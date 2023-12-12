@@ -31,6 +31,10 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\MrCapitalQ.FollowAlong.Core\MrCapitalQ.FollowAlong.Core.csproj" />
+  </ItemGroup>
 
   <!-- 
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
