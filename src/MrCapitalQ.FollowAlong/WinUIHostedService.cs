@@ -28,14 +28,10 @@ namespace MrCapitalQ.FollowAlong
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
         public void Dispose()
-        {
-        }
+        { }
 
         private void Main()
         {

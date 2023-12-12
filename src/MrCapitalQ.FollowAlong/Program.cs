@@ -7,6 +7,6 @@ Host.CreateDefaultBuilder(args)
     {
         services.AddHostedService<WinUIHostedService<App>>();
         services.AddSingleton<App>();
-        services.AddTransient<MainWindow>();
+        services.AddSingleton<MainWindow>();
     })
     .Build().Run();
