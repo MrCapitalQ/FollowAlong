@@ -27,6 +27,8 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.DisplayName);
 
             _handler = handler;
+            if (_canvasDevice is not null)
+                _handler.Initialize(_canvasDevice, captureItem.Size);
 
             _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
                 DirectXPixelFormat.B8G8R8A8UIntNormalized,
@@ -84,7 +86,11 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
                 try
                 {
                     if (recreateDevice)
+                    {
                         _canvasDevice = new CanvasDevice();
+
+                        _handler?.Initialize(_canvasDevice);
+                    }
 
                     _framePool?.Recreate(_canvasDevice,
                         DirectXPixelFormat.B8G8R8A8UIntNormalized,
