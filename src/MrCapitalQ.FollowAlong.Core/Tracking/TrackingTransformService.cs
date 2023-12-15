@@ -7,15 +7,15 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
     public class TrackingTransformService
     {
         private readonly PointerService _pointerService;
-        private float _horizontalBoundsPercentage = 0.5f;
-        private float _verticalBoundsPercentage = 0.5f;
+        private double _horizontalBoundsPercentage = 0.5f;
+        private double _verticalBoundsPercentage = 0.5f;
         private ITrackingTransformTarget? _target;
         private double _currentScale = 1;
         private Point _currentTranslate;
 
         public TrackingTransformService(PointerService pointerService) => _pointerService = pointerService;
 
-        public float HorizontalBoundsPercentage
+        public double HorizontalBoundsPercentage
         {
             get => _horizontalBoundsPercentage;
             set
@@ -26,7 +26,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             }
         }
 
-        public float VerticalBoundsPercentage
+        public double VerticalBoundsPercentage
         {
             get => _verticalBoundsPercentage;
             set
