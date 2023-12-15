@@ -7,18 +7,17 @@ using Microsoft.UI.Xaml.Hosting;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using System.Numerics;
 using Windows.Foundation;
-using Windows.Graphics;
 
 namespace MrCapitalQ.FollowAlong.Controls
 {
     public sealed class CapturePreview : Control, IBitmapFrameHandler
     {
-        private SizeInt32 _surfaceSize;
+        private Size _surfaceSize;
         private CompositionDrawingSurface? _surface;
 
         public CapturePreview() => DefaultStyleKey = typeof(CapturePreview);
 
-        public void Initialize(CanvasDevice canvasDevice, SizeInt32? size = null)
+        public void Initialize(CanvasDevice canvasDevice, Size? size = null)
         {
             if (size.HasValue)
                 _surfaceSize = size.Value;
@@ -26,7 +25,7 @@ namespace MrCapitalQ.FollowAlong.Controls
             var compositor = ElementCompositionPreview.GetElementVisual(this).Compositor;
             var compositionGraphicsDevice = CanvasComposition.CreateCompositionGraphicsDevice(compositor, canvasDevice);
 
-            _surface = compositionGraphicsDevice.CreateDrawingSurface(new Size(_surfaceSize.Width, _surfaceSize.Height),
+            _surface = compositionGraphicsDevice.CreateDrawingSurface(_surfaceSize,
                  Microsoft.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
                  Microsoft.Graphics.DirectX.DirectXAlphaMode.Premultiplied);
 

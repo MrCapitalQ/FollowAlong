@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
 using System;
+using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
@@ -28,7 +29,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
             _handler = handler;
             if (_canvasDevice is not null)
-                _handler.Initialize(_canvasDevice, captureItem.Size);
+                _handler.Initialize(_canvasDevice, new Size(captureItem.Size.Width, captureItem.Size.Height));
 
             _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
                 DirectXPixelFormat.B8G8R8A8UIntNormalized,
