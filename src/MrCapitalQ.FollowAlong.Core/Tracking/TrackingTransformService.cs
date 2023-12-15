@@ -7,8 +7,8 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
     public class TrackingTransformService
     {
         private readonly PointerService _pointerService;
-        private double _horizontalBoundsPercentage = 0.5f;
-        private double _verticalBoundsPercentage = 0.5f;
+        private double _horizontalBoundsPercentage = 0.5;
+        private double _verticalBoundsPercentage = 0.5;
         private ITrackingTransformTarget? _target;
         private double _currentScale = 1;
         private Point _currentTranslate;
