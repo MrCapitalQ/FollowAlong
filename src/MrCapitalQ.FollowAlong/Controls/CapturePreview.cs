@@ -14,7 +14,6 @@ namespace MrCapitalQ.FollowAlong.Controls
 {
     public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTransformTarget
     {
-        private readonly TrackingTransformService _trackingTransformService;
         private Size _surfaceSize;
         private CompositionDrawingSurface? _surface;
         private CompositionSurfaceBrush? _brush;
@@ -22,7 +21,6 @@ namespace MrCapitalQ.FollowAlong.Controls
         public CapturePreview()
         {
             DefaultStyleKey = typeof(CapturePreview);
-            _trackingTransformService = new TrackingTransformService();
             SizeChanged += CapturePreview_SizeChanged;
         }
 
@@ -33,6 +31,8 @@ namespace MrCapitalQ.FollowAlong.Controls
         public Size ViewportSize => ActualSize.ToSize();
 
         public double RenderScale => XamlRoot.RasterizationScale;
+
+        public TrackingTransformService? TrackingTransformService { get; set; }
 
         public void Initialize(CanvasDevice canvasDevice, Size? size = null)
         {
@@ -55,7 +55,7 @@ namespace MrCapitalQ.FollowAlong.Controls
 
             ElementCompositionPreview.SetElementChildVisual(this, visual);
 
-            _trackingTransformService.StartTrackingTransforms(this);
+            TrackingTransformService?.StartTrackingTransforms(this);
         }
 
         public void HandleFrame(CanvasBitmap canvasBitmap)
@@ -64,12 +64,12 @@ namespace MrCapitalQ.FollowAlong.Controls
             session.Clear(Colors.Transparent);
             session.DrawImage(canvasBitmap);
 
-            _trackingTransformService.UpdateTransforms();
+            TrackingTransformService?.UpdateTransforms();
         }
 
         private void CapturePreview_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _trackingTransformService.UpdateCenterPoint();
+            TrackingTransformService?.UpdateCenterPoint();
         }
     }
 }

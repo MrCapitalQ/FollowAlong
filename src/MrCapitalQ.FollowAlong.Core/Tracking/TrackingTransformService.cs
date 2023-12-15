@@ -13,10 +13,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
         private double _currentScale = 1;
         private Point _currentTranslate;
 
-        public TrackingTransformService()
-        {
-            _pointerService = new();
-        }
+        public TrackingTransformService(PointerService pointerService) => _pointerService = pointerService;
 
         public float HorizontalBoundsPercentage
         {

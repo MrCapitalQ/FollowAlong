@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Monitors;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,11 +13,14 @@ namespace MrCapitalQ.FollowAlong
         private readonly MonitorService _monitorService;
         private readonly BitmapCaptureService _captureService;
 
-        public MainWindow(MonitorService monitorService, BitmapCaptureService captureService)
+        public MainWindow(MonitorService monitorService,
+            BitmapCaptureService captureService,
+            TrackingTransformService trackingTransformService)
         {
+            InitializeComponent();
             _monitorService = monitorService;
             _captureService = captureService;
-            InitializeComponent();
+            Preview.TrackingTransformService = trackingTransformService;
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
@@ -35,10 +39,7 @@ namespace MrCapitalQ.FollowAlong
 
         private void ExcludeWindowFromCapture()
         {
-            //const uint WDA_NONE = 0x00000000;
-            //const uint WDA_MONITOR = 0x00000001;
             const uint WDA_EXCLUDEFROMCAPTURE = 0x00000011;
-
 
             var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             _ = SetWindowDisplayAffinity(hWnd, WDA_EXCLUDEFROMCAPTURE);
