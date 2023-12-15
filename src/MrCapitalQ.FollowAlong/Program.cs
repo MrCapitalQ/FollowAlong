@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using MrCapitalQ.FollowAlong;
 using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 
@@ -16,5 +17,6 @@ Host.CreateDefaultBuilder(args)
         services.AddSingleton<BitmapCaptureService>();
         services.AddTransient<PointerService>();
         services.AddTransient<TrackingTransformService>();
+        services.AddTransient<HotKeysService>();
     })
     .Build().Run();

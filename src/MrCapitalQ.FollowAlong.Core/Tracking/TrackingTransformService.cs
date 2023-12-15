@@ -11,6 +11,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
         private const int UpdatesPerSecond = 60;
         private readonly PointerService _pointerService;
         private readonly Timer _timer;
+        private double _zoom = 1;
         private double _horizontalBoundsPercentage = 0.5;
         private double _verticalBoundsPercentage = 0.5;
         private ITrackingTransformTarget? _target;
@@ -46,13 +47,23 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             }
         }
 
+        public double Zoom
+        {
+            get => _zoom;
+            set
+            {
+                if (value is <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), $"Value must be greater than 0.");
+                _zoom = value;
+            }
+        }
+
         public void StartTrackingTransforms(ITrackingTransformTarget target)
         {
             _target = target;
             _target.SizeChanged += Target_SizeChanged;
 
             UpdateCenterPoint();
-            Scale(target.ViewportSize.Height / target.ContentSize.Height);
 
             _timer.Start();
         }
@@ -64,6 +75,9 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
 
             if (_pointerService.GetCurrentPosition() is not Point point)
                 return;
+
+            var scale = _zoom * _target.ViewportSize.Height / _target.ContentSize.Height;
+            Scale(scale);
 
             var viewportBounds = GetViewportBounds();
 
