@@ -40,7 +40,6 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             }
         }
 
-
         public void StartTrackingTransforms(ITrackingTransformTarget target)
         {
             _target = target;
@@ -92,17 +91,16 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
 
         private void Translate(double x, double y)
         {
-            _currentTranslate.X = x;
-            _currentTranslate.Y = y;
-
             if (_target?.Brush is null)
                 return;
 
-            var translateLimitX = Math.Max((_currentScale * _target.ContentSize.Width) - _target.ViewportSize.Width, 0) / 2;
-            var translateLimitY = Math.Max((_currentScale * _target.ContentSize.Height) - _target.ViewportSize.Height, 0) / 2;
+            var translateLimitX = Math.Max((_currentScale * _target.ContentSize.Width) - _target.ViewportSize.Width, 0) / 2 / _currentScale;
+            var translateLimitY = Math.Max((_currentScale * _target.ContentSize.Height) - _target.ViewportSize.Height, 0) / 2 / _currentScale;
 
-            _target.Brush.Offset = new Vector2((float)Math.Clamp(-x * _currentScale, -translateLimitX, translateLimitX),
-                (float)Math.Clamp(-y * _currentScale, -translateLimitY, translateLimitY));
+            _currentTranslate.X = Math.Clamp(x, -translateLimitX, translateLimitX);
+            _currentTranslate.Y = Math.Clamp(y, -translateLimitY, translateLimitY);
+            _target.Brush.Offset = new Vector2((float)(-_currentTranslate.X * _currentScale),
+                (float)(-_currentTranslate.Y * _currentScale));
         }
 
         private Rect GetViewportBounds()
