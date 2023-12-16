@@ -31,7 +31,7 @@ namespace MrCapitalQ.FollowAlong
             _captureService.StartCapture(captureItem, Preview);
             _trackingTransformService.StartTrackingTransforms(Preview);
 
-            ExcludeWindowFromCapture();
+            //ExcludeWindowFromCapture();
         }
 
         [DllImport("user32.dll")]
