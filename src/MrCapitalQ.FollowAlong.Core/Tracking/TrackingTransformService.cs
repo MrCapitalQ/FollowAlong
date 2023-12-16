@@ -42,7 +42,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             _target = target;
 
             UpdateCenterPoint();
-            Scale(1 / _target.RenderScale);
+            Scale(target.ViewportSize.Height / target.ContentSize.Height);
         }
 
         public void UpdateTransforms()

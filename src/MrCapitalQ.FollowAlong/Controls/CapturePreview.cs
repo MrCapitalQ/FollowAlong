@@ -30,8 +30,6 @@ namespace MrCapitalQ.FollowAlong.Controls
 
         public Size ViewportSize => ActualSize.ToSize();
 
-        public double RenderScale => XamlRoot.RasterizationScale;
-
         public TrackingTransformService? TrackingTransformService { get; set; }
 
         public void Initialize(CanvasDevice canvasDevice, Size? size = null)
