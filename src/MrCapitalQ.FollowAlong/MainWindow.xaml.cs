@@ -12,6 +12,7 @@ namespace MrCapitalQ.FollowAlong
     {
         private readonly MonitorService _monitorService;
         private readonly BitmapCaptureService _captureService;
+        private readonly TrackingTransformService _trackingTransformService;
 
         public MainWindow(MonitorService monitorService,
             BitmapCaptureService captureService,
@@ -20,7 +21,7 @@ namespace MrCapitalQ.FollowAlong
             InitializeComponent();
             _monitorService = monitorService;
             _captureService = captureService;
-            Preview.TrackingTransformService = trackingTransformService;
+            _trackingTransformService = trackingTransformService;
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
@@ -28,10 +29,9 @@ namespace MrCapitalQ.FollowAlong
             var monitor = _monitorService.GetAll().Where(x => x.IsPrimary).First();
             var captureItem = monitor.CreateCaptureItem();
             _captureService.StartCapture(captureItem, Preview);
+            _trackingTransformService.StartTrackingTransforms(Preview);
 
-#if DEBUG
             ExcludeWindowFromCapture();
-#endif
         }
 
         [DllImport("user32.dll")]

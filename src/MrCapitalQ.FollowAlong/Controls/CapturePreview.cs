@@ -2,7 +2,6 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Composition;
 using Microsoft.UI;
 using Microsoft.UI.Composition;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
 using MrCapitalQ.FollowAlong.Core.Capture;
@@ -18,19 +17,13 @@ namespace MrCapitalQ.FollowAlong.Controls
         private CompositionDrawingSurface? _surface;
         private CompositionSurfaceBrush? _brush;
 
-        public CapturePreview()
-        {
-            DefaultStyleKey = typeof(CapturePreview);
-            SizeChanged += CapturePreview_SizeChanged;
-        }
+        public CapturePreview() => DefaultStyleKey = typeof(CapturePreview);
 
         public CompositionSurfaceBrush? Brush => _brush;
 
         public Size ContentSize => _surfaceSize;
 
         public Size ViewportSize => ActualSize.ToSize();
-
-        public TrackingTransformService? TrackingTransformService { get; set; }
 
         public void Initialize(CanvasDevice canvasDevice, Size? size = null)
         {
@@ -52,8 +45,6 @@ namespace MrCapitalQ.FollowAlong.Controls
             visual.Brush = _brush;
 
             ElementCompositionPreview.SetElementChildVisual(this, visual);
-
-            TrackingTransformService?.StartTrackingTransforms(this);
         }
 
         public void HandleFrame(CanvasBitmap canvasBitmap)
@@ -61,13 +52,6 @@ namespace MrCapitalQ.FollowAlong.Controls
             using var session = CanvasComposition.CreateDrawingSession(_surface);
             session.Clear(Colors.Transparent);
             session.DrawImage(canvasBitmap);
-
-            TrackingTransformService?.UpdateTransforms();
-        }
-
-        private void CapturePreview_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            TrackingTransformService?.UpdateCenterPoint();
         }
     }
 }

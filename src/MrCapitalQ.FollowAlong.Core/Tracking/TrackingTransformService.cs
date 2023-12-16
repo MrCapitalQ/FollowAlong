@@ -1,19 +1,28 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml;
+using System;
 using System.Numerics;
+using System.Timers;
 using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Core.Tracking
 {
     public class TrackingTransformService
     {
+        private const int UpdatesPerSecond = 60;
         private readonly PointerService _pointerService;
+        private readonly Timer _timer;
         private double _horizontalBoundsPercentage = 0.5;
         private double _verticalBoundsPercentage = 0.5;
         private ITrackingTransformTarget? _target;
         private double _currentScale = 1;
         private Point _currentTranslate;
 
-        public TrackingTransformService(PointerService pointerService) => _pointerService = pointerService;
+        public TrackingTransformService(PointerService pointerService)
+        {
+            _pointerService = pointerService;
+            _timer = new Timer(TimeSpan.FromSeconds(1.0 / UpdatesPerSecond).TotalMilliseconds);
+            _timer.Elapsed += Timer_Elapsed;
+        }
 
         public double HorizontalBoundsPercentage
         {
@@ -40,9 +49,12 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
         public void StartTrackingTransforms(ITrackingTransformTarget target)
         {
             _target = target;
+            _target.SizeChanged += Target_SizeChanged;
 
             UpdateCenterPoint();
             Scale(target.ViewportSize.Height / target.ContentSize.Height);
+
+            _timer.Start();
         }
 
         public void UpdateTransforms()
@@ -114,5 +126,10 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
                 boundsAreaHeight);
             return viewportBounds;
         }
+
+        private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
+            => _target?.DispatcherQueue?.TryEnqueue(() => UpdateTransforms());
+
+        private void Target_SizeChanged(object sender, SizeChangedEventArgs e) => UpdateCenterPoint();
     }
 }
