@@ -6,6 +6,8 @@ using MrCapitalQ.FollowAlong.Core.Tracking;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Windows.Graphics;
+using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong
 {
@@ -31,6 +33,10 @@ namespace MrCapitalQ.FollowAlong
             _hotKeysService = hotKeysService;
             _hotKeysService.RegisterHotKeys(this);
             _hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
+
+            ExtendsContentIntoTitleBar = true;
+            AppWindow.Resize(new SizeInt32(640, 480));
+            this.CenterOnScreen();
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e) => StartCapture();
@@ -42,7 +48,16 @@ namespace MrCapitalQ.FollowAlong
             _captureService.StartCapture(captureItem, Preview);
             _trackingTransformService.StartTrackingTransforms(Preview);
 
+            CaptureButton.Visibility = Visibility.Collapsed;
+
+            AppWindow.ResizeClient(new SizeInt32(1280, 720));
+            AppWindow.Move(new PointInt32((int)monitor.ScreenSize.X - 1, (int)monitor.ScreenSize.Y - 1));
+            this.SetIsResizable(false);
+            this.SetIsMinimizable(false);
+            this.SetIsMaximizable(false);
+
             //ExcludeWindowFromCapture();
+            //this.CenterOnScreen();
         }
 
         private void StopCapture()

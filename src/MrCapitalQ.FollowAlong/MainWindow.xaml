@@ -7,11 +7,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
         mc:Ignorable="d">
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
 
     <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
-        <controls:CapturePreview x:Name="Preview"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <controls:CapturePreview x:Name="Preview"
+                                 Grid.RowSpan="2" />
         <Button x:Name="CaptureButton"
-                Click="CaptureButton_Click">Start capture</Button>
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Click="CaptureButton_Click"
+                Grid.Row="1">
+            Start
+        </Button>
     </Grid>
 </Window>
