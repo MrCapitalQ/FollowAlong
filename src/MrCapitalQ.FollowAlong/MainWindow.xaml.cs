@@ -1,17 +1,28 @@
 using Microsoft.UI.Xaml;
+using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.Monitors;
+using System.Linq;
 
 namespace MrCapitalQ.FollowAlong
 {
     public sealed partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly MonitorService _monitorService;
+        private readonly BitmapCaptureService _captureService;
+
+        public MainWindow(MonitorService monitorService, BitmapCaptureService captureService)
         {
+            _monitorService = monitorService;
+            _captureService = captureService;
             InitializeComponent();
         }
 
-        private void MyButton_Click(object sender, RoutedEventArgs e)
+        private void CaptureButton_Click(object sender, RoutedEventArgs e)
         {
-            MyButton.Content = "Clicked";
+            var monitor = _monitorService.GetAll().Where(x => x.IsPrimary).First();
+            var captureItem = monitor.CreateCaptureItem();
+            _captureService.StartCapture(captureItem, Preview);
         }
+
     }
 }

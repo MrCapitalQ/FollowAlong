@@ -1,11 +1,11 @@
 ﻿using Microsoft.Graphics.Canvas;
-using Windows.Graphics;
+using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Core.Capture
 {
     public interface IBitmapFrameHandler
     {
-        void Initialize(CanvasDevice canvasDevice, SizeInt32? size = null);
+        void Initialize(CanvasDevice canvasDevice, Size? size = null);
         void HandleFrame(CanvasBitmap canvasBitmap);
     }
 }
