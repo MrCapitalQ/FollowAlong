@@ -5,17 +5,25 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
 using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using System.Numerics;
 using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Controls
 {
-    public sealed class CapturePreview : Control, IBitmapFrameHandler
+    public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTransformTarget
     {
         private Size _surfaceSize;
         private CompositionDrawingSurface? _surface;
+        private CompositionSurfaceBrush? _brush;
 
         public CapturePreview() => DefaultStyleKey = typeof(CapturePreview);
+
+        public CompositionSurfaceBrush? Brush => _brush;
+
+        public Size ContentSize => _surfaceSize;
+
+        public Size ViewportSize => ActualSize.ToSize();
 
         public void Initialize(CanvasDevice canvasDevice, Size? size = null)
         {
@@ -29,13 +37,12 @@ namespace MrCapitalQ.FollowAlong.Controls
                  Microsoft.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
                  Microsoft.Graphics.DirectX.DirectXAlphaMode.Premultiplied);
 
-            var brush = compositor.CreateSurfaceBrush(_surface);
-            brush.Scale = new Vector2((float)(1 / XamlRoot.RasterizationScale));
-            brush.Stretch = CompositionStretch.None;
+            _brush = compositor.CreateSurfaceBrush(_surface);
+            _brush.Stretch = CompositionStretch.None;
 
             var visual = compositor.CreateSpriteVisual();
             visual.RelativeSizeAdjustment = Vector2.One;
-            visual.Brush = brush;
+            visual.Brush = _brush;
 
             ElementCompositionPreview.SetElementChildVisual(this, visual);
         }
