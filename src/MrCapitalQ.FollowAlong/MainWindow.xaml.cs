@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using System;
@@ -13,15 +14,23 @@ namespace MrCapitalQ.FollowAlong
         private readonly MonitorService _monitorService;
         private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
+        private readonly HotKeysService _hotKeysService;
 
         public MainWindow(MonitorService monitorService,
             BitmapCaptureService captureService,
-            TrackingTransformService trackingTransformService)
+            TrackingTransformService trackingTransformService,
+            HotKeysService hotKeysService)
         {
             InitializeComponent();
             _monitorService = monitorService;
             _captureService = captureService;
+
             _trackingTransformService = trackingTransformService;
+            _trackingTransformService.Zoom = 1.5;
+
+            _hotKeysService = hotKeysService;
+            _hotKeysService.RegisterHotKeys(this);
+            _hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
@@ -32,6 +41,14 @@ namespace MrCapitalQ.FollowAlong
             _trackingTransformService.StartTrackingTransforms(Preview);
 
             //ExcludeWindowFromCapture();
+        }
+
+        private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
+        {
+            if (e.HotKeyType == HotKeyType.ZoomIn)
+                _trackingTransformService.Zoom = Math.Min(_trackingTransformService.Zoom + 0.5, 3);
+            else if (e.HotKeyType == HotKeyType.ZoomOut)
+                _trackingTransformService.Zoom = Math.Max(_trackingTransformService.Zoom - 0.5, 1);
         }
 
         [DllImport("user32.dll")]
