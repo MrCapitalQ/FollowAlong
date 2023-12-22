@@ -19,14 +19,18 @@
         </Grid.RowDefinitions>
         <controls:CapturePreview x:Name="Preview"
                                  Grid.RowSpan="2" />
-        <Grid x:Name="MainContent"
-              Grid.Row="1">
+        <StackPanel x:Name="MainContent"
+                    Margin="16"
+                    VerticalAlignment="Center"
+                    Grid.Row="1">
+            <TextBlock TextWrapping="Wrap">Press Ctrl + Shift + Alt + S to start or stop. The "Start" button below can also be used to start.</TextBlock>
+            <TextBlock TextWrapping="Wrap">When starting, this window will be hidden and will be restored after stopping.</TextBlock>
             <Button x:Name="CaptureButton"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Click="CaptureButton_Click">
                 Start
             </Button>
-        </Grid>
+        </StackPanel>
     </Grid>
 </Window>
