@@ -48,7 +48,7 @@ namespace MrCapitalQ.FollowAlong
             _captureService.StartCapture(captureItem, Preview);
             _trackingTransformService.StartTrackingTransforms(Preview);
 
-            CaptureButton.Visibility = Visibility.Collapsed;
+            MainContent.Visibility = Visibility.Collapsed;
 
             AppWindow.ResizeClient(new SizeInt32(1280, 720));
             AppWindow.Move(new PointInt32((int)monitor.ScreenSize.X - 1, (int)monitor.ScreenSize.Y - 1));
@@ -64,6 +64,14 @@ namespace MrCapitalQ.FollowAlong
         {
             _captureService.StopCapture();
             _trackingTransformService.StopTrackingTransforms();
+
+            MainContent.Visibility = Visibility.Visible;
+
+            AppWindow.Resize(new SizeInt32(640, 480));
+            this.CenterOnScreen();
+            this.SetIsResizable(false);
+            this.SetIsMinimizable(false);
+            this.SetIsMaximizable(false);
         }
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)

@@ -19,12 +19,14 @@
         </Grid.RowDefinitions>
         <controls:CapturePreview x:Name="Preview"
                                  Grid.RowSpan="2" />
-        <Button x:Name="CaptureButton"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Click="CaptureButton_Click"
-                Grid.Row="1">
-            Start
-        </Button>
+        <Grid x:Name="MainContent"
+              Grid.Row="1">
+            <Button x:Name="CaptureButton"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Click="CaptureButton_Click">
+                Start
+            </Button>
+        </Grid>
     </Grid>
 </Window>
