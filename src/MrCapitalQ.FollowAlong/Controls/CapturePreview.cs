@@ -53,5 +53,11 @@ namespace MrCapitalQ.FollowAlong.Controls
             session.Clear(Colors.Transparent);
             session.DrawImage(canvasBitmap);
         }
+
+        public void ClearFrame()
+        {
+            using var session = CanvasComposition.CreateDrawingSession(_surface);
+            session.Clear(Colors.Transparent);
+        }
     }
 }

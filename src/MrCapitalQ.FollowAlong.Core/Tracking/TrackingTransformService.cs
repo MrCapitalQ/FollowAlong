@@ -68,6 +68,17 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             _timer.Start();
         }
 
+        public void StopTrackingTransforms()
+        {
+            _timer.Stop();
+
+            if (_target is null)
+                return;
+
+            _target.SizeChanged -= Target_SizeChanged;
+            _target = null;
+        }
+
         public void UpdateTransforms()
         {
             if (_target?.Brush is null)

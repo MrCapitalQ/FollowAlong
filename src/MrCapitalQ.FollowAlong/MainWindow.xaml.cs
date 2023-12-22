@@ -33,7 +33,9 @@ namespace MrCapitalQ.FollowAlong
             _hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
         }
 
-        private void CaptureButton_Click(object sender, RoutedEventArgs e)
+        private void CaptureButton_Click(object sender, RoutedEventArgs e) => StartCapture();
+
+        private void StartCapture()
         {
             var monitor = _monitorService.GetAll().Where(x => x.IsPrimary).First();
             var captureItem = monitor.CreateCaptureItem();
@@ -43,9 +45,22 @@ namespace MrCapitalQ.FollowAlong
             //ExcludeWindowFromCapture();
         }
 
+        private void StopCapture()
+        {
+            _captureService.StopCapture();
+            _trackingTransformService.StopTrackingTransforms();
+        }
+
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
         {
-            if (e.HotKeyType == HotKeyType.ZoomIn)
+            if (e.HotKeyType == HotKeyType.StartStop)
+            {
+                if (_captureService.IsStarted)
+                    StopCapture();
+                else
+                    StartCapture();
+            }
+            else if (e.HotKeyType == HotKeyType.ZoomIn)
                 _trackingTransformService.Zoom = Math.Min(_trackingTransformService.Zoom + 0.5, 3);
             else if (e.HotKeyType == HotKeyType.ZoomOut)
                 _trackingTransformService.Zoom = Math.Max(_trackingTransformService.Zoom - 0.5, 1);
