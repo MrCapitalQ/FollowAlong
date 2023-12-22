@@ -52,6 +52,7 @@ namespace MrCapitalQ.FollowAlong
 
             AppWindow.ResizeClient(new SizeInt32(1280, 720));
             AppWindow.Move(new PointInt32((int)monitor.ScreenSize.X - 1, (int)monitor.ScreenSize.Y - 1));
+            AppWindow.IsShownInSwitchers = false;
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
             this.SetIsMaximizable(false);
@@ -68,6 +69,7 @@ namespace MrCapitalQ.FollowAlong
             MainContent.Visibility = Visibility.Visible;
 
             AppWindow.Resize(new SizeInt32(640, 480));
+            AppWindow.IsShownInSwitchers = true;
             this.CenterOnScreen();
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
