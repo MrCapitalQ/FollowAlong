@@ -24,7 +24,10 @@ namespace MrCapitalQ.FollowAlong
             InitializeComponent();
             _monitorService = monitorService;
             _captureService = captureService;
+
             _trackingTransformService = trackingTransformService;
+            _trackingTransformService.Zoom = 1.5;
+
             _hotKeysService = hotKeysService;
             _hotKeysService.RegisterHotKeys(this);
             _hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
