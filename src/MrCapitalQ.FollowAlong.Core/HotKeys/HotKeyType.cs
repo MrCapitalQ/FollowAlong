@@ -2,8 +2,7 @@
 {
     public enum HotKeyType
     {
-        Start,
-        Stop,
+        StartStop,
         ZoomIn,
         ZoomOut,
         ResetZoom

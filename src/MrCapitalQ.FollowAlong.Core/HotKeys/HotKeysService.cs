@@ -19,6 +19,7 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
 
             _hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
 
+            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.StartStop, (uint)HotKeyModifiers, (uint)Keys.S);
             HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomIn, (uint)HotKeyModifiers, (uint)Keys.Plus);
             HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomOut, (uint)HotKeyModifiers, (uint)Keys.Minus);
 
@@ -65,9 +66,9 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
             WinKey = 8
         }
 
-        [Flags]
-        private enum Keys
+        private enum Keys : uint
         {
+            S = 0x53,
             Plus = 0xBB,
             Minus = 0xBD
         }
