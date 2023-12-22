@@ -17,6 +17,6 @@ Host.CreateDefaultBuilder(args)
         services.AddSingleton<BitmapCaptureService>();
         services.AddTransient<PointerService>();
         services.AddTransient<TrackingTransformService>();
-        services.AddTransient<HotKeysService>();
+        services.AddSingleton<HotKeysService>();
     })
     .Build().Run();
