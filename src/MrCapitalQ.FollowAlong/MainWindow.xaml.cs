@@ -56,9 +56,6 @@ namespace MrCapitalQ.FollowAlong
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
             this.SetIsMaximizable(false);
-
-            //ExcludeWindowFromCapture();
-            //this.CenterOnScreen();
         }
 
         private void StopCapture()
@@ -71,9 +68,10 @@ namespace MrCapitalQ.FollowAlong
             AppWindow.Resize(new SizeInt32(640, 480));
             AppWindow.IsShownInSwitchers = true;
             this.CenterOnScreen();
-            this.SetIsResizable(false);
-            this.SetIsMinimizable(false);
-            this.SetIsMaximizable(false);
+            this.SetIsResizable(true);
+            this.SetIsMinimizable(true);
+            this.SetIsMaximizable(true);
+            this.SetForegroundWindow();
         }
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
