@@ -5,7 +5,6 @@ using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Windows.Graphics;
 using WinUIEx;
 
@@ -13,6 +12,12 @@ namespace MrCapitalQ.FollowAlong
 {
     public sealed partial class MainWindow : Window
     {
+        private const double MaxZoom = 3;
+        private const double MinZoom = 1;
+        private const double ZoomStepSize = 0.5;
+        private readonly static SizeInt32 s_defaultWindowSize = new(640, 480);
+        private readonly static SizeInt32 s_viewportWindowSize = new(1280, 720);
+
         private readonly MonitorService _monitorService;
         private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
@@ -35,7 +40,7 @@ namespace MrCapitalQ.FollowAlong
             _hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
 
             ExtendsContentIntoTitleBar = true;
-            AppWindow.Resize(new SizeInt32(640, 480));
+            AppWindow.Resize(s_defaultWindowSize);
             this.CenterOnScreen();
         }
 
@@ -50,7 +55,7 @@ namespace MrCapitalQ.FollowAlong
 
             MainContent.Visibility = Visibility.Collapsed;
 
-            AppWindow.ResizeClient(new SizeInt32(1280, 720));
+            AppWindow.ResizeClient(s_viewportWindowSize);
             AppWindow.Move(new PointInt32((int)monitor.ScreenSize.X - 1, (int)monitor.ScreenSize.Y - 1));
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
@@ -64,7 +69,7 @@ namespace MrCapitalQ.FollowAlong
 
             MainContent.Visibility = Visibility.Visible;
 
-            AppWindow.Resize(new SizeInt32(640, 480));
+            AppWindow.Resize(s_viewportWindowSize);
             this.CenterOnScreen();
             this.SetIsResizable(true);
             this.SetIsMinimizable(true);
@@ -82,20 +87,9 @@ namespace MrCapitalQ.FollowAlong
                     StartCapture();
             }
             else if (e.HotKeyType == HotKeyType.ZoomIn)
-                _trackingTransformService.Zoom = Math.Min(_trackingTransformService.Zoom + 0.5, 3);
+                _trackingTransformService.Zoom = Math.Min(_trackingTransformService.Zoom + ZoomStepSize, MaxZoom);
             else if (e.HotKeyType == HotKeyType.ZoomOut)
-                _trackingTransformService.Zoom = Math.Max(_trackingTransformService.Zoom - 0.5, 1);
-        }
-
-        [DllImport("user32.dll")]
-        private static extern uint SetWindowDisplayAffinity(IntPtr hwnd, uint dwAffinity);
-
-        private void ExcludeWindowFromCapture()
-        {
-            const uint WDA_EXCLUDEFROMCAPTURE = 0x00000011;
-
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-            _ = SetWindowDisplayAffinity(hWnd, WDA_EXCLUDEFROMCAPTURE);
+                _trackingTransformService.Zoom = Math.Max(_trackingTransformService.Zoom - ZoomStepSize, MinZoom);
         }
     }
 }
