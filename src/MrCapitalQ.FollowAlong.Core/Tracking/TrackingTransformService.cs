@@ -15,6 +15,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
         private double _horizontalBoundsPercentage = 0.5;
         private double _verticalBoundsPercentage = 0.5;
         private ITrackingTransformTarget? _target;
+        private double _baseScale;
         private double _currentScale = 1;
         private Point _currentTranslate;
 
@@ -63,7 +64,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             _target = target;
             _target.SizeChanged += Target_SizeChanged;
 
-            UpdateCenterPoint();
+            UpdateLayout();
 
             _timer.Start();
         }
@@ -87,7 +88,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             if (_pointerService.GetCurrentPosition() is not Point point)
                 return;
 
-            var scale = _zoom * _target.ViewportSize.Height / _target.ContentSize.Height;
+            var scale = _zoom * _baseScale;
             Scale(scale);
 
             var viewportBounds = GetViewportBounds();
@@ -107,10 +108,14 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             Translate(translateX, translateY);
         }
 
-        public void UpdateCenterPoint()
+        public void UpdateLayout()
         {
             if (_target?.Brush is null)
                 return;
+
+            _baseScale = (_target.ContentSize.Width / _target.ContentSize.Height) > (16 / 9.0)
+                ? _target.ViewportSize.Height / _target.ContentSize.Height
+                : _target.ViewportSize.Width / _target.ContentSize.Width;
 
             _target.Brush.CenterPoint = new Vector2(_target.ViewportSize._width / 2, _target.ViewportSize._height / 2);
         }
@@ -155,6 +160,6 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
         private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
             => _target?.DispatcherQueue?.TryEnqueue(() => UpdateTransforms());
 
-        private void Target_SizeChanged(object sender, SizeChangedEventArgs e) => UpdateCenterPoint();
+        private void Target_SizeChanged(object sender, SizeChangedEventArgs e) => UpdateLayout();
     }
 }
