@@ -7,5 +7,6 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
     {
         void Initialize(CanvasDevice canvasDevice, Size? size = null);
         void HandleFrame(CanvasBitmap canvasBitmap);
+        void Stop();
     }
 }

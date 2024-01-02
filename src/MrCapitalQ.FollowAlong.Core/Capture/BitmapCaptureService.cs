@@ -19,17 +19,24 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         public BitmapCaptureService(ILogger<BitmapCaptureService> logger)
         {
-            _canvasDevice = new CanvasDevice();
             _logger = logger;
         }
 
+        public bool IsStarted { get; private set; }
+
         public void StartCapture(GraphicsCaptureItem captureItem, IBitmapFrameHandler handler)
         {
+            if (IsStarted)
+                throw new InvalidOperationException("Cannot start capture because a capture is has already been started.");
+
             _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.DisplayName);
 
+            IsStarted = true;
+
             _handler = handler;
-            if (_canvasDevice is not null)
-                _handler.Initialize(_canvasDevice, new Size(captureItem.Size.Width, captureItem.Size.Height));
+
+            _canvasDevice = new CanvasDevice();
+            _handler.Initialize(_canvasDevice, new Size(captureItem.Size.Width, captureItem.Size.Height));
 
             _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
                 DirectXPixelFormat.B8G8R8A8UIntNormalized,
@@ -41,6 +48,20 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
             _session = _framePool.CreateCaptureSession(captureItem);
             _session.StartCapture();
+        }
+
+        public void StopCapture()
+        {
+            _logger.LogInformation("Stopping capture session.");
+
+            IsStarted = false;
+            _handler?.Stop();
+            _handler = null;
+            _canvasDevice?.Dispose();
+            _canvasDevice = null;
+            _framePool?.Dispose();
+            _framePool = null;
+            _session?.Dispose();
         }
 
         public void Dispose() => StopCapture();
@@ -104,16 +125,6 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
                     recreateDevice = true;
                 }
             }
-        }
-
-        private void StopCapture()
-        {
-            _logger.LogInformation("Stopping capture session.");
-            _canvasDevice?.Dispose();
-            _canvasDevice = null;
-            _framePool?.Dispose();
-            _framePool = null;
-            _session?.Dispose();
         }
     }
 }

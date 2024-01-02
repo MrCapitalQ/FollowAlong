@@ -16,13 +16,12 @@ namespace MrCapitalQ.FollowAlong.Controls
         private Size _surfaceSize;
         private CompositionDrawingSurface? _surface;
         private CompositionSurfaceBrush? _brush;
+        private SpriteVisual? _visual;
 
         public CapturePreview() => DefaultStyleKey = typeof(CapturePreview);
 
         public CompositionSurfaceBrush? Brush => _brush;
-
         public Size ContentSize => _surfaceSize;
-
         public Size ViewportSize => ActualSize.ToSize();
 
         public void Initialize(CanvasDevice canvasDevice, Size? size = null)
@@ -31,7 +30,7 @@ namespace MrCapitalQ.FollowAlong.Controls
                 _surfaceSize = size.Value;
 
             var compositor = ElementCompositionPreview.GetElementVisual(this).Compositor;
-            var compositionGraphicsDevice = CanvasComposition.CreateCompositionGraphicsDevice(compositor, canvasDevice);
+            using var compositionGraphicsDevice = CanvasComposition.CreateCompositionGraphicsDevice(compositor, canvasDevice);
 
             _surface = compositionGraphicsDevice.CreateDrawingSurface(_surfaceSize,
                  Microsoft.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
@@ -40,11 +39,11 @@ namespace MrCapitalQ.FollowAlong.Controls
             _brush = compositor.CreateSurfaceBrush(_surface);
             _brush.Stretch = CompositionStretch.None;
 
-            var visual = compositor.CreateSpriteVisual();
-            visual.RelativeSizeAdjustment = Vector2.One;
-            visual.Brush = _brush;
+            _visual = compositor.CreateSpriteVisual();
+            _visual.RelativeSizeAdjustment = Vector2.One;
+            _visual.Brush = _brush;
 
-            ElementCompositionPreview.SetElementChildVisual(this, visual);
+            ElementCompositionPreview.SetElementChildVisual(this, _visual);
         }
 
         public void HandleFrame(CanvasBitmap canvasBitmap)
@@ -52,6 +51,19 @@ namespace MrCapitalQ.FollowAlong.Controls
             using var session = CanvasComposition.CreateDrawingSession(_surface);
             session.Clear(Colors.Transparent);
             session.DrawImage(canvasBitmap);
+        }
+
+        public void Stop()
+        {
+            using var session = CanvasComposition.CreateDrawingSession(_surface);
+            session.Clear(Colors.Transparent);
+
+            ElementCompositionPreview.SetElementChildVisual(this, null);
+
+            _visual?.Dispose();
+            _visual = null;
+            _brush?.Dispose();
+            _brush = null;
         }
     }
 }
