@@ -6,19 +6,20 @@ namespace MrCapitalQ.FollowAlong
 {
     public partial class App : Application
     {
-        private readonly IServiceProvider _services;
-        private Window? _window;
-
         public App(IServiceProvider services)
         {
             InitializeComponent();
-            _services = services;
+            Services = services;
         }
+
+        public static new App Current => (App)Application.Current;
+        public IServiceProvider Services { get; }
+        public Window? Window { get; protected set; }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            _window = _services.GetRequiredService<MainWindow>();
-            _window.Activate();
+            Window = Services.GetRequiredService<MainWindow>();
+            Window.Activate();
         }
     }
 }

@@ -6,13 +6,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
+        xmlns:monitors="using:MrCapitalQ.FollowAlong.Core.Monitors"
         mc:Ignorable="d"
         Title="Follow Along">
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid HorizontalAlignment="Stretch"
+    <Grid x:Name="Root"
+          HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
@@ -24,14 +26,20 @@
                     Margin="16"
                     VerticalAlignment="Center"
                     Grid.Row="1">
-            <TextBlock TextWrapping="Wrap">Press Ctrl + Shift + Alt + S to start or stop. The "Start" button below can also be used to start.</TextBlock>
-            <TextBlock TextWrapping="Wrap">When starting, this window will be hidden and will be restored after stopping.</TextBlock>
-            <Button x:Name="CaptureButton"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Click="CaptureButton_Click">
-                Start
-            </Button>
+            <ListView ItemsSource="{x:Bind _viewModel.Monitors}"
+                      SelectedItem="{x:Bind _viewModel.SelectedMonitor}"
+                      SelectionMode="Single"
+                      Grid.Row="1">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="monitors:MonitorInfo">
+                        <TextBlock Text="{x:Bind DeviceName}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <TextBlock TextWrapping="Wrap"
+                       TextAlignment="Center">Press Ctrl + Shift + Alt + S to start or stop.</TextBlock>
+            <TextBlock TextWrapping="Wrap"
+                       TextAlignment="Center">When starting, this window will be hidden and will be restored after stopping.</TextBlock>
         </StackPanel>
     </Grid>
 </Window>

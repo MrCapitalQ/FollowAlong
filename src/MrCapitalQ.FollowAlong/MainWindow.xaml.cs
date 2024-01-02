@@ -10,7 +10,7 @@ using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong
 {
-    public sealed partial class MainWindow : Window
+    internal sealed partial class MainWindow : Window
     {
         private const double MaxZoom = 3;
         private const double MinZoom = 1;
@@ -21,12 +21,13 @@ namespace MrCapitalQ.FollowAlong
         private readonly MonitorService _monitorService;
         private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
-        private readonly HotKeysService _hotKeysService;
+        private readonly MainViewModel _viewModel;
 
         public MainWindow(MonitorService monitorService,
             BitmapCaptureService captureService,
             TrackingTransformService trackingTransformService,
-            HotKeysService hotKeysService)
+            HotKeysService hotKeysService,
+            MainViewModel viewModel)
         {
             InitializeComponent();
             _monitorService = monitorService;
@@ -35,16 +36,14 @@ namespace MrCapitalQ.FollowAlong
             _trackingTransformService = trackingTransformService;
             _trackingTransformService.Zoom = 1.5;
 
-            _hotKeysService = hotKeysService;
-            _hotKeysService.RegisterHotKeys(this);
-            _hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
+            _viewModel = viewModel;
+            hotKeysService.RegisterHotKeys(this);
+            hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
 
             ExtendsContentIntoTitleBar = true;
             AppWindow.Resize(s_defaultWindowSize);
             this.CenterOnScreen();
         }
-
-        private void CaptureButton_Click(object sender, RoutedEventArgs e) => StartCapture();
 
         private void StartCapture()
         {
