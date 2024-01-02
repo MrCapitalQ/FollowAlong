@@ -69,7 +69,7 @@ namespace MrCapitalQ.FollowAlong
 
             MainContent.Visibility = Visibility.Visible;
 
-            AppWindow.Resize(s_viewportWindowSize);
+            AppWindow.Resize(s_defaultWindowSize);
             this.CenterOnScreen();
             this.SetIsResizable(true);
             this.SetIsMinimizable(true);
