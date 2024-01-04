@@ -10,6 +10,9 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 {
     public sealed class BitmapCaptureService : IDisposable
     {
+        public event EventHandler? Started;
+        public event EventHandler? Stopped;
+
         private readonly ILogger<BitmapCaptureService> _logger;
         private IBitmapFrameHandler? _handler;
         private CanvasDevice? _canvasDevice;
@@ -24,16 +27,17 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         public bool IsStarted { get; private set; }
 
-        public void StartCapture(GraphicsCaptureItem captureItem, IBitmapFrameHandler handler)
+        public void StartCapture(GraphicsCaptureItem captureItem)
         {
             if (IsStarted)
                 throw new InvalidOperationException("Cannot start capture because a capture is has already been started.");
 
+            if (_handler is null)
+                throw new InvalidOperationException("A bitmap frame handler must be registered before starting.");
+
             _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.DisplayName);
 
             IsStarted = true;
-
-            _handler = handler;
 
             _canvasDevice = new CanvasDevice();
             _handler.Initialize(_canvasDevice, new Size(captureItem.Size.Width, captureItem.Size.Height));
@@ -48,6 +52,8 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
             _session = _framePool.CreateCaptureSession(captureItem);
             _session.StartCapture();
+
+            OnStarted();
         }
 
         public void StopCapture()
@@ -56,15 +62,40 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
             IsStarted = false;
             _handler?.Stop();
-            _handler = null;
+            //_handler = null;
             _canvasDevice?.Dispose();
             _canvasDevice = null;
             _framePool?.Dispose();
             _framePool = null;
             _session?.Dispose();
+
+            OnStopped();
+        }
+
+        public void RegisterFrameHandler(IBitmapFrameHandler handler)
+        {
+            if (_handler is not null)
+                throw new InvalidOperationException("A bitmap frame handler has already been set.");
+
+            if (IsStarted)
+                throw new InvalidOperationException("A bitmap frame handler cannot be registered after starting.");
+
+            _handler = handler;
         }
 
         public void Dispose() => StopCapture();
+
+        private void OnStarted()
+        {
+            var raiseEvent = Started;
+            raiseEvent?.Invoke(this, new());
+        }
+
+        private void OnStopped()
+        {
+            var raiseEvent = Stopped;
+            raiseEvent?.Invoke(this, new());
+        }
 
         private void FramePool_FrameArrived(Direct3D11CaptureFramePool sender, object args)
         {
