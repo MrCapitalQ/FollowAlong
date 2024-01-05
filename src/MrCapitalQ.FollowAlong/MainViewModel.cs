@@ -67,7 +67,7 @@ namespace MrCapitalQ.FollowAlong
         {
             using var bitmap = new Bitmap((int)MonitorInfo.MonitorArea.Width, (int)MonitorInfo.MonitorArea.Height);
             using var graphics = Graphics.FromImage(bitmap);
-            graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
+            graphics.CopyFromScreen((int)MonitorInfo.MonitorArea.Left, (int)MonitorInfo.MonitorArea.Top, 0, 0, bitmap.Size);
 
             using var memoryStream = new MemoryStream();
             bitmap.Save(memoryStream, ImageFormat.Png);

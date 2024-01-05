@@ -29,7 +29,7 @@
             <StackPanel x:Name="MainContent"
                         VerticalAlignment="Center">
                 <GridView ItemsSource="{x:Bind _viewModel.Monitors}"
-                          SelectedItem="{x:Bind _viewModel.SelectedMonitor}"
+                          SelectedItem="{x:Bind _viewModel.SelectedMonitor, Mode=TwoWay}"
                           SelectionMode="Single"
                           Padding="32,8"
                           ScrollViewer.HorizontalScrollMode="Enabled"
@@ -43,13 +43,13 @@
                     </GridView.ItemsPanel>
                     <GridView.ItemTemplate>
                         <DataTemplate x:DataType="local:MonitorViewModel">
-                            <Border Height="120"
-                                    Width="{Binding AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}"
-                                    BorderBrush="Black"
+                            <Border BorderBrush="Black"
                                     BorderThickness="4"
                                     CornerRadius="4"
                                     Margin="4">
-                                <Image Source="{Binding BitmapImage, Mode=OneWay}" />
+                                <Image Source="{Binding BitmapImage, Mode=OneWay}"
+                                       Height="120"
+                                       Width="{Binding AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
                             </Border>
                         </DataTemplate>
                     </GridView.ItemTemplate>
