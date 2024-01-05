@@ -30,8 +30,9 @@ namespace MrCapitalQ.FollowAlong
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
         {
-            if (e.HotKeyType == HotKeyType.StartStop)
-            {
+            if (e.HotKeyType != HotKeyType.StartStop)
+                return;
+
                 if (!_captureService.IsStarted && SelectedMonitor is not null)
                 {
                     var captureItem = SelectedMonitor.CreateCaptureItem();
@@ -40,10 +41,5 @@ namespace MrCapitalQ.FollowAlong
                 else if (_captureService.IsStarted)
                     _captureService.StopCapture();
             }
-            else if (e.HotKeyType == HotKeyType.ZoomIn)
-            { }
-            else if (e.HotKeyType == HotKeyType.ZoomOut)
-            { }
-        }
     }
 }
