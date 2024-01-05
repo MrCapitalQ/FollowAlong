@@ -65,14 +65,17 @@ namespace MrCapitalQ.FollowAlong
 
         private async Task LoadThumbnailAsync()
         {
-            using var bitmap = new Bitmap((int)MonitorInfo.MonitorArea.Width, (int)MonitorInfo.MonitorArea.Height);
-            using var graphics = Graphics.FromImage(bitmap);
-            graphics.CopyFromScreen((int)MonitorInfo.MonitorArea.Left, (int)MonitorInfo.MonitorArea.Top, 0, 0, bitmap.Size);
+            using var memoryStream = await Task.Run(() =>
+            {
+                using var bitmap = new Bitmap((int)MonitorInfo.MonitorArea.Width, (int)MonitorInfo.MonitorArea.Height);
+                using var graphics = Graphics.FromImage(bitmap);
+                graphics.CopyFromScreen((int)MonitorInfo.MonitorArea.Left, (int)MonitorInfo.MonitorArea.Top, 0, 0, bitmap.Size);
 
-            using var memoryStream = new MemoryStream();
-            bitmap.Save(memoryStream, ImageFormat.Png);
-            memoryStream.Position = 0;
-
+                var memoryStream = new MemoryStream();
+                bitmap.Save(memoryStream, ImageFormat.Png);
+                memoryStream.Position = 0;
+                return memoryStream;
+            });
             await BitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());
         }
     }
