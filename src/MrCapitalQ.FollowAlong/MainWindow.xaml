@@ -49,7 +49,7 @@
                                     BorderThickness="4"
                                     CornerRadius="4"
                                     Margin="4">
-                                <ContentPresenter Background="Green" />
+                                <Image Source="{Binding BitmapImage, Mode=OneWay}" />
                             </Border>
                         </DataTemplate>
                     </GridView.ItemTemplate>

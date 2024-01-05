@@ -1,9 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Media.Imaging;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Monitors;
+using System;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MrCapitalQ.FollowAlong
 {
@@ -48,9 +54,26 @@ namespace MrCapitalQ.FollowAlong
         public MonitorViewModel(MonitorInfo monitorInfo)
         {
             MonitorInfo = monitorInfo;
+            BitmapImage = new();
+
+            _ = LoadThumbnailAsync();
         }
 
         public MonitorInfo MonitorInfo { get; }
+        public BitmapImage BitmapImage { get; }
         public double AspectRatio => MonitorInfo.ScreenSize.X / MonitorInfo.ScreenSize.Y;
+
+        private async Task LoadThumbnailAsync()
+        {
+            using var bitmap = new Bitmap((int)MonitorInfo.MonitorArea.Width, (int)MonitorInfo.MonitorArea.Height);
+            using var graphics = Graphics.FromImage(bitmap);
+            graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
+
+            using var memoryStream = new MemoryStream();
+            bitmap.Save(memoryStream, ImageFormat.Png);
+            memoryStream.Position = 0;
+
+            await BitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());
+        }
     }
 }
