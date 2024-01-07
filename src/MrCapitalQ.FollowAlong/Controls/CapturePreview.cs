@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Tracking;
+using System;
 using System.Numerics;
 using Windows.Foundation;
 
@@ -55,13 +56,27 @@ namespace MrCapitalQ.FollowAlong.Controls
 
         public void Stop()
         {
-            using var session = CanvasComposition.CreateDrawingSession(_surface);
-            session.Clear(Colors.Transparent);
+            if (_surface is not null)
+            {
+                try
+                {
+                    using var session = CanvasComposition.CreateDrawingSession(_surface);
+                    session.Clear(Colors.Transparent);
+                }
+                catch (Exception ex) when (ex is ObjectDisposedException)
+                {
+                    _surface = null;
+                }
+            }
 
-            ElementCompositionPreview.SetElementChildVisual(this, null);
+            if (_visual is not null)
+            {
+                ElementCompositionPreview.SetElementChildVisual(this, null);
 
-            _visual?.Dispose();
-            _visual = null;
+                _visual?.Dispose();
+                _visual = null;
+            }
+
             _brush?.Dispose();
             _brush = null;
         }
