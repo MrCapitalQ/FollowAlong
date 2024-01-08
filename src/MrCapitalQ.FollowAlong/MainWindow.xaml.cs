@@ -83,7 +83,12 @@ namespace MrCapitalQ.FollowAlong
             this.SetIsMaximizable(true);
             this.SetForegroundWindow();
 
-            _previewWindow?.Hide();
+            if (_previewWindow is not null)
+            {
+                _previewWindow.Closed -= PreviewWindow_Closed;
+                _previewWindow.Close();
+                _previewWindow = null;
+            }
         }
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
