@@ -54,7 +54,7 @@ namespace MrCapitalQ.FollowAlong
 
             var appMonitor = this.GetWindowMonitorSize();
             if (appMonitor is not null)
-                AppWindow.Move(new PointInt32((int)appMonitor.ScreenSize.X - 1, (int)appMonitor.ScreenSize.X - 1));
+                AppWindow.Move(new PointInt32((int)appMonitor.ScreenSize.X - 1, (int)appMonitor.ScreenSize.Y - 1));
 
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
