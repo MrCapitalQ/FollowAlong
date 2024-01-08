@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
@@ -20,6 +21,7 @@ namespace MrCapitalQ.FollowAlong
 
         private readonly TrackingTransformService _trackingTransformService;
         private readonly MainViewModel _viewModel;
+        private PreviewWindow? _previewWindow;
 
         public MainWindow(BitmapCaptureService captureService,
             TrackingTransformService trackingTransformService,
@@ -44,6 +46,8 @@ namespace MrCapitalQ.FollowAlong
             ExtendsContentIntoTitleBar = true;
             AppWindow.Resize(s_defaultWindowSize);
             this.CenterOnScreen();
+
+            Closed += MainWindow_Closed;
         }
 
         private void CaptureService_Started(object? sender, EventArgs e)
@@ -59,6 +63,13 @@ namespace MrCapitalQ.FollowAlong
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
             this.SetIsMaximizable(false);
+
+            if (_previewWindow is null)
+            {
+                _previewWindow = App.Current.Services.GetRequiredService<PreviewWindow>();
+                _previewWindow.Closed += PreviewWindow_Closed;
+            }
+            _previewWindow.Activate();
         }
 
         private void CaptureService_Stopped(object? sender, EventArgs e)
@@ -71,6 +82,8 @@ namespace MrCapitalQ.FollowAlong
             this.SetIsMinimizable(true);
             this.SetIsMaximizable(true);
             this.SetForegroundWindow();
+
+            _previewWindow?.Hide();
         }
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
@@ -79,6 +92,17 @@ namespace MrCapitalQ.FollowAlong
                 _trackingTransformService.Zoom = Math.Min(_trackingTransformService.Zoom + ZoomStepSize, MaxZoom);
             else if (e.HotKeyType == HotKeyType.ZoomOut)
                 _trackingTransformService.Zoom = Math.Max(_trackingTransformService.Zoom - ZoomStepSize, MinZoom);
+        }
+
+        private void MainWindow_Closed(object sender, WindowEventArgs args) => _previewWindow?.Close();
+
+        private void PreviewWindow_Closed(object sender, WindowEventArgs args)
+        {
+            if (_previewWindow is null)
+                return;
+
+            _previewWindow.Closed -= PreviewWindow_Closed;
+            _previewWindow = null;
         }
     }
 }
