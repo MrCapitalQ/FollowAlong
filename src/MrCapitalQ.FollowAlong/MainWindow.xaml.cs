@@ -1,16 +1,16 @@
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using System;
-using System.Linq;
 using Windows.Graphics;
 using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong
 {
-    public sealed partial class MainWindow : Window
+    internal sealed partial class MainWindow : Window
     {
         private const double MaxZoom = 3;
         private const double MinZoom = 1;
@@ -18,55 +18,51 @@ namespace MrCapitalQ.FollowAlong
         private readonly static SizeInt32 s_defaultWindowSize = new(640, 480);
         private readonly static SizeInt32 s_viewportWindowSize = new(1280, 720);
 
-        private readonly MonitorService _monitorService;
-        private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
-        private readonly HotKeysService _hotKeysService;
+        private readonly MainViewModel _viewModel;
 
-        public MainWindow(MonitorService monitorService,
-            BitmapCaptureService captureService,
+        public MainWindow(BitmapCaptureService captureService,
             TrackingTransformService trackingTransformService,
-            HotKeysService hotKeysService)
+            HotKeysService hotKeysService,
+            MainViewModel viewModel)
         {
             InitializeComponent();
-            _monitorService = monitorService;
-            _captureService = captureService;
+
+            captureService.RegisterFrameHandler(Preview);
+            captureService.Started += CaptureService_Started;
+            captureService.Stopped += CaptureService_Stopped;
 
             _trackingTransformService = trackingTransformService;
             _trackingTransformService.Zoom = 1.5;
+            _trackingTransformService.StartTrackingTransforms(Preview);
 
-            _hotKeysService = hotKeysService;
-            _hotKeysService.RegisterHotKeys(this);
-            _hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
+            _viewModel = viewModel;
+
+            hotKeysService.RegisterHotKeys(this);
+            hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
 
             ExtendsContentIntoTitleBar = true;
             AppWindow.Resize(s_defaultWindowSize);
             this.CenterOnScreen();
         }
 
-        private void CaptureButton_Click(object sender, RoutedEventArgs e) => StartCapture();
-
-        private void StartCapture()
+        private void CaptureService_Started(object? sender, EventArgs e)
         {
-            var monitor = _monitorService.GetAll().Where(x => x.IsPrimary).First();
-            var captureItem = monitor.CreateCaptureItem();
-            _captureService.StartCapture(captureItem, Preview);
-            _trackingTransformService.StartTrackingTransforms(Preview);
-
             MainContent.Visibility = Visibility.Collapsed;
 
             AppWindow.ResizeClient(s_viewportWindowSize);
-            AppWindow.Move(new PointInt32((int)monitor.ScreenSize.X - 1, (int)monitor.ScreenSize.Y - 1));
+
+            var appMonitor = this.GetWindowMonitorSize();
+            if (appMonitor is not null)
+                AppWindow.Move(new PointInt32((int)appMonitor.ScreenSize.X - 1, (int)appMonitor.ScreenSize.X - 1));
+
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
             this.SetIsMaximizable(false);
         }
 
-        private void StopCapture()
+        private void CaptureService_Stopped(object? sender, EventArgs e)
         {
-            _captureService.StopCapture();
-            _trackingTransformService.StopTrackingTransforms();
-
             MainContent.Visibility = Visibility.Visible;
 
             AppWindow.Resize(s_defaultWindowSize);
@@ -79,14 +75,7 @@ namespace MrCapitalQ.FollowAlong
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
         {
-            if (e.HotKeyType == HotKeyType.StartStop)
-            {
-                if (_captureService.IsStarted)
-                    StopCapture();
-                else
-                    StartCapture();
-            }
-            else if (e.HotKeyType == HotKeyType.ZoomIn)
+            if (e.HotKeyType == HotKeyType.ZoomIn)
                 _trackingTransformService.Zoom = Math.Min(_trackingTransformService.Zoom + ZoomStepSize, MaxZoom);
             else if (e.HotKeyType == HotKeyType.ZoomOut)
                 _trackingTransformService.Zoom = Math.Max(_trackingTransformService.Zoom - ZoomStepSize, MinZoom);

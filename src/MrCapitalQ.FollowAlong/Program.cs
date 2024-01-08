@@ -28,6 +28,7 @@ Host.CreateDefaultBuilder(args)
         services.AddTransient<PointerService>();
         services.AddTransient<TrackingTransformService>();
         services.AddSingleton<HotKeysService>();
+        services.AddTransient<MainViewModel>();
     })
     .Build()
     .Run();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
@@ -16,6 +17,9 @@ namespace MrCapitalQ.FollowAlong.Core.Monitors
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern bool GetMonitorInfo(nint hMonitor, ref MonitorInfoEx lpmi);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorFlag flag);
 
         public static IEnumerable<MonitorInfo> GetMonitors()
         {
@@ -49,6 +53,12 @@ namespace MrCapitalQ.FollowAlong.Core.Monitors
             return result;
         }
 
+        public static MonitorInfo? GetMonitorFromWindow(IntPtr hwnd)
+        {
+            var hmon = MonitorFromWindow(hwnd, MonitorFlag.MONITOR_DEFAULTTONEAREST);
+            return GetMonitors().FirstOrDefault(x => x.Hmon == hmon);
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
         {
@@ -67,6 +77,13 @@ namespace MrCapitalQ.FollowAlong.Core.Monitors
             public uint Flags;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = CCHDEVICENAME)]
             public string DeviceName;
+        }
+
+        private enum MonitorFlag : uint
+        {
+            MONITOR_DEFAULTTONULL = 0,
+            MONITOR_DEFAULTTOPRIMARY = 1,
+            MONITOR_DEFAULTTONEAREST = 2
         }
     }
 }
