@@ -61,8 +61,9 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _logger.LogInformation("Stopping capture session.");
 
             IsStarted = false;
+
             _handler?.Stop();
-            //_handler = null;
+
             _canvasDevice?.Dispose();
             _canvasDevice = null;
             _framePool?.Dispose();
