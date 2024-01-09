@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Monitors;
@@ -23,8 +24,9 @@ namespace MrCapitalQ.FollowAlong
             captureService.RegisterFrameHandler(Preview);
 
             _trackingTransformService = trackingTransformService;
-            _trackingTransformService.Zoom = 1.5;
             _trackingTransformService.StartTrackingTransforms(Preview);
+            WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
+                (r, m) => _trackingTransformService.Zoom = m.Zoom);
 
             ExcludeWindowFromCapture();
             this.SetIsShownInSwitchers(false);

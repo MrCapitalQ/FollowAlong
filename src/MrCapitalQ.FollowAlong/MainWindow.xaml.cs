@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -13,9 +14,6 @@ namespace MrCapitalQ.FollowAlong
 {
     internal sealed partial class MainWindow : Window
     {
-        private const double MaxZoom = 3;
-        private const double MinZoom = 1;
-        private const double ZoomStepSize = 0.5;
         private readonly static SizeInt32 s_defaultWindowSize = new(800, 600);
         private readonly static SizeInt32 s_viewportWindowSize = new(1280, 720);
 
@@ -35,13 +33,13 @@ namespace MrCapitalQ.FollowAlong
             captureService.Stopped += CaptureService_Stopped;
 
             _trackingTransformService = trackingTransformService;
-            _trackingTransformService.Zoom = 1.5;
             _trackingTransformService.StartTrackingTransforms(Preview);
-
-            _viewModel = viewModel;
+            WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
+                (r, m) => _trackingTransformService.Zoom = m.Zoom);
 
             hotKeysService.RegisterHotKeys(this);
-            hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
+
+            _viewModel = viewModel;
 
             ExtendsContentIntoTitleBar = true;
             AppWindow.Resize(s_defaultWindowSize);
@@ -89,14 +87,6 @@ namespace MrCapitalQ.FollowAlong
                 _previewWindow.Close();
                 _previewWindow = null;
             }
-        }
-
-        private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
-        {
-            if (e.HotKeyType == HotKeyType.ZoomIn)
-                _trackingTransformService.Zoom = Math.Min(_trackingTransformService.Zoom + ZoomStepSize, MaxZoom);
-            else if (e.HotKeyType == HotKeyType.ZoomOut)
-                _trackingTransformService.Zoom = Math.Max(_trackingTransformService.Zoom - ZoomStepSize, MinZoom);
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs args) => _previewWindow?.Close();
