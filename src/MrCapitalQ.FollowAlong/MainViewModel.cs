@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Media.Imaging;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
@@ -15,7 +16,11 @@ namespace MrCapitalQ.FollowAlong
 {
     internal partial class MainViewModel : ObservableObject
     {
+        private const double MaxZoom = 3;
+        private const double MinZoom = 1;
+        private const double ZoomStepSize = 0.5;
         private readonly BitmapCaptureService _captureService;
+        private double _zoom = 1.5;
 
         [ObservableProperty]
         private ObservableCollection<MonitorViewModel> _monitors = new();
@@ -36,16 +41,22 @@ namespace MrCapitalQ.FollowAlong
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
         {
-            if (e.HotKeyType != HotKeyType.StartStop)
-                return;
-
-            if (!_captureService.IsStarted && SelectedMonitor is not null)
+            if (e.HotKeyType is HotKeyType.StartStop)
             {
-                var captureItem = SelectedMonitor.MonitorInfo.CreateCaptureItem();
-                _captureService.StartCapture(captureItem);
+
+                if (!_captureService.IsStarted && SelectedMonitor is not null)
+                {
+                    var captureItem = SelectedMonitor.MonitorInfo.CreateCaptureItem();
+                    _captureService.StartCapture(captureItem);
+                    WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom));
+                }
+                else if (_captureService.IsStarted)
+                    _captureService.StopCapture();
             }
-            else if (_captureService.IsStarted)
-                _captureService.StopCapture();
+            else if (e.HotKeyType == HotKeyType.ZoomIn)
+                WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom = Math.Min(_zoom + ZoomStepSize, MaxZoom)));
+            else if (e.HotKeyType == HotKeyType.ZoomOut)
+                WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom = Math.Max(_zoom - ZoomStepSize, MinZoom)));
         }
     }
 
