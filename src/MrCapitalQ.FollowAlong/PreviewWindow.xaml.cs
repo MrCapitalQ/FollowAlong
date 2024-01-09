@@ -13,6 +13,7 @@ namespace MrCapitalQ.FollowAlong
     {
         private const int BottomPadding = 48;
         private readonly static SizeInt32 s_windowSize = new(480, 320);
+        private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
 
         public PreviewWindow(BitmapCaptureService captureService,
@@ -20,7 +21,8 @@ namespace MrCapitalQ.FollowAlong
         {
             InitializeComponent();
 
-            captureService.RegisterFrameHandler(Preview);
+            _captureService = captureService;
+            _captureService.RegisterFrameHandler(Preview);
 
             _trackingTransformService = trackingTransformService;
             _trackingTransformService.StartTrackingTransforms(Preview);
@@ -61,6 +63,7 @@ namespace MrCapitalQ.FollowAlong
             Root.Loaded -= Root_Loaded;
             Activated -= PreviewWindow_Activated;
             Closed -= PreviewWindow_Closed;
+            _captureService.UnregisterFrameHandler(Preview);
             _trackingTransformService.StopTrackingTransforms();
             WeakReferenceMessenger.Default.UnregisterAll(this);
         }

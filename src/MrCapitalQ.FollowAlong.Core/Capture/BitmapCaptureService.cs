@@ -93,6 +93,12 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
                 handler.Initialize(_canvasDevice, new Size(_captureItem.Size.Width, _captureItem.Size.Height));
         }
 
+        public void UnregisterFrameHandler(IBitmapFrameHandler handler)
+        {
+            _handlers.Remove(handler);
+            handler.Stop();
+        }
+
         public void Dispose() => StopCapture();
 
         private void OnStarted()
