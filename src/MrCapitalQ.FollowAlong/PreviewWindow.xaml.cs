@@ -3,8 +3,7 @@ using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
-using System;
-using System.Runtime.InteropServices;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using Windows.Graphics;
 using WinUIEx;
 
@@ -28,7 +27,7 @@ namespace MrCapitalQ.FollowAlong
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
                 (r, m) => _trackingTransformService.Zoom = m.Zoom);
 
-            ExcludeWindowFromCapture();
+            this.ExcludeFromCapture();
             this.SetIsShownInSwitchers(false);
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
@@ -41,6 +40,7 @@ namespace MrCapitalQ.FollowAlong
 
             Root.Loaded += Root_Loaded;
             Activated += PreviewWindow_Activated;
+            Closed += PreviewWindow_Closed;
         }
 
         private void RepositionToPreviewPosition()
@@ -56,15 +56,13 @@ namespace MrCapitalQ.FollowAlong
         private void PreviewWindow_Activated(object sender, WindowActivatedEventArgs args)
             => _trackingTransformService.UpdateLayout();
 
-        [DllImport("user32.dll")]
-        private static extern uint SetWindowDisplayAffinity(IntPtr hwnd, uint dwAffinity);
-
-        private void ExcludeWindowFromCapture()
+        private void PreviewWindow_Closed(object sender, WindowEventArgs args)
         {
-            const uint WDA_EXCLUDEFROMCAPTURE = 0x00000011;
-
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-            _ = SetWindowDisplayAffinity(hWnd, WDA_EXCLUDEFROMCAPTURE);
+            Root.Loaded -= Root_Loaded;
+            Activated -= PreviewWindow_Activated;
+            Closed -= PreviewWindow_Closed;
+            _trackingTransformService.StopTrackingTransforms();
+            WeakReferenceMessenger.Default.UnregisterAll(this);
         }
     }
 }
