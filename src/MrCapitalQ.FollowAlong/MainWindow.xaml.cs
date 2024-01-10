@@ -15,7 +15,7 @@ namespace MrCapitalQ.FollowAlong
         private const double MaxZoom = 3;
         private const double MinZoom = 1;
         private const double ZoomStepSize = 0.5;
-        private readonly static SizeInt32 s_defaultWindowSize = new(640, 480);
+        private readonly static SizeInt32 s_defaultWindowSize = new(800, 600);
         private readonly static SizeInt32 s_viewportWindowSize = new(1280, 720);
 
         private readonly TrackingTransformService _trackingTransformService;

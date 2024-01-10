@@ -6,40 +6,58 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
-        xmlns:monitors="using:MrCapitalQ.FollowAlong.Core.Monitors"
+        xmlns:converters="using:MrCapitalQ.FollowAlong.Converters"
         mc:Ignorable="d"
         Title="Follow Along">
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid x:Name="Root"
-          HorizontalAlignment="Stretch"
+    <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
+        <Grid.Resources>
+            <converters:AspectRatioConverter x:Key="AspectRatioConverter" />
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <controls:CapturePreview x:Name="Preview"
                                  Grid.RowSpan="2" />
-        <StackPanel x:Name="MainContent"
-                    Margin="16"
-                    VerticalAlignment="Center"
-                    Grid.Row="1">
-            <ListView ItemsSource="{x:Bind _viewModel.Monitors}"
-                      SelectedItem="{x:Bind _viewModel.SelectedMonitor}"
-                      SelectionMode="Single"
-                      Grid.Row="1">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="monitors:MonitorInfo">
-                        <TextBlock Text="{x:Bind DeviceName}" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <TextBlock TextWrapping="Wrap"
-                       TextAlignment="Center">Press Ctrl + Shift + Alt + S to start or stop.</TextBlock>
-            <TextBlock TextWrapping="Wrap"
-                       TextAlignment="Center">When starting, this window will be hidden and will be restored after stopping.</TextBlock>
-        </StackPanel>
+        <ScrollViewer Grid.Row="1">
+            <StackPanel x:Name="MainContent"
+                        VerticalAlignment="Center">
+                <GridView ItemsSource="{x:Bind _viewModel.Monitors}"
+                          SelectedItem="{x:Bind _viewModel.SelectedMonitor, Mode=TwoWay}"
+                          SelectionMode="Single"
+                          Padding="32,8"
+                          ScrollViewer.HorizontalScrollMode="Enabled"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          ScrollViewer.VerticalScrollMode="Disabled">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel Orientation="Horizontal"
+                                             HorizontalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="local:MonitorViewModel">
+                            <Border BorderBrush="Black"
+                                    BorderThickness="4"
+                                    CornerRadius="4"
+                                    Margin="4">
+                                <Image Source="{Binding BitmapImage, Mode=OneWay}"
+                                       Height="120"
+                                       Width="{Binding AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+                <TextBlock TextWrapping="Wrap"
+                           TextAlignment="Center">Press Ctrl + Shift + Alt + S to start or stop.</TextBlock>
+                <TextBlock TextWrapping="Wrap"
+                           TextAlignment="Center">When starting, this window will be hidden and will be restored after stopping.</TextBlock>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

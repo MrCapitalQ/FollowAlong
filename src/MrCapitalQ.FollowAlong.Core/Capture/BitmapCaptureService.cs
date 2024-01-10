@@ -58,7 +58,10 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         public void StopCapture()
         {
-            _logger.LogInformation("Stopping capture session.");
+            var isStarted = IsStarted;
+
+            if (isStarted)
+                _logger.LogInformation("Stopping capture session.");
 
             IsStarted = false;
 
@@ -70,7 +73,8 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _framePool = null;
             _session?.Dispose();
 
-            OnStopped();
+            if (isStarted)
+                OnStopped();
         }
 
         public void RegisterFrameHandler(IBitmapFrameHandler handler)
