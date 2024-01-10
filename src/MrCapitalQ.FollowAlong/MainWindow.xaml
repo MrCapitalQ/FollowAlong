@@ -55,7 +55,7 @@
                     </GridView.ItemTemplate>
                 </GridView>
                 <Grid ColumnSpacing="16"
-                      RowSpacing="4"
+                      RowSpacing="8"
                       HorizontalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -68,29 +68,80 @@
                     </Grid.RowDefinitions>
                     <TextBlock Text="Start/Stop"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                    <TextBlock TextWrapping="Wrap"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Grid.Column="1">
-                            Ctrl + Shift + Alt + S
-                    </TextBlock>
+                    <RichTextBlock TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Grid.Column="1">
+                        <Paragraph>
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
+                            </InlineUIContainer>
+                            +
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>Shift</controls:KeyboardKey>
+                            </InlineUIContainer>
+                            +
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>Alt</controls:KeyboardKey>
+                            </InlineUIContainer>
+                            +
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>S</controls:KeyboardKey>
+                            </InlineUIContainer>
+                        </Paragraph>
+                    </RichTextBlock>
                     <TextBlock Text="Zoom in"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Grid.Row="1" />
-                    <TextBlock TextWrapping="Wrap"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Grid.Column="1"
-                               Grid.Row="1">
-                        Ctrl + Shift + Alt + Plus
-                    </TextBlock>
+                    <RichTextBlock TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Grid.Column="1"
+                                   Grid.Row="1">
+                        <Paragraph>
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
+                            </InlineUIContainer>
+                            +
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>Shift</controls:KeyboardKey>
+                            </InlineUIContainer>
+                            +
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>Alt</controls:KeyboardKey>
+                            </InlineUIContainer>
+                            +
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>+</controls:KeyboardKey>
+                            </InlineUIContainer>
+                        </Paragraph>
+                    </RichTextBlock>
                     <TextBlock Text="Zoom out"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Grid.Row="2" />
-                    <TextBlock TextWrapping="Wrap"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Grid.Column="1"
-                               Grid.Row="2">
-                        Ctrl + Shift + Alt + Minus
-                    </TextBlock>
+                    <RichTextBlock TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Grid.Column="1"
+                                   Grid.Row="2">
+                        <Paragraph>
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
+                            </InlineUIContainer>
+                            +
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>Shift</controls:KeyboardKey>
+                            </InlineUIContainer>
+                            +
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>Alt</controls:KeyboardKey>
+                            </InlineUIContainer>
+                            +
+                            <InlineUIContainer>
+                                <controls:KeyboardKey>-</controls:KeyboardKey>
+                            </InlineUIContainer>
+                        </Paragraph>
+                    </RichTextBlock>
                 </Grid>
             </StackPanel>
         </ScrollViewer>

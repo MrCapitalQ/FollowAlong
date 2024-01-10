@@ -15,4 +15,34 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="controls:KeyboardKey">
+        <Setter Property="BorderThickness"
+                Value="0.5" />
+        <Setter Property="CornerRadius"
+                Value="4" />
+        <Setter Property="Padding"
+                Value="4, 2" />
+        <Setter Property="Margin"
+                Value="0, -3" />
+        <Setter Property="MinWidth"
+                Value="24" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:KeyboardKey">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding Foreground}"
+                            BorderThickness="1"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}"
+                            Margin="{TemplateBinding Margin}"
+                            MinWidth="{TemplateBinding MinWidth}">
+                        <TextBlock Text="{TemplateBinding MainContent}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   FontSize="12"
+                                   TextAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
