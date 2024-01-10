@@ -30,7 +30,7 @@
                 <GridView ItemsSource="{x:Bind _viewModel.Monitors}"
                           SelectedItem="{x:Bind _viewModel.SelectedMonitor, Mode=TwoWay}"
                           SelectionMode="Single"
-                          Padding="32,8"
+                          Padding="32,16"
                           ScrollViewer.HorizontalScrollMode="Enabled"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto"
                           ScrollViewer.VerticalScrollMode="Disabled">
@@ -53,10 +53,44 @@
                         </DataTemplate>
                     </GridView.ItemTemplate>
                 </GridView>
-                <TextBlock TextWrapping="Wrap"
-                           TextAlignment="Center">Press Ctrl + Shift + Alt + S to start or stop.</TextBlock>
-                <TextBlock TextWrapping="Wrap"
-                           TextAlignment="Center">When starting, this window will be hidden and will be restored after stopping.</TextBlock>
+                <Grid ColumnSpacing="16"
+                      RowSpacing="4"
+                      HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Start/Stop"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock TextWrapping="Wrap"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Grid.Column="1">
+                            Ctrl + Shift + Alt + S
+                    </TextBlock>
+                    <TextBlock Text="Zoom in"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Grid.Row="1" />
+                    <TextBlock TextWrapping="Wrap"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Grid.Column="1"
+                               Grid.Row="1">
+                        Ctrl + Shift + Alt + Plus
+                    </TextBlock>
+                    <TextBlock Text="Zoom out"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Grid.Row="2" />
+                    <TextBlock TextWrapping="Wrap"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Grid.Column="1"
+                               Grid.Row="2">
+                        Ctrl + Shift + Alt + Minus
+                    </TextBlock>
+                </Grid>
             </StackPanel>
         </ScrollViewer>
     </Grid>
