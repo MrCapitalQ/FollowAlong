@@ -42,10 +42,17 @@ namespace MrCapitalQ.FollowAlong
             _viewModel = viewModel;
 
             ExtendsContentIntoTitleBar = true;
-            AppWindow.Resize(s_defaultWindowSize);
-            this.CenterOnScreen();
+            SetDefaultWindowSizeAndPosition(s_defaultWindowSize);
 
+            Root.Loaded += Root_Loaded;
             Closed += MainWindow_Closed;
+        }
+
+        private void SetDefaultWindowSizeAndPosition(SizeInt32 size)
+        {
+            var scale = Root.XamlRoot?.RasterizationScale ?? 1;
+            AppWindow.Resize(new((int)(size.Width * scale), (int)(size.Height * scale)));
+            this.CenterOnScreen();
         }
 
         private void CaptureService_Started(object? sender, EventArgs e)
@@ -74,8 +81,7 @@ namespace MrCapitalQ.FollowAlong
         {
             MainContent.Visibility = Visibility.Visible;
 
-            AppWindow.Resize(s_defaultWindowSize);
-            this.CenterOnScreen();
+            SetDefaultWindowSizeAndPosition(s_defaultWindowSize);
             this.SetIsResizable(true);
             this.SetIsMinimizable(true);
             this.SetIsMaximizable(true);
@@ -90,6 +96,12 @@ namespace MrCapitalQ.FollowAlong
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs args) => _previewWindow?.Close();
+
+        private void Root_Loaded(object sender, RoutedEventArgs e)
+        {
+            Root.Loaded -= Root_Loaded;
+            SetDefaultWindowSizeAndPosition(s_defaultWindowSize);
+        }
 
         private void PreviewWindow_Closed(object sender, WindowEventArgs args)
         {
