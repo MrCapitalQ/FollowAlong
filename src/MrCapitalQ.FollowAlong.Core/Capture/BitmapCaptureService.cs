@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
 using System;
+using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Graphics.Capture;
@@ -14,7 +15,8 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
         public event EventHandler? Stopped;
 
         private readonly ILogger<BitmapCaptureService> _logger;
-        private IBitmapFrameHandler? _handler;
+        private readonly HashSet<IBitmapFrameHandler> _handlers = new();
+        private GraphicsCaptureItem? _captureItem;
         private CanvasDevice? _canvasDevice;
         private Direct3D11CaptureFramePool? _framePool;
         private GraphicsCaptureSession? _session;
@@ -32,15 +34,16 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             if (IsStarted)
                 throw new InvalidOperationException("Cannot start capture because a capture is has already been started.");
 
-            if (_handler is null)
-                throw new InvalidOperationException("A bitmap frame handler must be registered before starting.");
-
             _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.DisplayName);
 
             IsStarted = true;
+            _captureItem = captureItem;
 
             _canvasDevice = new CanvasDevice();
-            _handler.Initialize(_canvasDevice, new Size(captureItem.Size.Width, captureItem.Size.Height));
+            foreach (var handler in _handlers)
+            {
+                handler.Initialize(_canvasDevice, new Size(captureItem.Size.Width, captureItem.Size.Height));
+            }
 
             _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
                 DirectXPixelFormat.B8G8R8A8UIntNormalized,
@@ -65,13 +68,18 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
             IsStarted = false;
 
-            _handler?.Stop();
+            foreach (var handler in _handlers)
+            {
+                handler.Stop();
+            }
 
             _canvasDevice?.Dispose();
             _canvasDevice = null;
             _framePool?.Dispose();
             _framePool = null;
             _session?.Dispose();
+            _session = null;
+            _captureItem = null;
 
             if (isStarted)
                 OnStopped();
@@ -79,13 +87,16 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         public void RegisterFrameHandler(IBitmapFrameHandler handler)
         {
-            if (_handler is not null)
-                throw new InvalidOperationException("A bitmap frame handler has already been set.");
+            _handlers.Add(handler);
 
-            if (IsStarted)
-                throw new InvalidOperationException("A bitmap frame handler cannot be registered after starting.");
+            if (IsStarted && _captureItem is not null && _canvasDevice is not null)
+                handler.Initialize(_canvasDevice, new Size(_captureItem.Size.Width, _captureItem.Size.Height));
+        }
 
-            _handler = handler;
+        public void UnregisterFrameHandler(IBitmapFrameHandler handler)
+        {
+            _handlers.Remove(handler);
+            handler.Stop();
         }
 
         public void Dispose() => StopCapture();
@@ -119,7 +130,10 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             try
             {
                 var canvasBitmap = CanvasBitmap.CreateFromDirect3D11Surface(_canvasDevice, frame.Surface);
-                _handler?.HandleFrame(canvasBitmap);
+                foreach (var handler in _handlers)
+                {
+                    handler.HandleFrame(canvasBitmap);
+                }
             }
             catch (Exception ex) when (_canvasDevice?.IsDeviceLost(ex.HResult) != false)
             {
@@ -146,8 +160,10 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
                     if (recreateDevice)
                     {
                         _canvasDevice = new CanvasDevice();
-
-                        _handler?.Initialize(_canvasDevice);
+                        foreach (var handler in _handlers)
+                        {
+                            handler.Initialize(_canvasDevice);
+                        };
                     }
 
                     _framePool?.Recreate(_canvasDevice,

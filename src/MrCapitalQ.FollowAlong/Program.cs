@@ -22,13 +22,15 @@ Host.CreateDefaultBuilder(args)
         services.AddHostedService<WinUIHostedService<App>>();
         services.AddSingleton<App>();
         services.AddSingleton<MainWindow>();
+        services.AddTransient<PreviewWindow>();
+
+        services.AddSingleton<MainViewModel>();
 
         services.AddTransient<MonitorService>();
         services.AddSingleton<BitmapCaptureService>();
         services.AddTransient<PointerService>();
         services.AddTransient<TrackingTransformService>();
         services.AddSingleton<HotKeysService>();
-        services.AddTransient<MainViewModel>();
     })
     .Build()
     .Run();
