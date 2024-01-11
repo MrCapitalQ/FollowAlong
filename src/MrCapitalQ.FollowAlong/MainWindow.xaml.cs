@@ -57,6 +57,7 @@ namespace MrCapitalQ.FollowAlong
 
         private void SetViewportWindowSizeAndPosition(CaptureStartedEventArgs e)
         {
+            this.Restore();
             var viewportSize = (e.Size.Width / e.Size.Height) > ViewportAspectRatio
                             ? new SizeInt32((int)(e.Size.Height * ViewportAspectRatio), e.Size.Height)
                             : new SizeInt32(e.Size.Width, (int)(e.Size.Width / ViewportAspectRatio));
