@@ -12,7 +12,7 @@ namespace MrCapitalQ.FollowAlong
     public sealed partial class PreviewWindow : Window
     {
         private const int BottomPadding = 48;
-        private readonly static SizeInt32 s_windowSize = new(480, 320);
+        private readonly static SizeInt32 s_windowSize = new(480, 270);
         private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
 

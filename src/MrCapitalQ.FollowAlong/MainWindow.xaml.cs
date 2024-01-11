@@ -59,7 +59,7 @@ namespace MrCapitalQ.FollowAlong
         {
             MainContent.Visibility = Visibility.Collapsed;
 
-            AppWindow.ResizeClient(s_viewportWindowSize);
+            AppWindow.Resize(s_viewportWindowSize);
 
             var appMonitor = this.GetWindowMonitorSize();
             if (appMonitor is not null)
