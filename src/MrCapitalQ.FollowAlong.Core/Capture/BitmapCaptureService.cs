@@ -11,7 +11,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 {
     public sealed class BitmapCaptureService : IDisposable
     {
-        public event EventHandler? Started;
+        public event EventHandler<CaptureStartedEventArgs>? Started;
         public event EventHandler? Stopped;
 
         private readonly ILogger<BitmapCaptureService> _logger;
@@ -56,7 +56,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _session = _framePool.CreateCaptureSession(captureItem);
             _session.StartCapture();
 
-            OnStarted();
+            OnStarted(captureItem.Size);
         }
 
         public void StopCapture()
@@ -101,10 +101,10 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         public void Dispose() => StopCapture();
 
-        private void OnStarted()
+        private void OnStarted(SizeInt32 size)
         {
             var raiseEvent = Started;
-            raiseEvent?.Invoke(this, new());
+            raiseEvent?.Invoke(this, new(size));
         }
 
         private void OnStopped()

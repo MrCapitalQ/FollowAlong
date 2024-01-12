@@ -14,8 +14,8 @@ namespace MrCapitalQ.FollowAlong
 {
     internal sealed partial class MainWindow : Window
     {
+        private const double ViewportAspectRatio = 16 / 9d;
         private readonly static SizeInt32 s_defaultWindowSize = new(800, 600);
-        private readonly static SizeInt32 s_viewportWindowSize = new(1280, 720);
 
         private readonly TrackingTransformService _trackingTransformService;
         private readonly MainViewModel _viewModel;
@@ -55,15 +55,23 @@ namespace MrCapitalQ.FollowAlong
             this.CenterOnScreen();
         }
 
-        private void CaptureService_Started(object? sender, EventArgs e)
+        private void SetViewportWindowSizeAndPosition(CaptureStartedEventArgs e)
         {
-            MainContent.Visibility = Visibility.Collapsed;
-
-            AppWindow.Resize(s_viewportWindowSize);
+            var viewportSize = (e.Size.Width / e.Size.Height) > ViewportAspectRatio
+                            ? new SizeInt32((int)(e.Size.Height * ViewportAspectRatio), e.Size.Height)
+                            : new SizeInt32(e.Size.Width, (int)(e.Size.Width / ViewportAspectRatio));
+            AppWindow.Resize(viewportSize);
 
             var appMonitor = this.GetWindowMonitorSize();
             if (appMonitor is not null)
                 AppWindow.Move(new PointInt32((int)appMonitor.ScreenSize.X - 1, (int)appMonitor.ScreenSize.Y - 1));
+        }
+
+        private void CaptureService_Started(object? sender, CaptureStartedEventArgs e)
+        {
+            MainContent.Visibility = Visibility.Collapsed;
+
+            SetViewportWindowSizeAndPosition(e);
 
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
