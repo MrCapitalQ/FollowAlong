@@ -13,7 +13,8 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid HorizontalAlignment="Stretch"
+    <Grid x:Name="Root"
+          HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
         <Grid.Resources>
             <converters:AspectRatioConverter x:Key="AspectRatioConverter" />

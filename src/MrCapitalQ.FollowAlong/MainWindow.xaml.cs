@@ -14,8 +14,8 @@ namespace MrCapitalQ.FollowAlong
 {
     internal sealed partial class MainWindow : Window
     {
+        private const double ViewportAspectRatio = 16 / 9d;
         private readonly static SizeInt32 s_defaultWindowSize = new(800, 600);
-        private readonly static SizeInt32 s_viewportWindowSize = new(1280, 720);
 
         private readonly TrackingTransformService _trackingTransformService;
         private readonly MainViewModel _viewModel;
@@ -42,21 +42,36 @@ namespace MrCapitalQ.FollowAlong
             _viewModel = viewModel;
 
             ExtendsContentIntoTitleBar = true;
-            AppWindow.Resize(s_defaultWindowSize);
-            this.CenterOnScreen();
+            SetDefaultWindowSizeAndPosition(s_defaultWindowSize);
 
+            Root.Loaded += Root_Loaded;
             Closed += MainWindow_Closed;
         }
 
-        private void CaptureService_Started(object? sender, EventArgs e)
+        private void SetDefaultWindowSizeAndPosition(SizeInt32 size)
         {
-            MainContent.Visibility = Visibility.Collapsed;
+            var scale = Root.XamlRoot?.RasterizationScale ?? 1;
+            AppWindow.Resize(new((int)(size.Width * scale), (int)(size.Height * scale)));
+            this.CenterOnScreen();
+        }
 
-            AppWindow.ResizeClient(s_viewportWindowSize);
+        private void SetViewportWindowSizeAndPosition(CaptureStartedEventArgs e)
+        {
+            var viewportSize = (e.Size.Width / e.Size.Height) > ViewportAspectRatio
+                            ? new SizeInt32((int)(e.Size.Height * ViewportAspectRatio), e.Size.Height)
+                            : new SizeInt32(e.Size.Width, (int)(e.Size.Width / ViewportAspectRatio));
+            AppWindow.Resize(viewportSize);
 
             var appMonitor = this.GetWindowMonitorSize();
             if (appMonitor is not null)
                 AppWindow.Move(new PointInt32((int)appMonitor.ScreenSize.X - 1, (int)appMonitor.ScreenSize.Y - 1));
+        }
+
+        private void CaptureService_Started(object? sender, CaptureStartedEventArgs e)
+        {
+            MainContent.Visibility = Visibility.Collapsed;
+
+            SetViewportWindowSizeAndPosition(e);
 
             this.SetIsResizable(false);
             this.SetIsMinimizable(false);
@@ -74,8 +89,7 @@ namespace MrCapitalQ.FollowAlong
         {
             MainContent.Visibility = Visibility.Visible;
 
-            AppWindow.Resize(s_defaultWindowSize);
-            this.CenterOnScreen();
+            SetDefaultWindowSizeAndPosition(s_defaultWindowSize);
             this.SetIsResizable(true);
             this.SetIsMinimizable(true);
             this.SetIsMaximizable(true);
@@ -90,6 +104,12 @@ namespace MrCapitalQ.FollowAlong
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs args) => _previewWindow?.Close();
+
+        private void Root_Loaded(object sender, RoutedEventArgs e)
+        {
+            Root.Loaded -= Root_Loaded;
+            SetDefaultWindowSizeAndPosition(s_defaultWindowSize);
+        }
 
         private void PreviewWindow_Closed(object sender, WindowEventArgs args)
         {
