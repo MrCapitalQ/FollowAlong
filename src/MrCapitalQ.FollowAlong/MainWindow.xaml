@@ -7,8 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
         xmlns:converters="using:MrCapitalQ.FollowAlong.Converters"
-        mc:Ignorable="d"
-        Title="Follow Along">
+        mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>

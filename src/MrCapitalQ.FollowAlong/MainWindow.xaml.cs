@@ -58,7 +58,7 @@ namespace MrCapitalQ.FollowAlong
             this.SetIsResizable(true);
             this.SetIsMaximizable(true);
             this.SetIsAlwaysOnTop(false);
-            this.IncludeWithCapture();
+            this.SetIsExcludedFromCapture(false);
 
             var scale = Root.XamlRoot?.RasterizationScale ?? 1;
             AppWindow.Resize(new((int)(s_defaultWindowSize.Width * scale), (int)(s_defaultWindowSize.Height * scale)));
@@ -74,7 +74,7 @@ namespace MrCapitalQ.FollowAlong
             this.SetIsResizable(false);
             this.SetIsMaximizable(false);
             this.SetIsAlwaysOnTop(true);
-            this.ExcludeFromCapture();
+            this.SetIsExcludedFromCapture(true);
 
             var scale = Root.XamlRoot?.RasterizationScale ?? 1;
 

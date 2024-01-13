@@ -12,16 +12,10 @@ namespace MrCapitalQ.FollowAlong.Core.Utils
         [DllImport("user32.dll")]
         private static extern uint SetWindowDisplayAffinity(IntPtr hwnd, uint dwAffinity);
 
-        public static void ExcludeFromCapture(this Window window)
+        public static void SetIsExcludedFromCapture(this Window window, bool isExcludedFromCapture)
         {
             var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            _ = SetWindowDisplayAffinity(hWnd, WDA_EXCLUDEFROMCAPTURE);
-        }
-
-        public static void IncludeWithCapture(this Window window)
-        {
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            _ = SetWindowDisplayAffinity(hWnd, WDA_NONE);
+            _ = SetWindowDisplayAffinity(hWnd, isExcludedFromCapture ? WDA_EXCLUDEFROMCAPTURE : WDA_NONE);
         }
     }
 }
