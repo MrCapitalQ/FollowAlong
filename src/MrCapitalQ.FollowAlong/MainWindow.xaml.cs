@@ -67,7 +67,8 @@ namespace MrCapitalQ.FollowAlong
 
         private void SetWindowToPreviewMode()
         {
-            Title = "DO NOT SHARE";
+            // Teams does not list windows with no title. Set no title so the preview window cannot be selected.
+            Title = null;
             MainContent.Visibility = Visibility.Collapsed;
 
             this.SetIsResizable(false);
