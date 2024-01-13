@@ -106,12 +106,7 @@ namespace MrCapitalQ.FollowAlong
 
             this.SetForegroundWindow();
 
-            if (_shareWindow is not null)
-            {
-                _shareWindow.Closed -= ShareWindow_Closed;
-                _shareWindow.Close();
-                _shareWindow = null;
-            }
+            _shareWindow?.Close();
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs args) => _shareWindow?.Close();
