@@ -55,9 +55,7 @@ namespace MrCapitalQ.FollowAlong
             Title = "Follow Along";
             MainContent.Visibility = Visibility.Visible;
 
-            this.SetIsResizable(true);
-            this.SetIsMaximizable(true);
-            this.SetIsAlwaysOnTop(false);
+            AppWindow.SetPresenter(AppWindowPresenterKind.Default);
             this.SetIsExcludedFromCapture(false);
 
             var scale = Root.XamlRoot?.RasterizationScale ?? 1;
@@ -71,9 +69,7 @@ namespace MrCapitalQ.FollowAlong
             Title = null;
             MainContent.Visibility = Visibility.Collapsed;
 
-            this.SetIsResizable(false);
-            this.SetIsMaximizable(false);
-            this.SetIsAlwaysOnTop(true);
+            AppWindow.SetPresenter(AppWindowPresenterKind.CompactOverlay);
             this.SetIsExcludedFromCapture(true);
 
             var scale = Root.XamlRoot?.RasterizationScale ?? 1;
@@ -101,7 +97,6 @@ namespace MrCapitalQ.FollowAlong
 
         private void CaptureService_Stopped(object? sender, EventArgs e)
         {
-            MainContent.Visibility = Visibility.Visible;
             SetWindowToDefaultMode();
 
             this.SetForegroundWindow();
@@ -119,6 +114,9 @@ namespace MrCapitalQ.FollowAlong
 
         private void ShareWindow_Closed(object sender, WindowEventArgs args)
         {
+            if (sender is Window window)
+                window.Closed -= ShareWindow_Closed;
+
             if (_shareWindow is null)
                 return;
 
