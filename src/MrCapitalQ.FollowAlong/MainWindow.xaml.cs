@@ -45,6 +45,8 @@ namespace MrCapitalQ.FollowAlong
 
             ExtendsContentIntoTitleBar = true;
             SetWindowToDefaultMode();
+            AppWindow.Resize(s_defaultWindowSize);
+            this.CenterOnScreen();
 
             Root.Loaded += Root_Loaded;
             Closed += MainWindow_Closed;
@@ -57,10 +59,6 @@ namespace MrCapitalQ.FollowAlong
 
             AppWindow.SetPresenter(AppWindowPresenterKind.Default);
             this.SetIsExcludedFromCapture(false);
-
-            var scale = Root.XamlRoot?.RasterizationScale ?? 1;
-            AppWindow.Resize(new((int)(s_defaultWindowSize.Width * scale), (int)(s_defaultWindowSize.Height * scale)));
-            this.CenterOnScreen();
         }
 
         private void SetWindowToPreviewMode()
@@ -110,6 +108,10 @@ namespace MrCapitalQ.FollowAlong
         {
             Root.Loaded -= Root_Loaded;
             SetWindowToDefaultMode();
+
+            var scale = Root.XamlRoot?.RasterizationScale ?? 1;
+            AppWindow.Resize(new((int)(s_defaultWindowSize.Width * scale), (int)(s_defaultWindowSize.Height * scale)));
+            this.CenterOnScreen();
         }
 
         private void ShareWindow_Closed(object sender, WindowEventArgs args)
