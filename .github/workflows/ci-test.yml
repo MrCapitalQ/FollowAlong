@@ -1,0 +1,133 @@
+name: CI Test
+
+on:
+  push:
+    branches: [ci]
+  pull_request:
+    branches: [ci]
+
+env:
+  # TODO: Handle package version.
+  PACKAGE_VERSION: 1.0.13.0
+  CONFIGURATION: Release
+  PACKAGE_NAME: MrCapitalQ.FollowAlong
+
+jobs:
+
+  build:
+    name: Build
+
+    strategy:
+      matrix:
+        platform: [x64, x86]
+
+    runs-on: windows-latest
+
+    environment: Alpha
+
+    env:
+      SOLUTION_NAME: MrCapitalQ.FollowAlong.sln
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Associate Store App
+      shell: pwsh
+      run: |
+        $appxManifestPath = "./Package.appxmanifest"
+        [xml]$appxManifestXml = Get-Content $appxManifestPath
+
+        $appxManifestXml.Package.Identity.Name = "$env:PACKAGE_ID_NAME"
+        $appxManifestXml.Package.Identity.Publisher = "$env:PACKAGE_ID_PUBLISHER"
+        $appxManifestXml.Package.Identity.Version = "$env:PACKAGE_VERSION"
+        $appxManifestXml.Package["mp:PhoneIdentity"].PhoneProductId = "$env:PACKAGE_PHONE_PRODUCT_ID"
+        $appxManifestXml.Package.Properties.DisplayName = "$env:PACKAGE_DISPLAY_NAME"
+
+        $appxManifestXml.Save($appxManifestPath);
+
+        "$env:PACKAGE_STORE_ASSOCIATION_XML" | Out-File -FilePath "./Package.StoreAssociation.xml"
+      working-directory: ${{ github.workspace }}/src/MrCapitalQ.FollowAlong
+      env:
+        PACKAGE_ID_NAME: ${{ secrets.PACKAGE_ID_NAME }}
+        PACKAGE_ID_PUBLISHER: ${{ secrets.PACKAGE_ID_PUBLISHER }}
+        PACKAGE_PHONE_PRODUCT_ID: ${{ secrets.PACKAGE_PHONE_PRODUCT_ID }}
+        PACKAGE_DISPLAY_NAME: ${{ vars.PACKAGE_DISPLAY_NAME }}
+        PACKAGE_STORE_ASSOCIATION_XML: ${{ secrets.PACKAGE_STORE_ASSOCIATION_XML }}
+
+    - name: Restore
+      run: msbuild $env:SOLUTION_NAME /t:Restore /p:Configuration=$env:CONFIGURATION
+      env:
+        CONFIGURATION: ${{ env.CONFIGURATION }}
+
+    - name: Build
+      run: msbuild $env:SOLUTION_NAME /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /p:AppxPackageDir="$env:APPX_PACKAGE_DIR" /p:GenerateAppxPackageOnBuild=true
+      env:
+        CONFIGURATION: ${{ env.CONFIGURATION }}
+        PLATFORM: ${{ matrix.platform }}
+        APPX_PACKAGE_DIR: ${{ github.workspace }}/Packages/
+
+    - name: Upload MSIX Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }} MSIX Package
+        path: |
+          ${{ github.workspace }}/Packages/**/*.msix
+          ${{ github.workspace }}/Packages/**/*.msixsym
+          !**/Dependencies/**
+
+  package:
+    name: Package
+
+    needs: build
+  
+    runs-on: windows-latest
+  
+    steps:
+    - name: Download x64 MSIX Package
+      uses: actions/download-artifact@v4
+      with:
+        name: x64 MSIX Package
+
+    - name: Download x86 MSIX Package
+      uses: actions/download-artifact@v4
+      with:
+        name: x86 MSIX Package
+
+    - name: Create MSIX Bundle
+      shell: pwsh
+      run: |
+        New-Item -Path "${{ github.workspace }}" -Name "Bundle" -ItemType Directory
+        Get-ChildItem ./* -Include "*.msix" -Exclude "Bundle/**" -Recurse | Copy-Item -Destination "${{ github.workspace }}/Bundle"
+        & "C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x86\MakeAppx.exe" bundle /d ${{ github.workspace }}/Bundle /p "$env:MSIX_BUNDLE_PATH"
+      env:
+        PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
+        MSIX_BUNDLE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}_x86_x64.msixbundle
+
+    - name: Upload MSIX Bundle
+      uses: actions/upload-artifact@v4
+      with:
+        name: MSIX Bundle
+        path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}_x86_x64.msixbundle
+
+    - name: Create Store Upload Package
+      shell: pwsh
+      run: |
+        Get-ChildItem *.msixsym -Recurse | Rename-Item -NewName { $_.name -replace ".msixsym", ".appxsym" }
+        Get-ChildItem ./* -Include "*.msixbundle", "*.appxsym" -Recurse | Compress-Archive -DestinationPath "$env:MSIX_UPLOAD_PATH"
+      env:
+        MSIX_UPLOAD_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}.msixupload
+
+    - name: Upload Store Upload Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: Store Upload Package
+        path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}.msixupload
