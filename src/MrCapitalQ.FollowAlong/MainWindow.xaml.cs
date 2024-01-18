@@ -6,6 +6,7 @@ using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using System;
 using Windows.Graphics;
 using WinUIEx;
@@ -14,12 +15,13 @@ namespace MrCapitalQ.FollowAlong
 {
     internal sealed partial class MainWindow : Window
     {
-        private const double ViewportAspectRatio = 16 / 9d;
+        private const int BottomPadding = 48;
         private readonly static SizeInt32 s_defaultWindowSize = new(800, 600);
+        private readonly static SizeInt32 s_previewWindowSize = new(384, 216);
 
         private readonly TrackingTransformService _trackingTransformService;
         private readonly MainViewModel _viewModel;
-        private PreviewWindow? _previewWindow;
+        private ShareWindow? _shareWindow;
 
         public MainWindow(BitmapCaptureService captureService,
             TrackingTransformService trackingTransformService,
@@ -42,83 +44,86 @@ namespace MrCapitalQ.FollowAlong
             _viewModel = viewModel;
 
             ExtendsContentIntoTitleBar = true;
-            SetDefaultWindowSizeAndPosition(s_defaultWindowSize);
+            SetWindowToDefaultMode();
+            AppWindow.Resize(s_defaultWindowSize);
+            this.CenterOnScreen();
 
             Root.Loaded += Root_Loaded;
             Closed += MainWindow_Closed;
         }
 
-        private void SetDefaultWindowSizeAndPosition(SizeInt32 size)
+        private void SetWindowToDefaultMode()
         {
-            var scale = Root.XamlRoot?.RasterizationScale ?? 1;
-            AppWindow.Resize(new((int)(size.Width * scale), (int)(size.Height * scale)));
-            this.CenterOnScreen();
+            Title = "Follow Along";
+            MainContent.Visibility = Visibility.Visible;
+
+            AppWindow.SetPresenter(AppWindowPresenterKind.Default);
+            this.SetIsExcludedFromCapture(false);
         }
 
-        private void SetViewportWindowSizeAndPosition(CaptureStartedEventArgs e)
+        private void SetWindowToPreviewMode()
         {
-            this.Restore();
-            var viewportSize = (e.Size.Width / e.Size.Height) > ViewportAspectRatio
-                            ? new SizeInt32((int)(e.Size.Height * ViewportAspectRatio), e.Size.Height)
-                            : new SizeInt32(e.Size.Width, (int)(e.Size.Width / ViewportAspectRatio));
-            AppWindow.Resize(viewportSize);
+            // Teams does not list windows with no title. Set no title so the preview window cannot be selected.
+            Title = null;
+            MainContent.Visibility = Visibility.Collapsed;
+
+            AppWindow.SetPresenter(AppWindowPresenterKind.CompactOverlay);
+            this.SetIsExcludedFromCapture(true);
+
+            var scale = Root.XamlRoot?.RasterizationScale ?? 1;
+
+            AppWindow.Resize(new((int)(s_previewWindowSize.Width * scale), (int)(s_previewWindowSize.Height * scale)));
 
             var appMonitor = this.GetWindowMonitorSize();
             if (appMonitor is not null)
-                AppWindow.Move(new PointInt32((int)appMonitor.ScreenSize.X - 1, (int)appMonitor.ScreenSize.Y - 1));
+                AppWindow.Move(new PointInt32(0,
+                    (int)(appMonitor.ScreenSize.Y - (s_previewWindowSize.Height * scale) - (BottomPadding * scale))));
         }
 
         private void CaptureService_Started(object? sender, CaptureStartedEventArgs e)
         {
-            MainContent.Visibility = Visibility.Collapsed;
+            SetWindowToPreviewMode();
 
-            SetViewportWindowSizeAndPosition(e);
-
-            this.SetIsResizable(false);
-            this.SetIsMinimizable(false);
-            this.SetIsMaximizable(false);
-
-            if (_previewWindow is null)
+            if (_shareWindow is null)
             {
-                _previewWindow = App.Current.Services.GetRequiredService<PreviewWindow>();
-                _previewWindow.Closed += PreviewWindow_Closed;
+                _shareWindow = App.Current.Services.GetRequiredService<ShareWindow>();
+                _shareWindow.Closed += ShareWindow_Closed;
             }
-            _previewWindow.Activate();
+            _shareWindow.Activate();
+            _shareWindow.SetScreenSize(e.Size);
         }
 
         private void CaptureService_Stopped(object? sender, EventArgs e)
         {
-            MainContent.Visibility = Visibility.Visible;
+            SetWindowToDefaultMode();
 
-            SetDefaultWindowSizeAndPosition(s_defaultWindowSize);
-            this.SetIsResizable(true);
-            this.SetIsMinimizable(true);
-            this.SetIsMaximizable(true);
             this.SetForegroundWindow();
 
-            if (_previewWindow is not null)
-            {
-                _previewWindow.Closed -= PreviewWindow_Closed;
-                _previewWindow.Close();
-                _previewWindow = null;
-            }
+            _shareWindow?.Close();
         }
 
-        private void MainWindow_Closed(object sender, WindowEventArgs args) => _previewWindow?.Close();
+        private void MainWindow_Closed(object sender, WindowEventArgs args) => _shareWindow?.Close();
 
         private void Root_Loaded(object sender, RoutedEventArgs e)
         {
             Root.Loaded -= Root_Loaded;
-            SetDefaultWindowSizeAndPosition(s_defaultWindowSize);
+            SetWindowToDefaultMode();
+
+            var scale = Root.XamlRoot?.RasterizationScale ?? 1;
+            AppWindow.Resize(new((int)(s_defaultWindowSize.Width * scale), (int)(s_defaultWindowSize.Height * scale)));
+            this.CenterOnScreen();
         }
 
-        private void PreviewWindow_Closed(object sender, WindowEventArgs args)
+        private void ShareWindow_Closed(object sender, WindowEventArgs args)
         {
-            if (_previewWindow is null)
+            if (sender is Window window)
+                window.Closed -= ShareWindow_Closed;
+
+            if (_shareWindow is null)
                 return;
 
-            _previewWindow.Closed -= PreviewWindow_Closed;
-            _previewWindow = null;
+            _shareWindow.Closed -= ShareWindow_Closed;
+            _shareWindow = null;
         }
     }
 }

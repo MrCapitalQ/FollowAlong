@@ -22,7 +22,7 @@ Host.CreateDefaultBuilder(args)
         services.AddHostedService<WinUIHostedService<App>>();
         services.AddSingleton<App>();
         services.AddSingleton<MainWindow>();
-        services.AddTransient<PreviewWindow>();
+        services.AddTransient<ShareWindow>();
 
         services.AddSingleton<MainViewModel>();
 

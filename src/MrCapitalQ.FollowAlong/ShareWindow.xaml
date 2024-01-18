@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Window x:Class="MrCapitalQ.FollowAlong.PreviewWindow"
+<Window x:Class="MrCapitalQ.FollowAlong.ShareWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="using:MrCapitalQ.FollowAlong"
@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
         mc:Ignorable="d"
-        Title="Preview Window - Do Not Share">
+        Title="Follow Along - Share Window">
 
     <Grid x:Name="Root">
         <controls:CapturePreview x:Name="Preview" />
