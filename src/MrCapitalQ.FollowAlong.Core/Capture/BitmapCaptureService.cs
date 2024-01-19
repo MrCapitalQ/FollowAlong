@@ -14,6 +14,8 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
         public event EventHandler<CaptureStartedEventArgs>? Started;
         public event EventHandler? Stopped;
 
+        private const double FrameRate = 30;
+
         private readonly ILogger<BitmapCaptureService> _logger;
         private readonly HashSet<IBitmapFrameHandler> _handlers = new();
         private GraphicsCaptureItem? _captureItem;
@@ -21,6 +23,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
         private Direct3D11CaptureFramePool? _framePool;
         private GraphicsCaptureSession? _session;
         private SizeInt32 _lastSize;
+        private DateTime _nextFrameTime;
 
         public BitmapCaptureService(ILogger<BitmapCaptureService> logger)
         {
@@ -118,8 +121,10 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             var needsReset = false;
 
             using var frame = sender.TryGetNextFrame();
-            if (frame is null)
+            if (frame is null || DateTime.Now < _nextFrameTime)
                 return;
+
+            _nextFrameTime = DateTime.Now.AddSeconds(1 / FrameRate);
 
             if (frame.ContentSize.Width != _lastSize.Width || frame.ContentSize.Height != _lastSize.Height)
             {
