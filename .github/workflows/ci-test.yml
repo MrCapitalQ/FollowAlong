@@ -7,8 +7,6 @@ on:
     branches: [ci]
 
 env:
-  # TODO: Handle package version.
-  PACKAGE_VERSION: 1.0.14.0
   CONFIGURATION: Release
   PACKAGE_NAME: MrCapitalQ.FollowAlong
 
@@ -27,6 +25,7 @@ jobs:
       SOLUTION_NAME: MrCapitalQ.FollowAlong.sln
 
     steps:
+
     - name: Checkout
       uses: actions/checkout@v4
 
@@ -47,7 +46,7 @@ jobs:
         $appxManifestXml.Save($appxManifestPath);
       working-directory: ${{ github.workspace }}/src/MrCapitalQ.FollowAlong
       env:
-        PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+        PACKAGE_VERSION: ${{ vars.NEXT_ALPHA_STORE_VERSION }}
 
     - name: Restore
       run: msbuild $env:SOLUTION_NAME /t:Restore /p:Configuration=$env:CONFIGURATION
@@ -76,12 +75,13 @@ jobs:
     name: MS Store Publish
 
     needs: build
-  
+
     runs-on: windows-latest
 
     environment: Alpha
-  
+
     steps:
+
     - name: Setup MSIX Toolkit
       shell: pwsh
       run: |
@@ -142,13 +142,13 @@ jobs:
         Get-ChildItem ./* -Include "*.msix" -Exclude "Bundle/**" -Recurse | Copy-Item -Destination "${{ github.workspace }}/Bundle"
         MakeAppx bundle /d ${{ github.workspace }}/Bundle /p "$env:MSIX_BUNDLE_PATH"
       env:
-        MSIX_BUNDLE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}_x86_x64.msixbundle
+        MSIX_BUNDLE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_ALPHA_STORE_VERSION }}_x86_x64.msixbundle
 
     - name: Upload MSIX Bundle
       uses: actions/upload-artifact@v4
       with:
         name: MSIX Bundle
-        path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}_x86_x64.msixbundle
+        path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_ALPHA_STORE_VERSION }}_x86_x64.msixbundle
 
     - name: Create Store Upload Package
       shell: pwsh
@@ -156,13 +156,13 @@ jobs:
         Get-ChildItem *.msixsym -Recurse | Rename-Item -NewName { $_.name -replace ".msixsym", ".appxsym" }
         Get-ChildItem ./* -Include "*.msixbundle", "*.appxsym" -Recurse | Compress-Archive -DestinationPath "$env:MSIX_UPLOAD_PATH"
       env:
-        MSIX_UPLOAD_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}.msixupload
+        MSIX_UPLOAD_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_ALPHA_STORE_VERSION }}.msixupload
 
     - name: Upload Store Upload Package
       uses: actions/upload-artifact@v4
       with:
         name: Store Upload Package
-        path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}.msixupload
+        path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_ALPHA_STORE_VERSION }}.msixupload
 
     - name: Publish MS Store Update
       shell: pwsh
@@ -183,7 +183,7 @@ jobs:
         # Create submission package for new update.
         New-SubmissionPackage -ConfigPath "./storeBrokerConfig.json" -AppxPath "$env:APP_PACKAGE_PATH" -OutPath "./SubmissionPackage" -OutName "SubmissionPackage" -DisableAutoPackageNameFormatting
         Write-Output "::endgroup::"
-        
+
         Write-Output "::group::Create New Store Submission"
         # Create new Store submission, overwritting any existing pending submissions.
         $submission = New-ApplicationSubmission -AppId "$env:MS_STORE_APP_ID" -Force
@@ -242,4 +242,26 @@ jobs:
         MS_STORE_CLIENT_ID: ${{ secrets.MS_STORE_CLIENT_ID }}
         MS_STORE_CLIENT_SECRET: ${{ secrets.MS_STORE_CLIENT_SECRET }}
         MS_STORE_APP_ID: ${{ secrets.MS_STORE_APP_ID }}
-        APP_PACKAGE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}.msixupload
+        APP_PACKAGE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_ALPHA_STORE_VERSION }}.msixupload
+
+    - name: Increment Version
+      shell: pwsh
+      run: |
+        $variableName = "NEXT_ALPHA_STORE_VERSION"
+        $variableUrl = "https://api.github.com/repos/${{ github.repository }}/actions/variables/$variableName"
+        $headers = @{
+            "Accept" = "application/vnd.github+json"
+            "Authorization" = "Bearer $env:ACCESS_TOKEN"
+            "X-GitHub-Api-Version" = "2022-11-28"
+        }
+
+        $currentValue = [version]$(Invoke-RestMethod -Uri $variableUrl -Headers $headers).value
+
+        $body = @{
+            "name" = $variableName
+            "value" = "$($currentValue.Major).$($currentValue.Minor).$($currentValue.Build + 1).$($currentValue.Revision)"
+        } | ConvertTo-Json
+
+        Invoke-RestMethod -Uri $variableUrl -Method Patch -Headers $headers -Body $body
+      env:
+        ACCESS_TOKEN: ${{ secrets.REPO_VARS_ACCESS_TOKEN }}
