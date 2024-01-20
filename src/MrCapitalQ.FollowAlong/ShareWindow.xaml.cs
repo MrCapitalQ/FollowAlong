@@ -1,10 +1,10 @@
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using Windows.Graphics;
-using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong
 {
@@ -28,10 +28,13 @@ namespace MrCapitalQ.FollowAlong
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
                 (r, m) => _trackingTransformService.Zoom = m.Zoom);
 
-            this.SetIsShownInSwitchers(false);
-            this.SetIsResizable(false);
-            this.SetIsMinimizable(false);
-            this.SetIsMaximizable(false);
+            if (AppWindow.Presenter is OverlappedPresenter presenter)
+            {
+                presenter.IsResizable = false;
+                presenter.IsMinimizable = false;
+                presenter.IsMaximizable = false;
+                presenter.SetBorderAndTitleBar(false, false);
+            }
 
             ExtendsContentIntoTitleBar = true;
             RepositionToSharingPosition();
