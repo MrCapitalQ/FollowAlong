@@ -1,10 +1,8 @@
-name: CI/CD POC
+name: CI/CD
 
 on:
   push:
-    branches: [ci]
-  pull_request:
-    branches: [ci]
+    branches: [main]
 
 env:
   PACKAGE_NAME: MrCapitalQ.FollowAlong
@@ -61,14 +59,14 @@ jobs:
           ${{ github.workspace }}/Packages/**/*.msixsym
           !**/Dependencies/**
 
-  package:
+  publish:
     name: MS Store Publish
 
     needs: build
 
     runs-on: windows-latest
 
-    environment: Alpha
+    environment: CD
 
     steps:
 
@@ -260,4 +258,4 @@ jobs:
         Invoke-RestMethod -Uri $variableUrl -Method Patch -Headers $headers -Body $body
       env:
         ACCESS_TOKEN: ${{ secrets.ENVIRONMENT_ACCESS_TOKEN }}
-        ENVIRONMENT_NAME: Alpha
+        ENVIRONMENT_NAME: CD
