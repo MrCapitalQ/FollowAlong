@@ -88,7 +88,7 @@ jobs:
       with:
         name: x86 MSIX Package
 
-    - name: Re-package for Store Submission
+    - name: Re-package for v${{ vars.NEXT_STORE_VERSION }} Store Submission
       shell: pwsh
       run: |
         $msixFiles = Get-ChildItem ./ -Recurse -File -Filter *.msix
@@ -129,9 +129,9 @@ jobs:
             }
         }
       env:
-        PACKAGE_ID_NAME: ${{ secrets.PACKAGE_ID_NAME }}
-        PACKAGE_ID_PUBLISHER: ${{ secrets.PACKAGE_ID_PUBLISHER }}
-        PACKAGE_PHONE_PRODUCT_ID: ${{ secrets.PACKAGE_PHONE_PRODUCT_ID }}
+        PACKAGE_ID_NAME: ${{ vars.PACKAGE_ID_NAME }}
+        PACKAGE_ID_PUBLISHER: ${{ vars.PACKAGE_ID_PUBLISHER }}
+        PACKAGE_PHONE_PRODUCT_ID: ${{ vars.PACKAGE_PHONE_PRODUCT_ID }}
         PACKAGE_DISPLAY_NAME: ${{ vars.PACKAGE_DISPLAY_NAME }}
         PACKAGE_VERSION: ${{ vars.NEXT_STORE_VERSION }}
         PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
@@ -145,13 +145,7 @@ jobs:
       env:
         MSIX_BUNDLE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}_x86_x64.msixbundle
 
-    - name: Upload MSIX Bundle
-      uses: actions/upload-artifact@v4
-      with:
-        name: MSIX Bundle
-        path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}_x86_x64.msixbundle
-
-    - name: Create Store Upload Package
+    - name: Create MS Store Upload Package
       shell: pwsh
       run: |
         Get-ChildItem *.msixsym -Recurse | Rename-Item -NewName { $_.name -replace ".msixsym", ".appxsym" }
@@ -165,7 +159,7 @@ jobs:
         name: Store Upload Package
         path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}.msixupload
 
-    - name: Publish MS Store Update
+    - name: Publish v${{ vars.NEXT_STORE_VERSION }} MS Store Submission
       shell: pwsh
       run: |
         Install-Module -Name StoreBroker -Force
