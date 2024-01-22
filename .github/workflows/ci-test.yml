@@ -7,7 +7,6 @@ on:
     branches: [ci]
 
 env:
-  CONFIGURATION: Release
   PACKAGE_NAME: MrCapitalQ.FollowAlong
 
 jobs:
@@ -22,6 +21,7 @@ jobs:
     runs-on: windows-latest
 
     env:
+      CONFIGURATION: Release
       SOLUTION_NAME: MrCapitalQ.FollowAlong.sln
 
     steps:
@@ -37,17 +37,6 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
 
-    - name: Set Package Version
-      shell: pwsh
-      run: |
-        $appxManifestPath = "./Package.appxmanifest"
-        [xml]$appxManifestXml = Get-Content $appxManifestPath
-        $appxManifestXml.Package.Identity.Version = "$env:PACKAGE_VERSION"
-        $appxManifestXml.Save($appxManifestPath);
-      working-directory: ${{ github.workspace }}/src/MrCapitalQ.FollowAlong
-      env:
-        PACKAGE_VERSION: ${{ vars.NEXT_ALPHA_STORE_VERSION }}
-
     - name: Restore
       run: msbuild $env:SOLUTION_NAME /t:Restore /p:Configuration=$env:CONFIGURATION
       env:
@@ -55,12 +44,13 @@ jobs:
         CONFIGURATION: ${{ env.CONFIGURATION }}
 
     - name: Build
-      run: msbuild $env:SOLUTION_NAME /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /p:AppxPackageDir="$env:APPX_PACKAGE_DIR" /p:GenerateAppxPackageOnBuild=true
+      run: msbuild $env:SOLUTION_NAME /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /p:AppxPackageDir="$env:APPX_PACKAGE_DIR" /p:AppxPackageTestDir="$($env:APPX_PACKAGE_DIR)/$($env:APPX_PACKAGE_NAME)/" /p:AppxPackageName="$env:APPX_PACKAGE_NAME" /p:GenerateAppxPackageOnBuild=true
       env:
         SOLUTION_NAME: ${{ env.SOLUTION_NAME }}
         CONFIGURATION: ${{ env.CONFIGURATION }}
         PLATFORM: ${{ matrix.platform }}
         APPX_PACKAGE_DIR: ${{ github.workspace }}/Packages/
+        APPX_PACKAGE_NAME: ${{ env.PACKAGE_NAME }}_${{ matrix.platform }}
 
     - name: Upload MSIX Package
       uses: actions/upload-artifact@v4
@@ -98,7 +88,7 @@ jobs:
       with:
         name: x86 MSIX Package
 
-    - name: Associate Store App
+    - name: Re-package for Store Submission
       shell: pwsh
       run: |
         $msixFiles = Get-ChildItem ./ -Recurse -File -Filter *.msix
@@ -121,6 +111,7 @@ jobs:
             $appxManifestXml.Package.Identity.Publisher = "$env:PACKAGE_ID_PUBLISHER"
             $appxManifestXml.Package["mp:PhoneIdentity"].PhoneProductId = "$env:PACKAGE_PHONE_PRODUCT_ID"
             $appxManifestXml.Package.Properties.DisplayName = "$env:PACKAGE_DISPLAY_NAME"
+            $appxManifestXml.Package.Identity.Version = "$env:PACKAGE_VERSION"
 
             $appxManifestXml.Save($appxManifestPath);
 
@@ -128,12 +119,22 @@ jobs:
             PackageEditor updateManifest -p "$($item.FullName)" -m "$($appxManifestPath)" -l
 
             Write-Host "Re-packaged $($item.FullName) with updated manifest."
+
+            if ($item.Name -match "$env:PACKAGE_NAME" + "_(.+).msix") {
+                $architecture = $Matches[1]
+                $newFileName = "$($env:PACKAGE_NAME)_$($env:PACKAGE_VERSION)_${architecture}.msix"
+
+                Rename-Item -Path $item.FullName -NewName $newFileName
+                Write-Host "Renamed $($item.FullName) to $newFileName."
+            }
         }
       env:
         PACKAGE_ID_NAME: ${{ secrets.PACKAGE_ID_NAME }}
         PACKAGE_ID_PUBLISHER: ${{ secrets.PACKAGE_ID_PUBLISHER }}
         PACKAGE_PHONE_PRODUCT_ID: ${{ secrets.PACKAGE_PHONE_PRODUCT_ID }}
         PACKAGE_DISPLAY_NAME: ${{ vars.PACKAGE_DISPLAY_NAME }}
+        PACKAGE_VERSION: ${{ vars.NEXT_ALPHA_STORE_VERSION }}
+        PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
 
     - name: Create MSIX Bundle
       shell: pwsh
