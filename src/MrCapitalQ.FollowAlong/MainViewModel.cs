@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Monitors;
+using MrCapitalQ.FollowAlong.Messages;
 using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -37,13 +38,19 @@ namespace MrCapitalQ.FollowAlong
             Monitors = new(monitorService.GetAll().Select(x => new MonitorViewModel(x)));
             SelectedMonitor = Monitors.FirstOrDefault(x => x.MonitorInfo.IsPrimary);
             _captureService = captureService;
+
+            WeakReferenceMessenger.Default.Register<StopCapture>(this,
+                (r, m) =>
+                {
+                    if (_captureService.IsStarted)
+                        _captureService.StopCapture();
+                });
         }
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
         {
             if (e.HotKeyType is HotKeyType.StartStop)
             {
-
                 if (!_captureService.IsStarted && SelectedMonitor is not null)
                 {
                     var captureItem = SelectedMonitor.MonitorInfo.CreateCaptureItem();
