@@ -145,7 +145,7 @@ jobs:
       env:
         MSIX_BUNDLE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}_x86_x64.msixbundle
 
-    - name: Create MS Store Upload Package
+    - name: Create MS Store Package
       shell: pwsh
       run: |
         Get-ChildItem *.msixsym -Recurse | Rename-Item -NewName { $_.name -replace ".msixsym", ".appxsym" }
@@ -153,7 +153,7 @@ jobs:
       env:
         MSIX_UPLOAD_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}.msixupload
 
-    - name: Upload Store Upload Package
+    - name: Upload MS Store Package
       uses: actions/upload-artifact@v4
       with:
         name: Store Upload Package
