@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
+using MrCapitalQ.FollowAlong.Messages;
 using Windows.Graphics;
 
 namespace MrCapitalQ.FollowAlong

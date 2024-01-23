@@ -7,6 +7,7 @@ using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
+using MrCapitalQ.FollowAlong.Messages;
 using System;
 using Windows.Graphics;
 using WinUIEx;
@@ -124,6 +125,8 @@ namespace MrCapitalQ.FollowAlong
 
             _shareWindow.Closed -= ShareWindow_Closed;
             _shareWindow = null;
+
+            WeakReferenceMessenger.Default.Send(new StopCapture());
         }
     }
 }
