@@ -9,14 +9,14 @@
 
   <Identity
     Name="126277fe-7893-4202-9aad-5abb8310319d"
-    Publisher="CN=Q"
+    Publisher="CN=MrCapitalQ"
     Version="1.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="126277fe-7893-4202-9aad-5abb8310319d" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>MrCapitalQ.FollowAlong</DisplayName>
-    <PublisherDisplayName>Q</PublisherDisplayName>
+    <DisplayName>Follow Along - Screen Share</DisplayName>
+    <PublisherDisplayName>MrCapitalQ</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

@@ -1,0 +1,261 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+
+env:
+  PACKAGE_NAME: MrCapitalQ.FollowAlong
+
+jobs:
+
+  build:
+    name: Build
+
+    strategy:
+      matrix:
+        platform: [x64, x86]
+
+    runs-on: windows-latest
+
+    env:
+      CONFIGURATION: Release
+      SOLUTION_NAME: MrCapitalQ.FollowAlong.sln
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Restore
+      run: msbuild $env:SOLUTION_NAME /t:Restore /p:Configuration=$env:CONFIGURATION
+      env:
+        SOLUTION_NAME: ${{ env.SOLUTION_NAME }}
+        CONFIGURATION: ${{ env.CONFIGURATION }}
+
+    - name: Build
+      run: msbuild $env:SOLUTION_NAME /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /p:AppxPackageDir="$env:APPX_PACKAGE_DIR" /p:AppxPackageTestDir="$($env:APPX_PACKAGE_DIR)/$($env:APPX_PACKAGE_NAME)/" /p:AppxPackageName="$env:APPX_PACKAGE_NAME" /p:GenerateAppxPackageOnBuild=true
+      env:
+        SOLUTION_NAME: ${{ env.SOLUTION_NAME }}
+        CONFIGURATION: ${{ env.CONFIGURATION }}
+        PLATFORM: ${{ matrix.platform }}
+        APPX_PACKAGE_DIR: ${{ github.workspace }}/Packages/
+        APPX_PACKAGE_NAME: ${{ env.PACKAGE_NAME }}_${{ matrix.platform }}
+
+    - name: Upload MSIX Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }} MSIX Package
+        path: |
+          ${{ github.workspace }}/Packages/**/*.msix
+          ${{ github.workspace }}/Packages/**/*.msixsym
+          !**/Dependencies/**
+
+  publish:
+    name: MS Store Publish
+
+    needs: build
+
+    runs-on: windows-latest
+
+    environment: CD
+
+    steps:
+
+    - name: Setup MSIX Toolkit
+      shell: pwsh
+      run: |
+        git clone https://github.com/microsoft/MSIX-Toolkit.git
+        "${{ github.workspace }}/MSIX-Toolkit/WindowsSDK/11/10.0.22000.0/x64" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+    - name: Download x64 MSIX Package
+      uses: actions/download-artifact@v4
+      with:
+        name: x64 MSIX Package
+
+    - name: Download x86 MSIX Package
+      uses: actions/download-artifact@v4
+      with:
+        name: x86 MSIX Package
+
+    - name: Re-package for v${{ vars.NEXT_STORE_VERSION }} Store Submission
+      shell: pwsh
+      run: |
+        $msixFiles = Get-ChildItem ./ -Recurse -File -Filter *.msix
+
+        foreach ($item in $msixFiles) {
+            Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction Stop
+
+            $appxManifestPath = "$($item.FullName | Split-Path -Parent)/AppxManifest.xml"
+
+            Write-Host "Extracting $($item.FullName)'s manifest to $appxManifestPath."
+            $zip = [System.IO.Compression.ZipFile]::OpenRead($item.FullName)
+            $compressedAppxManifest = $zip.Entries | Where-Object { $_.FullName -eq "AppxManifest.xml" } | Select-Object -First 1
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($compressedAppxManifest, $appxManifestPath)
+            $zip.Dispose()
+
+            Write-Host "Updating $appxManifestPath for Store listing."
+            [xml]$appxManifestXml = Get-Content $appxManifestPath
+
+            $appxManifestXml.Package.Identity.Name = "$env:PACKAGE_ID_NAME"
+            $appxManifestXml.Package.Identity.Publisher = "$env:PACKAGE_ID_PUBLISHER"
+            $appxManifestXml.Package["mp:PhoneIdentity"].PhoneProductId = "$env:PACKAGE_PHONE_PRODUCT_ID"
+            $appxManifestXml.Package.Properties.DisplayName = "$env:PACKAGE_DISPLAY_NAME"
+            $appxManifestXml.Package.Identity.Version = "$env:PACKAGE_VERSION"
+
+            $appxManifestXml.Save($appxManifestPath);
+
+            Write-Host "Re-packaging $($item.FullName) with updated manifest."
+            PackageEditor updateManifest -p "$($item.FullName)" -m "$($appxManifestPath)" -l
+
+            Write-Host "Re-packaged $($item.FullName) with updated manifest."
+
+            if ($item.Name -match "$env:PACKAGE_NAME" + "_(.+).msix") {
+                $architecture = $Matches[1]
+                $newFileName = "$($env:PACKAGE_NAME)_$($env:PACKAGE_VERSION)_${architecture}.msix"
+
+                Rename-Item -Path $item.FullName -NewName $newFileName
+                Write-Host "Renamed $($item.FullName) to $newFileName."
+            }
+        }
+      env:
+        PACKAGE_ID_NAME: ${{ vars.PACKAGE_ID_NAME }}
+        PACKAGE_ID_PUBLISHER: ${{ vars.PACKAGE_ID_PUBLISHER }}
+        PACKAGE_PHONE_PRODUCT_ID: ${{ vars.PACKAGE_PHONE_PRODUCT_ID }}
+        PACKAGE_DISPLAY_NAME: ${{ vars.PACKAGE_DISPLAY_NAME }}
+        PACKAGE_VERSION: ${{ vars.NEXT_STORE_VERSION }}
+        PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
+
+    - name: Create MSIX Bundle
+      shell: pwsh
+      run: |
+        New-Item -Path "${{ github.workspace }}" -Name "Bundle" -ItemType Directory
+        Get-ChildItem ./* -Include "*.msix" -Exclude "Bundle/**" -Recurse | Copy-Item -Destination "${{ github.workspace }}/Bundle"
+        MakeAppx bundle /d ${{ github.workspace }}/Bundle /p "$env:MSIX_BUNDLE_PATH"
+      env:
+        MSIX_BUNDLE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}_x86_x64.msixbundle
+
+    - name: Create MS Store Package
+      shell: pwsh
+      run: |
+        Get-ChildItem *.msixsym -Recurse | Rename-Item -NewName { $_.name -replace ".msixsym", ".appxsym" }
+        Get-ChildItem ./* -Include "*.msixbundle", "*.appxsym" -Recurse | Compress-Archive -DestinationPath "$env:MSIX_UPLOAD_PATH"
+      env:
+        MSIX_UPLOAD_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}.msixupload
+
+    - name: Upload MS Store Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: Store Upload Package
+        path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}.msixupload
+
+    - name: Publish v${{ vars.NEXT_STORE_VERSION }} MS Store Submission
+      shell: pwsh
+      run: |
+        Install-Module -Name StoreBroker -Force
+
+        Write-Output "::group::Set StoreBroker Credentials"
+        # Set credentials.
+        $password = ConvertTo-SecureString "$env:MS_STORE_CLIENT_SECRET" -AsPlainText -Force
+        $credentials = New-Object System.Management.Automation.PSCredential("$env:MS_STORE_CLIENT_ID", $password)
+        Set-StoreBrokerAuthentication -TenantId "$env:MS_STORE_TENANT_ID" -Credential $credentials
+        Write-Output "::endgroup::"
+
+        Write-Output "::group::Create Submission Package"
+        # Get store broker config file for app.
+        New-StoreBrokerConfigFile -Path "./storeBrokerConfig.json" -AppId "$env:MS_STORE_APP_ID"
+
+        # Create submission package for new update.
+        New-SubmissionPackage -ConfigPath "./storeBrokerConfig.json" -AppxPath "$env:APP_PACKAGE_PATH" -OutPath "./SubmissionPackage" -OutName "SubmissionPackage" -DisableAutoPackageNameFormatting
+        Write-Output "::endgroup::"
+
+        Write-Output "::group::Create New Store Submission"
+        # Create new Store submission, overwritting any existing pending submissions.
+        $submission = New-ApplicationSubmission -AppId "$env:MS_STORE_APP_ID" -Force
+        Write-Output "::endgroup::"
+
+        Write-Output "::group::Update Submission App Packages"
+        # Remove old packages from submission and add new package.
+        foreach ($package in $submission.applicationPackages) {
+            $package.fileStatus = "PendingDelete"
+        }
+
+        $newSubmissionPackage = (Get-Content ./SubmissionPackage/SubmissionPackage.json -Encoding UTF8) | ConvertFrom-Json
+        $submission.applicationPackages += $newSubmissionPackage.applicationPackages
+        Set-SubmissionPackage -PackagePath "./SubmissionPackage/SubmissionPackage.zip" -UploadUrl ($submission.fileUploadUrl)
+        Write-Output "::endgroup::"
+
+        Write-Output "::group::Submit Submission Changes"
+        # Update submission with changes.
+        Set-ApplicationSubmission -AppId "$env:MS_STORE_APP_ID" -UpdatedSubmission $submission
+        Write-Output "::endgroup::"
+
+        Write-Output "::group::Commit Submission"
+        # Commit submission to start certification process.
+        Complete-ApplicationSubmission -AppId "$env:MS_STORE_APP_ID" -SubmissionId ($submission.id)
+        Write-Output "::endgroup::"
+
+        $retryAttempts = 15
+        $sleepDuration = 60
+        for ($i = 0; $i -lt $retryAttempts; $i++) {
+            Write-Output "::group::Polling Submission Status (Attempt $($i + 1) of $retryAttempts)"
+            $submissionStatus = Get-ApplicationSubmission -AppId "$env:MS_STORE_APP_ID" -SubmissionId ($submission.id)
+            Write-Output "Submission status: $($submissionStatus.status)"
+            Write-Output "::endgroup::"
+
+            if (($submissionStatus.status -eq "CommitFailed") -or ($submissionStatus.statusDetails.errors.Count -gt 0)) {
+                Write-Output $submissionStatus.statusDetails.errors | ConvertTo-Json
+                Write-Output "::error::Submission commit was not successful."
+                exit 1
+            }
+
+            if (($submissionStatus.status -eq "PreProcessing") -or ($submissionStatus.status -eq "Certification")) {
+                Write-Output "Submission commit was successful."
+                break
+            }
+
+            if ($i -ge ($retryAttempts - 1)) {
+                Write-Output "::warning::Could not determine submission commit status after $retryAttempts attempts."
+                break
+            }
+
+            Write-Output "Polling status again in $sleepDuration seconds"
+            Start-Sleep -Seconds $sleepDuration
+        }
+      env:
+        MS_STORE_TENANT_ID: ${{ secrets.MS_STORE_TENANT_ID }}
+        MS_STORE_CLIENT_ID: ${{ secrets.MS_STORE_CLIENT_ID }}
+        MS_STORE_CLIENT_SECRET: ${{ secrets.MS_STORE_CLIENT_SECRET }}
+        MS_STORE_APP_ID: ${{ secrets.MS_STORE_APP_ID }}
+        APP_PACKAGE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}.msixupload
+
+    - name: Increment Version
+      shell: pwsh
+      run: |
+        $variableName = "NEXT_STORE_VERSION"
+        $variableUrl = "https://api.github.com/repos/${{ github.repository }}/environments/$($env:ENVIRONMENT_NAME)/variables/$variableName"
+        $headers = @{
+            "Accept" = "application/vnd.github+json"
+            "Authorization" = "Bearer $env:ACCESS_TOKEN"
+            "X-GitHub-Api-Version" = "2022-11-28"
+        }
+
+        $currentValue = [version]$(Invoke-RestMethod -Uri $variableUrl -Headers $headers).value
+
+        $body = @{
+            "name" = $variableName
+            "value" = "$($currentValue.Major).$($currentValue.Minor).$($currentValue.Build + 1).$($currentValue.Revision)"
+        } | ConvertTo-Json
+
+        Invoke-RestMethod -Uri $variableUrl -Method Patch -Headers $headers -Body $body
+      env:
+        ACCESS_TOKEN: ${{ secrets.ENVIRONMENT_ACCESS_TOKEN }}
+        ENVIRONMENT_NAME: CD
