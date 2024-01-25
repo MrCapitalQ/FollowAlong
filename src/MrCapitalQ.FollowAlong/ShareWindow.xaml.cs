@@ -5,7 +5,7 @@ using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Messages;
-using Windows.Foundation;
+using System.Linq;
 using Windows.Graphics;
 
 namespace MrCapitalQ.FollowAlong
@@ -60,17 +60,13 @@ namespace MrCapitalQ.FollowAlong
 
         private void RepositionToSharingPosition()
         {
-            // Get the bounds encompassing all monitors as they're laid out.
-            var monitors = _monitorService.GetAll();
-            var monitorsArea = new Rect();
-            foreach (var monitor in monitors)
-            {
-                monitorsArea.Union(monitor.MonitorArea);
-            }
+            var lowestMonitorArea = _monitorService.GetAll()
+                .Select(x => x.MonitorArea)
+                .Aggregate((x, y) => x.Bottom >= y.Bottom ? x : y);
 
-            // Move to the bottom, right most corner with 1px still in view so it is rendered.
-            // TODO: Check if this works if not in any single monitor's bounds.
-            AppWindow.Move(new PointInt32((int)monitorsArea.Right - 1, (int)monitorsArea.Bottom - 1));
+            // Move to the bottom, right most corner of the lowest-positioned monitor with 1px still in view so the
+            // window content is still rendered.
+            AppWindow.Move(new PointInt32((int)lowestMonitorArea.Right - 1, (int)lowestMonitorArea.Bottom - 1));
         }
 
         private void ShareWindow_Activated(object sender, WindowActivatedEventArgs args)
