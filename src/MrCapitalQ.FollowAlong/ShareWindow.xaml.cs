@@ -46,8 +46,19 @@ namespace MrCapitalQ.FollowAlong
             ExtendsContentIntoTitleBar = true;
             RepositionToSharingPosition();
 
+            AppWindow.Changed += AppWindow_Changed;
             Activated += ShareWindow_Activated;
             Closed += ShareWindow_Closed;
+        }
+
+        private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
+        {
+            if (!args.DidPositionChange)
+                return;
+
+            AppWindow.Changed -= AppWindow_Changed;
+            RepositionToSharingPosition();
+            AppWindow.Changed += AppWindow_Changed;
         }
 
         public void SetScreenSize(SizeInt32 size)
@@ -62,7 +73,15 @@ namespace MrCapitalQ.FollowAlong
         {
             var lowestMonitorArea = _monitorService.GetAll()
                 .Select(x => x.MonitorArea)
-                .Aggregate((x, y) => x.Bottom >= y.Bottom ? x : y);
+                .Aggregate((x, y) =>
+                {
+                    return (x, y) switch
+                    {
+                        _ when x.Bottom < y.Bottom => y,
+                        _ when x.Bottom == y.Bottom && x.Right < y.Right => y,
+                        _ => x
+                    };
+                });
 
             // Move to the bottom, right most corner of the lowest-positioned monitor with 1px still in view so the
             // window content is still rendered.
@@ -74,6 +93,7 @@ namespace MrCapitalQ.FollowAlong
 
         private void ShareWindow_Closed(object sender, WindowEventArgs args)
         {
+            AppWindow.Changed -= AppWindow_Changed;
             Activated -= ShareWindow_Activated;
             Closed -= ShareWindow_Closed;
             _captureService.UnregisterFrameHandler(Preview);
