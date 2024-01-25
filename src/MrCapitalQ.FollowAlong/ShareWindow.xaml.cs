@@ -5,6 +5,7 @@ using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Messages;
+using Windows.Foundation;
 using Windows.Graphics;
 
 namespace MrCapitalQ.FollowAlong
@@ -15,9 +16,11 @@ namespace MrCapitalQ.FollowAlong
 
         private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
+        private readonly MonitorService _monitorService;
 
         public ShareWindow(BitmapCaptureService captureService,
-            TrackingTransformService trackingTransformService)
+            TrackingTransformService trackingTransformService,
+            MonitorService monitorService)
         {
             InitializeComponent();
 
@@ -26,6 +29,9 @@ namespace MrCapitalQ.FollowAlong
 
             _trackingTransformService = trackingTransformService;
             _trackingTransformService.StartTrackingTransforms(Preview);
+
+            _monitorService = monitorService;
+
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
                 (r, m) => _trackingTransformService.Zoom = m.Zoom);
 
@@ -54,9 +60,17 @@ namespace MrCapitalQ.FollowAlong
 
         private void RepositionToSharingPosition()
         {
-            var appMonitor = this.GetCurrentMonitorInfo();
-            if (appMonitor is not null)
-                AppWindow.Move(new PointInt32((int)appMonitor.ScreenSize.X - 1, (int)appMonitor.ScreenSize.Y - 1));
+            // Get the bounds encompassing all monitors as they're laid out.
+            var monitors = _monitorService.GetAll();
+            var monitorsArea = new Rect();
+            foreach (var monitor in monitors)
+            {
+                monitorsArea.Union(monitor.MonitorArea);
+            }
+
+            // Move to the bottom, right most corner with 1px still in view so it is rendered.
+            // TODO: Check if this works if not in any single monitor's bounds.
+            AppWindow.Move(new PointInt32((int)monitorsArea.Right - 1, (int)monitorsArea.Bottom - 1));
         }
 
         private void ShareWindow_Activated(object sender, WindowActivatedEventArgs args)
