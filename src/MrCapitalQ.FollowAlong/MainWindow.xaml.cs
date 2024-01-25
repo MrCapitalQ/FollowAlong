@@ -14,10 +14,10 @@ using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong
 {
-    internal sealed partial class MainWindow : Window
+    internal sealed partial class MainWindow : WindowEx
     {
         private const int BottomPadding = 48;
-        private readonly static SizeInt32 s_defaultWindowSize = new(800, 600);
+        private readonly static SizeInt32 s_minWindowSize = new(600, 450);
         private readonly static SizeInt32 s_previewWindowSize = new(384, 216);
 
         private readonly TrackingTransformService _trackingTransformService;
@@ -46,10 +46,8 @@ namespace MrCapitalQ.FollowAlong
 
             ExtendsContentIntoTitleBar = true;
             SetWindowToDefaultMode();
-            AppWindow.Resize(s_defaultWindowSize);
             this.CenterOnScreen();
 
-            Root.Loaded += Root_Loaded;
             Closed += MainWindow_Closed;
         }
 
@@ -58,22 +56,27 @@ namespace MrCapitalQ.FollowAlong
             Title = "Follow Along";
             MainContent.Visibility = Visibility.Visible;
 
-            AppWindow.SetPresenter(AppWindowPresenterKind.Default);
+            PresenterKind = AppWindowPresenterKind.Default;
+            MinWidth = s_minWindowSize.Width;
+            MinHeight = s_minWindowSize.Height;
             this.SetIsExcludedFromCapture(false);
         }
 
         private void SetWindowToPreviewMode()
         {
             // Teams does not list windows with no title. Set no title so the preview window cannot be selected.
-            Title = null;
+            Title = null!;
             MainContent.Visibility = Visibility.Collapsed;
 
-            AppWindow.SetPresenter(AppWindowPresenterKind.CompactOverlay);
+            PresenterKind = AppWindowPresenterKind.CompactOverlay;
+            MinWidth = 0;
+            MinHeight = 0;
             this.SetIsExcludedFromCapture(true);
 
             var scale = Root.XamlRoot?.RasterizationScale ?? 1;
 
-            AppWindow.Resize(new((int)(s_previewWindowSize.Width * scale), (int)(s_previewWindowSize.Height * scale)));
+            Width = s_previewWindowSize.Width;
+            Height = s_previewWindowSize.Height;
 
             var appMonitor = this.GetWindowMonitorSize();
             if (appMonitor is not null)
@@ -104,16 +107,6 @@ namespace MrCapitalQ.FollowAlong
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs args) => _shareWindow?.Close();
-
-        private void Root_Loaded(object sender, RoutedEventArgs e)
-        {
-            Root.Loaded -= Root_Loaded;
-            SetWindowToDefaultMode();
-
-            var scale = Root.XamlRoot?.RasterizationScale ?? 1;
-            AppWindow.Resize(new((int)(s_defaultWindowSize.Width * scale), (int)(s_defaultWindowSize.Height * scale)));
-            this.CenterOnScreen();
-        }
 
         private void ShareWindow_Closed(object sender, WindowEventArgs args)
         {
