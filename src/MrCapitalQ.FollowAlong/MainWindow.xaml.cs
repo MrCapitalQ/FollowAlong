@@ -16,7 +16,6 @@ namespace MrCapitalQ.FollowAlong
 {
     internal sealed partial class MainWindow : WindowEx
     {
-        private const int BottomPadding = 48;
         private readonly static SizeInt32 s_minWindowSize = new(600, 450);
         private readonly static SizeInt32 s_previewWindowSize = new(384, 216);
 
@@ -73,15 +72,13 @@ namespace MrCapitalQ.FollowAlong
             MinHeight = 0;
             this.SetIsExcludedFromCapture(true);
 
-            var scale = Root.XamlRoot?.RasterizationScale ?? 1;
-
             Width = s_previewWindowSize.Width;
             Height = s_previewWindowSize.Height;
 
-            var appMonitor = this.GetWindowMonitorSize();
-            if (appMonitor is not null)
-                AppWindow.Move(new PointInt32(0,
-                    (int)(appMonitor.ScreenSize.Y - (s_previewWindowSize.Height * scale) - (BottomPadding * scale))));
+            var monitorInfo = this.GetCurrentMonitorInfo();
+            if (monitorInfo is not null)
+                AppWindow.Move(new PointInt32((int)(monitorInfo.WorkArea.Left),
+                    (int)(monitorInfo.WorkArea.Bottom - AppWindow.Size.Height)));
         }
 
         private void CaptureService_Started(object? sender, CaptureStartedEventArgs e)
