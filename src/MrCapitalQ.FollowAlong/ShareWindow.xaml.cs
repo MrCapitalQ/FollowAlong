@@ -54,7 +54,7 @@ namespace MrCapitalQ.FollowAlong
 
         private void RepositionToSharingPosition()
         {
-            var appMonitor = this.GetWindowMonitorSize();
+            var appMonitor = this.GetCurrentMonitorInfo();
             if (appMonitor is not null)
                 AppWindow.Move(new PointInt32((int)appMonitor.ScreenSize.X - 1, (int)appMonitor.ScreenSize.Y - 1));
         }

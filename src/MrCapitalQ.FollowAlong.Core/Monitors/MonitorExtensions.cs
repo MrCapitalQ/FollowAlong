@@ -19,7 +19,7 @@ namespace MrCapitalQ.FollowAlong.Core.Monitors
             return item;
         }
 
-        public static MonitorInfo? GetWindowMonitorSize(this Window window)
+        public static MonitorInfo? GetCurrentMonitorInfo(this Window window)
         {
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             return MonitorInterops.GetMonitorFromWindow(hwnd);
