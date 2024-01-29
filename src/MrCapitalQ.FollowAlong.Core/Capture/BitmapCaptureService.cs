@@ -2,7 +2,6 @@
 using Microsoft.Graphics.Canvas;
 using System;
 using System.Collections.Generic;
-using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
@@ -18,7 +17,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         private readonly ILogger<BitmapCaptureService> _logger;
         private readonly HashSet<IBitmapFrameHandler> _handlers = new();
-        private GraphicsCaptureItem? _captureItem;
+        private MonitorCaptureItem? _captureItem;
         private CanvasDevice? _canvasDevice;
         private Direct3D11CaptureFramePool? _framePool;
         private GraphicsCaptureSession? _session;
@@ -32,12 +31,12 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         public bool IsStarted { get; private set; }
 
-        public void StartCapture(GraphicsCaptureItem captureItem)
+        public void StartCapture(MonitorCaptureItem captureItem)
         {
             if (IsStarted)
                 throw new InvalidOperationException("Cannot start capture because a capture is has already been started.");
 
-            _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.DisplayName);
+            _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.GraphicsCaptureItem.DisplayName);
 
             IsStarted = true;
             _captureItem = captureItem;
@@ -45,21 +44,21 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _canvasDevice = new CanvasDevice();
             foreach (var handler in _handlers)
             {
-                handler.Initialize(_canvasDevice, new Size(captureItem.Size.Width, captureItem.Size.Height));
+                handler.Initialize(_canvasDevice, captureItem.MonitorInfo.MonitorArea);
             }
 
             _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
                 DirectXPixelFormat.B8G8R8A8UIntNormalized,
                 2,
-                captureItem.Size);
+                captureItem.GraphicsCaptureItem.Size);
 
             _framePool.FrameArrived += FramePool_FrameArrived;
-            captureItem.Closed += (_, _) => StopCapture();
+            captureItem.GraphicsCaptureItem.Closed += (_, _) => StopCapture();
 
-            _session = _framePool.CreateCaptureSession(captureItem);
+            _session = _framePool.CreateCaptureSession(captureItem.GraphicsCaptureItem);
             _session.StartCapture();
 
-            OnStarted(captureItem.Size);
+            OnStarted(captureItem.GraphicsCaptureItem.Size);
         }
 
         public void StopCapture()
@@ -93,7 +92,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _handlers.Add(handler);
 
             if (IsStarted && _captureItem is not null && _canvasDevice is not null)
-                handler.Initialize(_canvasDevice, new Size(_captureItem.Size.Width, _captureItem.Size.Height));
+                handler.Initialize(_canvasDevice, _captureItem.MonitorInfo.MonitorArea);
         }
 
         public void UnregisterFrameHandler(IBitmapFrameHandler handler)

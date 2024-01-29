@@ -88,6 +88,8 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             if (_pointerService.GetCurrentPosition() is not Point point)
                 return;
 
+            point = new Point(point.X - _target.ContentArea.Left, point.Y - _target.ContentArea.Top);
+
             var scale = _zoom * _baseScale;
             Scale(scale);
 
@@ -113,9 +115,9 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             if (_target?.Brush is null)
                 return;
 
-            _baseScale = (_target.ContentSize.Width / _target.ContentSize.Height) > (16 / 9.0)
-                ? _target.ViewportSize.Height / _target.ContentSize.Height
-                : _target.ViewportSize.Width / _target.ContentSize.Width;
+            _baseScale = (_target.ContentArea.Width / _target.ContentArea.Height) > (16 / 9.0)
+                ? _target.ViewportSize.Height / _target.ContentArea.Height
+                : _target.ViewportSize.Width / _target.ContentArea.Width;
 
             _target.Brush.CenterPoint = new Vector2(_target.ViewportSize._width / 2, _target.ViewportSize._height / 2);
         }
@@ -133,8 +135,8 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             if (_target?.Brush is null)
                 return;
 
-            var translateLimitX = Math.Max((_currentScale * _target.ContentSize.Width) - _target.ViewportSize.Width, 0) / 2 / _currentScale;
-            var translateLimitY = Math.Max((_currentScale * _target.ContentSize.Height) - _target.ViewportSize.Height, 0) / 2 / _currentScale;
+            var translateLimitX = Math.Max((_currentScale * _target.ContentArea.Width) - _target.ViewportSize.Width, 0) / 2 / _currentScale;
+            var translateLimitY = Math.Max((_currentScale * _target.ContentArea.Height) - _target.ViewportSize.Height, 0) / 2 / _currentScale;
 
             _currentTranslate.X = Math.Clamp(x, -translateLimitX, translateLimitX);
             _currentTranslate.Y = Math.Clamp(y, -translateLimitY, translateLimitY);
@@ -150,8 +152,8 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             var boundsAreaWidth = (_target.ViewportSize.Width / _currentScale * (1 - _horizontalBoundsPercentage));
             var boundsAreaHeight = (_target.ViewportSize.Height / _currentScale * (1 - _horizontalBoundsPercentage));
 
-            var viewportBounds = new Rect(((_target.ContentSize.Width - boundsAreaWidth) / 2) + _currentTranslate.X,
-                ((_target.ContentSize.Height - boundsAreaHeight) / 2) + _currentTranslate.Y,
+            var viewportBounds = new Rect(((_target.ContentArea.Width - boundsAreaWidth) / 2) + _currentTranslate.X,
+                ((_target.ContentArea.Height - boundsAreaHeight) / 2) + _currentTranslate.Y,
                 boundsAreaWidth,
                 boundsAreaHeight);
             return viewportBounds;
