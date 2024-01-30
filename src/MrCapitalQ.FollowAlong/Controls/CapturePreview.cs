@@ -14,7 +14,7 @@ namespace MrCapitalQ.FollowAlong.Controls
 {
     public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTransformTarget
     {
-        private Size _surfaceSize;
+        private Rect _contentArea;
         private CompositionDrawingSurface? _surface;
         private CompositionSurfaceBrush? _brush;
         private SpriteVisual? _visual;
@@ -22,18 +22,18 @@ namespace MrCapitalQ.FollowAlong.Controls
         public CapturePreview() => DefaultStyleKey = typeof(CapturePreview);
 
         public CompositionSurfaceBrush? Brush => _brush;
-        public Size ContentSize => _surfaceSize;
+        public Rect ContentArea => _contentArea;
         public Size ViewportSize => ActualSize.ToSize();
 
-        public void Initialize(CanvasDevice canvasDevice, Size? size = null)
+        public void Initialize(CanvasDevice canvasDevice, Rect? contentArea = null)
         {
-            if (size.HasValue)
-                _surfaceSize = size.Value;
+            if (contentArea.HasValue)
+                _contentArea = contentArea.Value;
 
             var compositor = ElementCompositionPreview.GetElementVisual(this).Compositor;
             using var compositionGraphicsDevice = CanvasComposition.CreateCompositionGraphicsDevice(compositor, canvasDevice);
 
-            _surface = compositionGraphicsDevice.CreateDrawingSurface(_surfaceSize,
+            _surface = compositionGraphicsDevice.CreateDrawingSurface(new Size(_contentArea.Width, _contentArea.Height),
                  Microsoft.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
                  Microsoft.Graphics.DirectX.DirectXAlphaMode.Premultiplied);
 

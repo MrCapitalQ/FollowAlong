@@ -9,7 +9,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
     {
         event SizeChangedEventHandler SizeChanged;
         CompositionSurfaceBrush? Brush { get; }
-        Size ContentSize { get; }
+        Rect ContentArea { get; }
         Size ViewportSize { get; }
         DispatcherQueue DispatcherQueue { get; }
     }

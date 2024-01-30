@@ -54,7 +54,7 @@ namespace MrCapitalQ.FollowAlong
                 if (!_captureService.IsStarted && SelectedMonitor is not null)
                 {
                     var captureItem = SelectedMonitor.MonitorInfo.CreateCaptureItem();
-                    _captureService.StartCapture(captureItem);
+                    _captureService.StartCapture(new(captureItem, SelectedMonitor.MonitorInfo));
                     WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom));
                 }
                 else if (_captureService.IsStarted)
