@@ -3,8 +3,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.AppLifecycle;
 using MrCapitalQ.FollowAlong;
 using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
-using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using System;
 
@@ -26,7 +26,7 @@ Host.CreateDefaultBuilder(args)
 
         services.AddSingleton<MainViewModel>();
 
-        services.AddTransient<MonitorService>();
+        services.AddTransient<DisplayService>();
         services.AddSingleton<BitmapCaptureService>();
         services.AddTransient<PointerService>();
         services.AddTransient<TrackingTransformService>();

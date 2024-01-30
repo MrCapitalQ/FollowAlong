@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
-using MrCapitalQ.FollowAlong.Core.Monitors;
+using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Messages;
 using System.Linq;
@@ -16,11 +16,11 @@ namespace MrCapitalQ.FollowAlong
 
         private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
-        private readonly MonitorService _monitorService;
+        private readonly DisplayService _displayService;
 
         public ShareWindow(BitmapCaptureService captureService,
             TrackingTransformService trackingTransformService,
-            MonitorService monitorService)
+            DisplayService displayService)
         {
             InitializeComponent();
 
@@ -30,7 +30,7 @@ namespace MrCapitalQ.FollowAlong
             _trackingTransformService = trackingTransformService;
             _trackingTransformService.StartTrackingTransforms(Preview);
 
-            _monitorService = monitorService;
+            _displayService = displayService;
 
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
                 (r, m) => _trackingTransformService.Zoom = m.Zoom);
@@ -71,8 +71,8 @@ namespace MrCapitalQ.FollowAlong
 
         private void RepositionToSharingPosition()
         {
-            var lowestMonitorArea = _monitorService.GetAll()
-                .Select(x => x.MonitorArea)
+            var lowestDisplayArea = _displayService.GetAll()
+                .Select(x => x.OuterBounds.ToRect())
                 .Aggregate((x, y) =>
                 {
                     return (x, y) switch
@@ -83,9 +83,9 @@ namespace MrCapitalQ.FollowAlong
                     };
                 });
 
-            // Move to the bottom, right most corner of the lowest-positioned monitor with 1px still in view so the
+            // Move to the bottom, right most corner of the lowest-positioned display with 1px still in view so the
             // window content is still rendered.
-            AppWindow.Move(new PointInt32((int)lowestMonitorArea.Right - 1, (int)lowestMonitorArea.Bottom - 1));
+            AppWindow.Move(new PointInt32((int)lowestDisplayArea.Right - 1, (int)lowestDisplayArea.Bottom - 1));
         }
 
         private void ShareWindow_Activated(object sender, WindowActivatedEventArgs args)

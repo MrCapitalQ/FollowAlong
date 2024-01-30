@@ -1,9 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media.Imaging;
 using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
-using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Messages;
 using System;
 using System.Collections.ObjectModel;
@@ -24,19 +25,19 @@ namespace MrCapitalQ.FollowAlong
         private double _zoom = 1.5;
 
         [ObservableProperty]
-        private ObservableCollection<MonitorViewModel> _monitors = new();
+        private ObservableCollection<DisplayViewModel> _displays = new();
 
         [ObservableProperty]
-        private MonitorViewModel? _selectedMonitor;
+        private DisplayViewModel? _selectedDisplay;
 
-        public MainViewModel(MonitorService monitorService,
+        public MainViewModel(DisplayService displayService,
             HotKeysService hotKeysService,
             BitmapCaptureService captureService)
         {
             hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
 
-            Monitors = new(monitorService.GetAll().Select(x => new MonitorViewModel(x)));
-            SelectedMonitor = Monitors.FirstOrDefault(x => x.MonitorInfo.IsPrimary);
+            Displays = new(displayService.GetAll().Select(x => new DisplayViewModel(x)));
+            SelectedDisplay = Displays.FirstOrDefault(x => x.DisplayArea.IsPrimary);
             _captureService = captureService;
 
             WeakReferenceMessenger.Default.Register<StopCapture>(this,
@@ -51,10 +52,10 @@ namespace MrCapitalQ.FollowAlong
         {
             if (e.HotKeyType is HotKeyType.StartStop)
             {
-                if (!_captureService.IsStarted && SelectedMonitor is not null)
+                if (!_captureService.IsStarted && SelectedDisplay is not null)
                 {
-                    var captureItem = SelectedMonitor.MonitorInfo.CreateCaptureItem();
-                    _captureService.StartCapture(new(captureItem, SelectedMonitor.MonitorInfo));
+                    var captureItem = SelectedDisplay.DisplayArea.CreateCaptureItem();
+                    _captureService.StartCapture(new(captureItem, SelectedDisplay.DisplayArea));
                     WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom));
                 }
                 else if (_captureService.IsStarted)
@@ -67,27 +68,27 @@ namespace MrCapitalQ.FollowAlong
         }
     }
 
-    internal class MonitorViewModel
+    internal class DisplayViewModel
     {
-        public MonitorViewModel(MonitorInfo monitorInfo)
+        public DisplayViewModel(DisplayArea displayArea)
         {
-            MonitorInfo = monitorInfo;
+            DisplayArea = displayArea;
             BitmapImage = new();
 
             _ = LoadThumbnailAsync();
         }
 
-        public MonitorInfo MonitorInfo { get; }
+        public DisplayArea DisplayArea { get; }
         public BitmapImage BitmapImage { get; }
-        public double AspectRatio => MonitorInfo.ScreenSize.X / MonitorInfo.ScreenSize.Y;
+        public double AspectRatio => (double)DisplayArea.OuterBounds.Width / DisplayArea.OuterBounds.Height;
 
         private async Task LoadThumbnailAsync()
         {
             using var memoryStream = await Task.Run(() =>
             {
-                using var bitmap = new Bitmap((int)MonitorInfo.MonitorArea.Width, (int)MonitorInfo.MonitorArea.Height);
+                using var bitmap = new Bitmap(DisplayArea.OuterBounds.Width, DisplayArea.OuterBounds.Height);
                 using var graphics = Graphics.FromImage(bitmap);
-                graphics.CopyFromScreen((int)MonitorInfo.MonitorArea.Left, (int)MonitorInfo.MonitorArea.Top, 0, 0, bitmap.Size);
+                graphics.CopyFromScreen(DisplayArea.OuterBounds.X, DisplayArea.OuterBounds.Y, 0, 0, bitmap.Size);
 
                 var memoryStream = new MemoryStream();
                 bitmap.Save(memoryStream, ImageFormat.Png);
