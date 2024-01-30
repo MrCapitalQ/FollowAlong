@@ -5,6 +5,7 @@ using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Messages;
+using System;
 using System.Linq;
 using Windows.Graphics;
 
@@ -17,10 +18,12 @@ namespace MrCapitalQ.FollowAlong
         private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
         private readonly DisplayService _displayService;
+        private readonly DisplayWatcher _displayWatcher;
 
         public ShareWindow(BitmapCaptureService captureService,
             TrackingTransformService trackingTransformService,
-            DisplayService displayService)
+            DisplayService displayService,
+            DisplayWatcher displayWatcher)
         {
             InitializeComponent();
 
@@ -31,6 +34,10 @@ namespace MrCapitalQ.FollowAlong
             _trackingTransformService.StartTrackingTransforms(Preview);
 
             _displayService = displayService;
+
+            _displayWatcher = displayWatcher;
+            _displayWatcher.Register(this);
+            _displayWatcher.DisplayChanged += DisplayWatcher_DisplayChanged;
 
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
                 (r, m) => _trackingTransformService.Zoom = m.Zoom);
@@ -46,19 +53,8 @@ namespace MrCapitalQ.FollowAlong
             ExtendsContentIntoTitleBar = true;
             RepositionToSharingPosition();
 
-            AppWindow.Changed += AppWindow_Changed;
             Activated += ShareWindow_Activated;
             Closed += ShareWindow_Closed;
-        }
-
-        private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
-        {
-            if (!args.DidPositionChange)
-                return;
-
-            AppWindow.Changed -= AppWindow_Changed;
-            RepositionToSharingPosition();
-            AppWindow.Changed += AppWindow_Changed;
         }
 
         public void SetScreenSize(SizeInt32 size)
@@ -88,14 +84,17 @@ namespace MrCapitalQ.FollowAlong
             AppWindow.Move(new PointInt32((int)lowestDisplayArea.Right - 1, (int)lowestDisplayArea.Bottom - 1));
         }
 
+        private void DisplayWatcher_DisplayChanged(object? sender, EventArgs e) => RepositionToSharingPosition();
+
         private void ShareWindow_Activated(object sender, WindowActivatedEventArgs args)
             => _trackingTransformService.UpdateLayout();
 
         private void ShareWindow_Closed(object sender, WindowEventArgs args)
         {
-            AppWindow.Changed -= AppWindow_Changed;
             Activated -= ShareWindow_Activated;
             Closed -= ShareWindow_Closed;
+            _displayWatcher.DisplayChanged -= DisplayWatcher_DisplayChanged;
+            _displayWatcher.Dispose();
             _captureService.UnregisterFrameHandler(Preview);
             _trackingTransformService.StopTrackingTransforms();
             WeakReferenceMessenger.Default.UnregisterAll(this);
