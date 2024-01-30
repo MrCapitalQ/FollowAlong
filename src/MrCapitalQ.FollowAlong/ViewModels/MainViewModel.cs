@@ -1,20 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml.Media.Imaging;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
 using System;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace MrCapitalQ.FollowAlong
+namespace MrCapitalQ.FollowAlong.ViewModels
 {
     internal partial class MainViewModel : ObservableObject
     {
@@ -65,37 +59,6 @@ namespace MrCapitalQ.FollowAlong
                 WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom = Math.Min(_zoom + ZoomStepSize, MaxZoom)));
             else if (e.HotKeyType == HotKeyType.ZoomOut)
                 WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom = Math.Max(_zoom - ZoomStepSize, MinZoom)));
-        }
-    }
-
-    internal class DisplayViewModel
-    {
-        public DisplayViewModel(DisplayArea displayArea)
-        {
-            DisplayArea = displayArea;
-            BitmapImage = new();
-
-            _ = LoadThumbnailAsync();
-        }
-
-        public DisplayArea DisplayArea { get; }
-        public BitmapImage BitmapImage { get; }
-        public double AspectRatio => (double)DisplayArea.OuterBounds.Width / DisplayArea.OuterBounds.Height;
-
-        private async Task LoadThumbnailAsync()
-        {
-            using var memoryStream = await Task.Run(() =>
-            {
-                using var bitmap = new Bitmap(DisplayArea.OuterBounds.Width, DisplayArea.OuterBounds.Height);
-                using var graphics = Graphics.FromImage(bitmap);
-                graphics.CopyFromScreen(DisplayArea.OuterBounds.X, DisplayArea.OuterBounds.Y, 0, 0, bitmap.Size);
-
-                var memoryStream = new MemoryStream();
-                bitmap.Save(memoryStream, ImageFormat.Png);
-                memoryStream.Position = 0;
-                return memoryStream;
-            });
-            await BitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());
         }
     }
 }
