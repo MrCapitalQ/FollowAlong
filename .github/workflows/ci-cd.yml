@@ -33,7 +33,7 @@ jobs:
         dotnet-version: 6.0.x
 
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1
+      uses: microsoft/setup-msbuild@v2
 
     - name: Restore
       run: msbuild $env:SOLUTION_NAME /t:Restore /p:Configuration=$env:CONFIGURATION
@@ -158,7 +158,7 @@ jobs:
         path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}.msixupload
 
     - name: Publish v${{ vars.NEXT_STORE_VERSION }} MS Store Submission
-      shell: pwsh
+      shell: powershell # Using Windows Powershell to workaround serialization error introduced in newer PWSH versions.
       run: |
         Install-Module -Name StoreBroker -Force
 
