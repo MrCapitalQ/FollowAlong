@@ -244,6 +244,7 @@ jobs:
         $variableUrl = "https://api.github.com/repos/${{ github.repository }}/environments/$($env:ENVIRONMENT_NAME)/variables/$variableName"
         $headers = @{
             "Accept" = "application/vnd.github+json"
+            "Content-Type" = "application/json"
             "Authorization" = "Bearer $env:ACCESS_TOKEN"
             "X-GitHub-Api-Version" = "2022-11-28"
         }
