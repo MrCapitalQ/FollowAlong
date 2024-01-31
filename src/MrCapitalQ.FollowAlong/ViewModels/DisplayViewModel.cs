@@ -22,7 +22,7 @@ namespace MrCapitalQ.FollowAlong.ViewModels
         public BitmapImage BitmapImage { get; }
         public double AspectRatio => (double)DisplayArea.OuterBounds.Width / DisplayArea.OuterBounds.Height;
 
-        private async Task LoadThumbnailAsync()
+        public async Task LoadThumbnailAsync()
         {
             using var memoryStream = await Task.Run(() =>
             {

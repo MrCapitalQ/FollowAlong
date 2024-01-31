@@ -53,7 +53,14 @@ namespace MrCapitalQ.FollowAlong.ViewModels
                     WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom));
                 }
                 else if (_captureService.IsStarted)
+                {
+                    foreach (var display in Displays)
+                    {
+                        _ = display.LoadThumbnailAsync();
+                    }
+
                     _captureService.StopCapture();
+                }
             }
             else if (e.HotKeyType == HotKeyType.ZoomIn)
                 WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom = Math.Min(_zoom + ZoomStepSize, MaxZoom)));
