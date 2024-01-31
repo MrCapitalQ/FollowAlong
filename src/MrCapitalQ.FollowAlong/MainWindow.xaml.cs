@@ -3,11 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
-using MrCapitalQ.FollowAlong.Core.Monitors;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
+using MrCapitalQ.FollowAlong.ViewModels;
 using System;
 using Windows.Graphics;
 using WinUIEx;
@@ -75,10 +76,10 @@ namespace MrCapitalQ.FollowAlong
             Width = s_previewWindowSize.Width;
             Height = s_previewWindowSize.Height;
 
-            var monitorInfo = this.GetCurrentMonitorInfo();
-            if (monitorInfo is not null)
-                AppWindow.Move(new PointInt32((int)(monitorInfo.WorkArea.Left),
-                    (int)(monitorInfo.WorkArea.Bottom - AppWindow.Size.Height)));
+            var displayArea = this.GetCurrentDisplayArea();
+            if (displayArea is not null)
+                AppWindow.Move(new PointInt32(displayArea.WorkArea.X,
+                    displayArea.WorkArea.Y + displayArea.WorkArea.Height - AppWindow.Size.Height));
         }
 
         private void CaptureService_Started(object? sender, CaptureStartedEventArgs e)

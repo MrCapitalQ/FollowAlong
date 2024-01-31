@@ -8,6 +8,7 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
     {
         public event EventHandler<HotKeyInvokedEventArgs>? HotKeyInvoked;
 
+        private const uint WM_HOTKEY = 0x0312;
         private const ModifierKeys HotKeyModifiers = ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt;
         private IntPtr? _hwnd;
         private WindowMessageMonitor? _monitor;
@@ -32,7 +33,10 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
         public void Dispose()
         {
             if (_hwnd.HasValue)
+            {
                 HotKeyInterops.UnregisterHotKey(_hwnd.Value, 0);
+                _hwnd = null;
+            }
 
             if (_monitor is not null)
             {
@@ -50,7 +54,7 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
 
         private void Monitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
         {
-            if (e.Message.MessageId != 0x0312)
+            if (e.Message.MessageId != WM_HOTKEY)
                 return;
 
             OnHotKeyInvoked(new((HotKeyType)e.Message.WParam));

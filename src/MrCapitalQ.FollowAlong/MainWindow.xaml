@@ -7,6 +7,7 @@
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
                   xmlns:converters="using:MrCapitalQ.FollowAlong.Converters"
+                  xmlns:vm="using:MrCapitalQ.FollowAlong.ViewModels"
                   xmlns:winuiex="using:WinUIEx"
                   mc:Ignorable="d"
                   Width="800"
@@ -30,8 +31,8 @@
         <ScrollViewer Grid.Row="1">
             <StackPanel x:Name="MainContent"
                         VerticalAlignment="Center">
-                <GridView ItemsSource="{x:Bind _viewModel.Monitors}"
-                          SelectedItem="{x:Bind _viewModel.SelectedMonitor, Mode=TwoWay}"
+                <GridView ItemsSource="{x:Bind _viewModel.Displays}"
+                          SelectedItem="{x:Bind _viewModel.SelectedDisplay, Mode=TwoWay}"
                           SelectionMode="Single"
                           Padding="32,16"
                           ScrollViewer.HorizontalScrollMode="Enabled"
@@ -44,7 +45,7 @@
                         </ItemsPanelTemplate>
                     </GridView.ItemsPanel>
                     <GridView.ItemTemplate>
-                        <DataTemplate x:DataType="local:MonitorViewModel">
+                        <DataTemplate x:DataType="vm:DisplayViewModel">
                             <Border BorderBrush="Black"
                                     BorderThickness="4"
                                     CornerRadius="4"

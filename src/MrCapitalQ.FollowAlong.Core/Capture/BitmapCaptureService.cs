@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
+using MrCapitalQ.FollowAlong.Core.Display;
 using System;
 using System.Collections.Generic;
 using Windows.Graphics;
@@ -17,7 +18,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         private readonly ILogger<BitmapCaptureService> _logger;
         private readonly HashSet<IBitmapFrameHandler> _handlers = new();
-        private MonitorCaptureItem? _captureItem;
+        private DisplayCaptureItem? _captureItem;
         private CanvasDevice? _canvasDevice;
         private Direct3D11CaptureFramePool? _framePool;
         private GraphicsCaptureSession? _session;
@@ -31,7 +32,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         public bool IsStarted { get; private set; }
 
-        public void StartCapture(MonitorCaptureItem captureItem)
+        public void StartCapture(DisplayCaptureItem captureItem)
         {
             if (IsStarted)
                 throw new InvalidOperationException("Cannot start capture because a capture is has already been started.");
@@ -44,7 +45,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _canvasDevice = new CanvasDevice();
             foreach (var handler in _handlers)
             {
-                handler.Initialize(_canvasDevice, captureItem.MonitorInfo.MonitorArea);
+                handler.Initialize(_canvasDevice, captureItem.DisplayArea.OuterBounds.ToRect());
             }
 
             _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
@@ -92,7 +93,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _handlers.Add(handler);
 
             if (IsStarted && _captureItem is not null && _canvasDevice is not null)
-                handler.Initialize(_canvasDevice, _captureItem.MonitorInfo.MonitorArea);
+                handler.Initialize(_canvasDevice, _captureItem.DisplayArea.OuterBounds.ToRect());
         }
 
         public void UnregisterFrameHandler(IBitmapFrameHandler handler)

@@ -2,9 +2,11 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using MrCapitalQ.FollowAlong.Core.Capture;
-using MrCapitalQ.FollowAlong.Core.Monitors;
+using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Messages;
+using System;
+using System.Linq;
 using Windows.Graphics;
 
 namespace MrCapitalQ.FollowAlong
@@ -15,9 +17,13 @@ namespace MrCapitalQ.FollowAlong
 
         private readonly BitmapCaptureService _captureService;
         private readonly TrackingTransformService _trackingTransformService;
+        private readonly DisplayService _displayService;
+        private readonly DisplayWatcher _displayWatcher;
 
         public ShareWindow(BitmapCaptureService captureService,
-            TrackingTransformService trackingTransformService)
+            TrackingTransformService trackingTransformService,
+            DisplayService displayService,
+            DisplayWatcher displayWatcher)
         {
             InitializeComponent();
 
@@ -26,6 +32,13 @@ namespace MrCapitalQ.FollowAlong
 
             _trackingTransformService = trackingTransformService;
             _trackingTransformService.StartTrackingTransforms(Preview);
+
+            _displayService = displayService;
+
+            _displayWatcher = displayWatcher;
+            _displayWatcher.Register(this);
+            _displayWatcher.DisplayChanged += DisplayWatcher_DisplayChanged;
+
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
                 (r, m) => _trackingTransformService.Zoom = m.Zoom);
 
@@ -54,10 +67,24 @@ namespace MrCapitalQ.FollowAlong
 
         private void RepositionToSharingPosition()
         {
-            var appMonitor = this.GetCurrentMonitorInfo();
-            if (appMonitor is not null)
-                AppWindow.Move(new PointInt32((int)appMonitor.ScreenSize.X - 1, (int)appMonitor.ScreenSize.Y - 1));
+            var lowestDisplayArea = _displayService.GetAll()
+                .Select(x => x.OuterBounds.ToRect())
+                .Aggregate((x, y) =>
+                {
+                    return (x, y) switch
+                    {
+                        _ when x.Bottom < y.Bottom => y,
+                        _ when x.Bottom == y.Bottom && x.Right < y.Right => y,
+                        _ => x
+                    };
+                });
+
+            // Move to the bottom, right most corner of the lowest-positioned display with 1px still in view so the
+            // window content is still rendered.
+            AppWindow.Move(new PointInt32((int)lowestDisplayArea.Right - 1, (int)lowestDisplayArea.Bottom - 1));
         }
+
+        private void DisplayWatcher_DisplayChanged(object? sender, EventArgs e) => RepositionToSharingPosition();
 
         private void ShareWindow_Activated(object sender, WindowActivatedEventArgs args)
             => _trackingTransformService.UpdateLayout();
@@ -66,6 +93,8 @@ namespace MrCapitalQ.FollowAlong
         {
             Activated -= ShareWindow_Activated;
             Closed -= ShareWindow_Closed;
+            _displayWatcher.DisplayChanged -= DisplayWatcher_DisplayChanged;
+            _displayWatcher.Dispose();
             _captureService.UnregisterFrameHandler(Preview);
             _trackingTransformService.StopTrackingTransforms();
             WeakReferenceMessenger.Default.UnregisterAll(this);
