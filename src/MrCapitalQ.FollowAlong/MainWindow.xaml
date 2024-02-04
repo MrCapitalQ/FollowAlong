@@ -16,54 +16,15 @@
         <MicaBackdrop />
     </winuiex:WindowEx.SystemBackdrop>
 
-    <Grid x:Name="Root"
-          HorizontalAlignment="Stretch"
+    <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
-        <Grid.Resources>
-            <converters:AspectRatioConverter x:Key="AspectRatioConverter" />
-        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <controls:CapturePreview x:Name="Preview"
                                  Grid.RowSpan="2" />
-        <StackPanel x:Name="MainContent"
-                    VerticalAlignment="Center"
-                    Grid.Row="1">
-            <TextBlock Text="Select a display, click start, and share the window named &quot;Follow Along - Share Window&quot;."
-                       TextAlignment="Center"
-                       TextWrapping="Wrap" />
-            <GridView ItemsSource="{x:Bind _viewModel.Displays}"
-                      SelectedItem="{x:Bind _viewModel.SelectedDisplay, Mode=TwoWay}"
-                      SelectionMode="Single"
-                      Padding="32,16"
-                      ScrollViewer.HorizontalScrollMode="Enabled"
-                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                      ScrollViewer.VerticalScrollMode="Disabled">
-                <GridView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsStackPanel Orientation="Horizontal"
-                                         HorizontalAlignment="Center" />
-                    </ItemsPanelTemplate>
-                </GridView.ItemsPanel>
-                <GridView.ItemTemplate>
-                    <DataTemplate x:DataType="vm:DisplayViewModel">
-                        <Border BorderBrush="Black"
-                                BorderThickness="4"
-                                CornerRadius="4"
-                                Margin="4">
-                            <Image Source="{Binding BitmapImage, Mode=OneWay}"
-                                   Height="120"
-                                   Width="{Binding AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
-                        </Border>
-                    </DataTemplate>
-                </GridView.ItemTemplate>
-            </GridView>
-            <Button HorizontalAlignment="Center"
-                    Content="Start"
-                    Command="{x:Bind _viewModel.StartCommand}"
-                    ToolTipService.ToolTip="Ctrl + Alt + S" />
-        </StackPanel>
+        <ContentPresenter x:Name="ContentContainer"
+                          Grid.Row="1" />
     </Grid>
 </winuiex:WindowEx>

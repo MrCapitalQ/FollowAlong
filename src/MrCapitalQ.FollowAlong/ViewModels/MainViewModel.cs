@@ -17,6 +17,8 @@ namespace MrCapitalQ.FollowAlong.ViewModels
         private const double MinZoom = 1;
         private const double ZoomStepSize = 0.5;
         private readonly BitmapCaptureService _captureService;
+
+        [ObservableProperty]
         private double _zoom = 1.5;
 
         [ObservableProperty]
@@ -24,6 +26,9 @@ namespace MrCapitalQ.FollowAlong.ViewModels
 
         [ObservableProperty]
         private DisplayViewModel? _selectedDisplay;
+
+        [ObservableProperty]
+        private bool _showSessionControls;
 
         public MainViewModel(DisplayService displayService,
             HotKeysService hotKeysService,
@@ -46,12 +51,40 @@ namespace MrCapitalQ.FollowAlong.ViewModels
         [RelayCommand]
         private void Start()
         {
-            if (SelectedDisplay is null)
+            if (_captureService.IsStarted || SelectedDisplay is null)
                 return;
 
             var captureItem = SelectedDisplay.DisplayArea.CreateCaptureItem();
             _captureService.StartCapture(new(captureItem, SelectedDisplay.DisplayArea));
-            WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom));
+            WeakReferenceMessenger.Default.Send(new ZoomChanged(Zoom));
+            ShowSessionControls = true;
+        }
+
+        [RelayCommand]
+        private void Stop()
+        {
+            if (!_captureService.IsStarted)
+                return;
+
+            foreach (var display in Displays)
+            {
+                _ = display.LoadThumbnailAsync();
+            }
+
+            _captureService.StopCapture();
+            ShowSessionControls = false;
+        }
+
+        [RelayCommand]
+        private void ZoomIn()
+        {
+            WeakReferenceMessenger.Default.Send(new ZoomChanged(Zoom = Math.Min(Zoom + ZoomStepSize, MaxZoom)));
+        }
+
+        [RelayCommand]
+        private void ZoomOut()
+        {
+            WeakReferenceMessenger.Default.Send(new ZoomChanged(Zoom = Math.Max(Zoom - ZoomStepSize, MinZoom)));
         }
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
@@ -60,20 +93,13 @@ namespace MrCapitalQ.FollowAlong.ViewModels
             {
                 if (!_captureService.IsStarted)
                     Start();
-                else if (_captureService.IsStarted)
-                {
-                    foreach (var display in Displays)
-                    {
-                        _ = display.LoadThumbnailAsync();
-                    }
-
-                    _captureService.StopCapture();
-                }
+                else
+                    Stop();
             }
             else if (e.HotKeyType == HotKeyType.ZoomIn)
-                WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom = Math.Min(_zoom + ZoomStepSize, MaxZoom)));
+                ZoomIn();
             else if (e.HotKeyType == HotKeyType.ZoomOut)
-                WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom = Math.Max(_zoom - ZoomStepSize, MinZoom)));
+                ZoomOut();
         }
     }
 }
