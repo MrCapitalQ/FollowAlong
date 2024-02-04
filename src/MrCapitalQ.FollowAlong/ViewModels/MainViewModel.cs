@@ -30,6 +30,9 @@ namespace MrCapitalQ.FollowAlong.ViewModels
         [ObservableProperty]
         private bool _showSessionControls;
 
+        [ObservableProperty]
+        private double _sessionControlsOpacity = 0.5;
+
         public MainViewModel(DisplayService displayService,
             HotKeysService hotKeysService,
             BitmapCaptureService captureService)
@@ -85,6 +88,15 @@ namespace MrCapitalQ.FollowAlong.ViewModels
         private void ZoomOut()
         {
             WeakReferenceMessenger.Default.Send(new ZoomChanged(Zoom = Math.Max(Zoom - ZoomStepSize, MinZoom)));
+        }
+
+        [RelayCommand]
+        private void UpdateSessionControlOpacity(string parameterValue)
+        {
+            if (!double.TryParse(parameterValue, out var opacity))
+                return;
+
+            SessionControlsOpacity = opacity;
         }
 
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
