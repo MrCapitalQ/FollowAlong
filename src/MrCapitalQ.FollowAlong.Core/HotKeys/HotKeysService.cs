@@ -9,7 +9,7 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
         public event EventHandler<HotKeyInvokedEventArgs>? HotKeyInvoked;
 
         private const uint WM_HOTKEY = 0x0312;
-        private const ModifierKeys HotKeyModifiers = ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt;
+        private const ModifierKeys HotKeyModifiers = ModifierKeys.Control | ModifierKeys.Alt;
         private IntPtr? _hwnd;
         private WindowMessageMonitor? _monitor;
 

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
@@ -42,16 +43,23 @@ namespace MrCapitalQ.FollowAlong.ViewModels
                 });
         }
 
+        [RelayCommand]
+        private void Start()
+        {
+            if (SelectedDisplay is null)
+                return;
+
+            var captureItem = SelectedDisplay.DisplayArea.CreateCaptureItem();
+            _captureService.StartCapture(new(captureItem, SelectedDisplay.DisplayArea));
+            WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom));
+        }
+
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
         {
             if (e.HotKeyType is HotKeyType.StartStop)
             {
-                if (!_captureService.IsStarted && SelectedDisplay is not null)
-                {
-                    var captureItem = SelectedDisplay.DisplayArea.CreateCaptureItem();
-                    _captureService.StartCapture(new(captureItem, SelectedDisplay.DisplayArea));
-                    WeakReferenceMessenger.Default.Send(new ZoomChanged(_zoom));
-                }
+                if (!_captureService.IsStarted)
+                    Start();
                 else if (_captureService.IsStarted)
                 {
                     foreach (var display in Displays)
