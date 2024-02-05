@@ -52,7 +52,7 @@
             </GridView>
             <Button HorizontalAlignment="Center"
                     Command="{x:Bind _viewModel.StartCommand}"
-                    ToolTipService.ToolTip="Ctrl + Alt + S">
+                    ToolTipService.ToolTip="Ctrl + Shift + Alt + F">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <FontIcon Glyph="&#xE768;"
@@ -78,7 +78,7 @@
                         VerticalAlignment="Bottom">
                 <Button Command="{x:Bind _viewModel.StopCommand}"
                         Style="{ThemeResource DateTimePickerFlyoutButtonStyle}"
-                        ToolTipService.ToolTip="Ctrl + Alt + S">
+                        ToolTipService.ToolTip="Ctrl + Shift + Alt + F">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <FontIcon Glyph="&#xE71A;"
@@ -95,7 +95,7 @@
                         Grid.Column="1">
                 <Button Command="{x:Bind _viewModel.ZoomOutCommand}"
                         Style="{ThemeResource DateTimePickerFlyoutButtonStyle}"
-                        ToolTipService.ToolTip="Ctrl + Alt + Minus">
+                        ToolTipService.ToolTip="Ctrl + Shift + Alt + Minus">
                     <FontIcon Glyph="&#xE71F;" />
                 </Button>
                 <TextBlock Text="{x:Bind _viewModel.Zoom, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:P0}'}"
@@ -105,7 +105,7 @@
                            TextLineBounds="Tight" />
                 <Button Command="{x:Bind _viewModel.ZoomInCommand}"
                         Style="{ThemeResource DateTimePickerFlyoutButtonStyle}"
-                        ToolTipService.ToolTip="Ctrl + Alt + Plus">
+                        ToolTipService.ToolTip="Ctrl + Shift + Alt + Plus">
                     <FontIcon Glyph="&#xE8A3;" />
                 </Button>
             </StackPanel>
