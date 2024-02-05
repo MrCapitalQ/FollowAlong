@@ -6,8 +6,6 @@
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
-                  xmlns:converters="using:MrCapitalQ.FollowAlong.Converters"
-                  xmlns:vm="using:MrCapitalQ.FollowAlong.ViewModels"
                   xmlns:winuiex="using:WinUIEx"
                   mc:Ignorable="d"
                   TaskBarIcon="Assets/AppIcon.ico"
@@ -20,9 +18,13 @@
     <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="32" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
+        <controls:TitleBar x:Name="TitleBar"
+                           Icon="Assets/AppIcon.ico"
+                           Title="{x:Bind Title}"
+                           Window="{x:Bind}" />
         <controls:CapturePreview x:Name="Preview"
                                  Grid.RowSpan="2" />
         <ContentPresenter x:Name="ContentContainer"
