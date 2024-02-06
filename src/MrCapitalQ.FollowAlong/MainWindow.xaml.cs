@@ -8,7 +8,7 @@ using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
-using MrCapitalQ.FollowAlong.ViewModels;
+using MrCapitalQ.FollowAlong.Pages;
 using System;
 using Windows.Graphics;
 using WinUIEx;
@@ -21,15 +21,14 @@ namespace MrCapitalQ.FollowAlong
         private readonly static SizeInt32 s_previewWindowSize = new(384, 216);
 
         private readonly TrackingTransformService _trackingTransformService;
-        private readonly MainViewModel _viewModel;
         private ShareWindow? _shareWindow;
 
         public MainWindow(BitmapCaptureService captureService,
             TrackingTransformService trackingTransformService,
-            HotKeysService hotKeysService,
-            MainViewModel viewModel)
+            HotKeysService hotKeysService)
         {
             InitializeComponent();
+            ContentContainer.Content = App.Current.Services.GetRequiredService<MainPage>();
 
             captureService.RegisterFrameHandler(Preview);
             captureService.Started += CaptureService_Started;
@@ -42,8 +41,6 @@ namespace MrCapitalQ.FollowAlong
 
             hotKeysService.RegisterHotKeys(this);
 
-            _viewModel = viewModel;
-
             ExtendsContentIntoTitleBar = true;
             SetWindowToDefaultMode();
             this.CenterOnScreen();
@@ -54,7 +51,6 @@ namespace MrCapitalQ.FollowAlong
         private void SetWindowToDefaultMode()
         {
             Title = "Follow Along";
-            MainContent.Visibility = Visibility.Visible;
 
             PresenterKind = AppWindowPresenterKind.Default;
             MinWidth = s_minWindowSize.Width;
@@ -66,7 +62,6 @@ namespace MrCapitalQ.FollowAlong
         {
             // Teams does not list windows with no title. Set no title so the preview window cannot be selected.
             Title = null!;
-            MainContent.Visibility = Visibility.Collapsed;
 
             PresenterKind = AppWindowPresenterKind.CompactOverlay;
             MinWidth = 0;

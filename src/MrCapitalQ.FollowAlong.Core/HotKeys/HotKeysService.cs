@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using System;
+using Windows.System;
 using WinUIEx.Messaging;
 
 namespace MrCapitalQ.FollowAlong.Core.HotKeys
@@ -20,9 +21,9 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
 
             _hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
 
-            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.StartStop, (uint)HotKeyModifiers, (uint)Keys.S);
-            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomIn, (uint)HotKeyModifiers, (uint)Keys.Plus);
-            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomOut, (uint)HotKeyModifiers, (uint)Keys.Minus);
+            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.StartStop, (uint)HotKeyModifiers, (uint)VirtualKey.F);
+            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomIn, (uint)HotKeyModifiers, (uint)AdditionalKeys.Plus);
+            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomOut, (uint)HotKeyModifiers, (uint)AdditionalKeys.Minus);
 
             _monitor = new WindowMessageMonitor(_hwnd.Value);
             _monitor.WindowMessageReceived += Monitor_WindowMessageReceived;
@@ -70,11 +71,10 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
             WinKey = 8
         }
 
-        private enum Keys : uint
+        private enum AdditionalKeys : uint
         {
-            S = 0x53,
-            Plus = 0xBB,
-            Minus = 0xBD
+            Plus = 187,
+            Minus = 189
         }
     }
 }

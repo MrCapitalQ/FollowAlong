@@ -16,137 +16,15 @@
         <MicaBackdrop />
     </winuiex:WindowEx.SystemBackdrop>
 
-    <Grid x:Name="Root"
-          HorizontalAlignment="Stretch"
+    <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
-        <Grid.Resources>
-            <converters:AspectRatioConverter x:Key="AspectRatioConverter" />
-        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <controls:CapturePreview x:Name="Preview"
                                  Grid.RowSpan="2" />
-        <ScrollViewer Grid.Row="1">
-            <StackPanel x:Name="MainContent"
-                        VerticalAlignment="Center">
-                <GridView ItemsSource="{x:Bind _viewModel.Displays}"
-                          SelectedItem="{x:Bind _viewModel.SelectedDisplay, Mode=TwoWay}"
-                          SelectionMode="Single"
-                          Padding="32,16"
-                          ScrollViewer.HorizontalScrollMode="Enabled"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                          ScrollViewer.VerticalScrollMode="Disabled">
-                    <GridView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsStackPanel Orientation="Horizontal"
-                                             HorizontalAlignment="Center" />
-                        </ItemsPanelTemplate>
-                    </GridView.ItemsPanel>
-                    <GridView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:DisplayViewModel">
-                            <Border BorderBrush="Black"
-                                    BorderThickness="4"
-                                    CornerRadius="4"
-                                    Margin="4">
-                                <Image Source="{Binding BitmapImage, Mode=OneWay}"
-                                       Height="120"
-                                       Width="{Binding AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
-                            </Border>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                </GridView>
-                <Grid ColumnSpacing="16"
-                      RowSpacing="8"
-                      HorizontalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="Start/Stop"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                    <RichTextBlock TextWrapping="Wrap"
-                                   TextAlignment="Center"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                   Grid.Column="1">
-                        <Paragraph>
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
-                            </InlineUIContainer>
-                            +
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>Shift</controls:KeyboardKey>
-                            </InlineUIContainer>
-                            +
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>Alt</controls:KeyboardKey>
-                            </InlineUIContainer>
-                            +
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>S</controls:KeyboardKey>
-                            </InlineUIContainer>
-                        </Paragraph>
-                    </RichTextBlock>
-                    <TextBlock Text="Zoom in"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Grid.Row="1" />
-                    <RichTextBlock TextWrapping="Wrap"
-                                   TextAlignment="Center"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                   Grid.Column="1"
-                                   Grid.Row="1">
-                        <Paragraph>
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
-                            </InlineUIContainer>
-                            +
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>Shift</controls:KeyboardKey>
-                            </InlineUIContainer>
-                            +
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>Alt</controls:KeyboardKey>
-                            </InlineUIContainer>
-                            +
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>+</controls:KeyboardKey>
-                            </InlineUIContainer>
-                        </Paragraph>
-                    </RichTextBlock>
-                    <TextBlock Text="Zoom out"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Grid.Row="2" />
-                    <RichTextBlock TextWrapping="Wrap"
-                                   TextAlignment="Center"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                   Grid.Column="1"
-                                   Grid.Row="2">
-                        <Paragraph>
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
-                            </InlineUIContainer>
-                            +
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>Shift</controls:KeyboardKey>
-                            </InlineUIContainer>
-                            +
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>Alt</controls:KeyboardKey>
-                            </InlineUIContainer>
-                            +
-                            <InlineUIContainer>
-                                <controls:KeyboardKey>-</controls:KeyboardKey>
-                            </InlineUIContainer>
-                        </Paragraph>
-                    </RichTextBlock>
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
+        <ContentPresenter x:Name="ContentContainer"
+                          Grid.Row="1" />
     </Grid>
 </winuiex:WindowEx>
