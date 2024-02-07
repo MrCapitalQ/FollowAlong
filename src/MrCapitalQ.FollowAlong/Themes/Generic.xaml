@@ -4,6 +4,8 @@
                     xmlns:controls="using:MrCapitalQ.FollowAlong.Controls">
 
     <Style TargetType="controls:CapturePreview">
+        <Setter Property="IsTabStop"
+                Value="false" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:CapturePreview">
@@ -26,6 +28,8 @@
                 Value="0, -3" />
         <Setter Property="MinWidth"
                 Value="24" />
+        <Setter Property="IsTabStop"
+                Value="false" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:KeyboardKey">
@@ -48,6 +52,8 @@
     <Style TargetType="controls:TitleBar">
         <Setter Property="Foreground"
                 Value="{ThemeResource WindowCaptionForeground}" />
+        <Setter Property="IsTabStop"
+                Value="false" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:TitleBar">
