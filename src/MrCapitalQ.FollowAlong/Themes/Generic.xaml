@@ -45,4 +45,39 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="controls:TitleBar">
+        <Setter Property="Foreground"
+                Value="{ThemeResource WindowCaptionForeground}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:TitleBar">
+                    <Grid Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Width="{TemplateBinding LeftInset}" />
+                        <Image Source="{TemplateBinding Icon}"
+                               Visibility="{TemplateBinding IconVisibility}"
+                               Height="16"
+                               Width="16"
+                               Margin="16,0,0,0"
+                               Grid.Column="1" />
+                        <TextBlock Text="{TemplateBinding Title}"
+                                   Style="{ThemeResource CaptionTextBlockStyle}"
+                                   TextWrapping="NoWrap"
+                                   VerticalAlignment="Center"
+                                   Margin="16,0"
+                                   Grid.Column="2" />
+                        <Border Width="{TemplateBinding RightInset}"
+                                Grid.Column="3" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

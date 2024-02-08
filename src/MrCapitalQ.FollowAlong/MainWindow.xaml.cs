@@ -51,6 +51,7 @@ namespace MrCapitalQ.FollowAlong
         private void SetWindowToDefaultMode()
         {
             Title = "Follow Along";
+            TitleBar.Visibility = Visibility.Visible;
 
             PresenterKind = AppWindowPresenterKind.Default;
             MinWidth = s_minWindowSize.Width;
@@ -62,6 +63,7 @@ namespace MrCapitalQ.FollowAlong
         {
             // Teams does not list windows with no title. Set no title so the preview window cannot be selected.
             Title = null!;
+            TitleBar.Visibility = Visibility.Collapsed;
 
             PresenterKind = AppWindowPresenterKind.CompactOverlay;
             MinWidth = 0;
