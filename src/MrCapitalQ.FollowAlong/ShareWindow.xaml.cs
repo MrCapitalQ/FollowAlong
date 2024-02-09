@@ -8,11 +8,10 @@ using MrCapitalQ.FollowAlong.Messages;
 using System;
 using System.Linq;
 using Windows.Graphics;
-using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong
 {
-    public sealed partial class ShareWindow : WindowEx
+    public sealed partial class ShareWindow : WindowBase
     {
         private const double ViewportAspectRatio = 16 / 9d;
 

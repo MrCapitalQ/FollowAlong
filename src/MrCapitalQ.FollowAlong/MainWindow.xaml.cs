@@ -8,14 +8,13 @@ using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
-using MrCapitalQ.FollowAlong.Pages;
 using System;
 using Windows.Graphics;
 using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong
 {
-    internal sealed partial class MainWindow : WindowEx
+    internal sealed partial class MainWindow : WindowBase
     {
         private readonly static SizeInt32 s_minWindowSize = new(600, 450);
         private readonly static SizeInt32 s_previewWindowSize = new(384, 216);
@@ -28,7 +27,6 @@ namespace MrCapitalQ.FollowAlong
             HotKeysService hotKeysService)
         {
             InitializeComponent();
-            ContentContainer.Content = App.Current.Services.GetRequiredService<MainPage>();
 
             captureService.RegisterFrameHandler(Preview);
             captureService.Started += CaptureService_Started;
