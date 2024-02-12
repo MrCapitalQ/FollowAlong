@@ -7,8 +7,11 @@
       xmlns:converters="using:MrCapitalQ.FollowAlong.Converters"
       xmlns:toolkitConverters="using:CommunityToolkit.WinUI.Converters"
       xmlns:vm="using:MrCapitalQ.FollowAlong.ViewModels"
+      xmlns:i="using:Microsoft.Xaml.Interactivity"
+      xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
       mc:Ignorable="d">
     <Page.Resources>
         <converters:AspectRatioConverter x:Key="AspectRatioConverter" />
@@ -17,7 +20,20 @@
     </Page.Resources>
 
     <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch">
+          VerticalAlignment="Stretch"
+          Background="Transparent">
+
+        <i:Interaction.Behaviors>
+            <ic:EventTriggerBehavior EventName="PointerEntered">
+                <ic:InvokeCommandAction Command="{x:Bind _viewModel.UpdateSessionControlOpacityCommand }"
+                                        CommandParameter="1" />
+            </ic:EventTriggerBehavior>
+            <ic:EventTriggerBehavior EventName="PointerExited">
+                <ic:InvokeCommandAction Command="{x:Bind _viewModel.UpdateSessionControlOpacityCommand }"
+                                        CommandParameter="0.5" />
+            </ic:EventTriggerBehavior>
+        </i:Interaction.Behaviors>
+
         <StackPanel VerticalAlignment="Center"
                     Visibility="{x:Bind _viewModel.ShowSessionControls, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}"
                     Grid.Row="1">
@@ -63,14 +79,22 @@
             </Button>
         </StackPanel>
 
-        <Grid HorizontalAlignment="Center"
+        <Grid x:Name="SessionControls"
+              HorizontalAlignment="Center"
               Visibility="{x:Bind _viewModel.ShowSessionControls, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+              Opacity="{x:Bind _viewModel.SessionControlsOpacity, Mode=OneWay}"
               ColumnSpacing="8"
               Margin="8">
+
+            <Grid.OpacityTransition>
+                <ScalarTransition />
+            </Grid.OpacityTransition>
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
+
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
