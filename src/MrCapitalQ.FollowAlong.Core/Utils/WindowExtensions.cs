@@ -1,9 +1,11 @@
 ﻿using Microsoft.UI.Xaml;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace MrCapitalQ.FollowAlong.Core.Utils
 {
+    [ExcludeFromCodeCoverage]
     public static class WindowExtensions
     {
         const uint WDA_NONE = 0x00000000;

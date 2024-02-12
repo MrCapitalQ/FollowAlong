@@ -2,6 +2,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Composition;
 using Microsoft.UI;
 using Microsoft.UI.Composition;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
 using MrCapitalQ.FollowAlong.Core.Capture;
@@ -14,14 +15,19 @@ namespace MrCapitalQ.FollowAlong.Controls
 {
     public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTransformTarget
     {
+        public event EventHandler? ViewportSizeChanged;
+
         private Rect _contentArea;
         private CompositionDrawingSurface? _surface;
         private CompositionSurfaceBrush? _brush;
         private SpriteVisual? _visual;
 
-        public CapturePreview() => DefaultStyleKey = typeof(CapturePreview);
+        public CapturePreview()
+        {
+            DefaultStyleKey = typeof(CapturePreview);
+            SizeChanged += CapturePreview_SizeChanged;
+        }
 
-        public CompositionSurfaceBrush? Brush => _brush;
         public Rect ContentArea => _contentArea;
         public Size ViewportSize => ActualSize.ToSize();
 
@@ -79,6 +85,36 @@ namespace MrCapitalQ.FollowAlong.Controls
 
             _brush?.Dispose();
             _brush = null;
+        }
+
+        public void SetCenterPoint(Vector2 centerPoint)
+        {
+            if (_brush is null)
+                return;
+
+            _brush.CenterPoint = centerPoint;
+        }
+
+        public void SetScale(float scale)
+        {
+            if (_brush is null)
+                return;
+
+            _brush.Scale = new Vector2(scale);
+        }
+
+        public void SetOffset(Vector2 offset)
+        {
+            if (_brush is null)
+                return;
+
+            _brush.Offset = offset;
+        }
+
+        private void CapturePreview_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var raiseEvent = ViewportSizeChanged;
+            raiseEvent?.Invoke(this, new());
         }
     }
 }
