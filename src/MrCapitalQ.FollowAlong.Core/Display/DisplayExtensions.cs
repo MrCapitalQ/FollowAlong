@@ -13,20 +13,24 @@ namespace MrCapitalQ.FollowAlong.Core.Display
     {
         private static readonly Guid s_graphicsCaptureItemGuid = new("79C3F95B-31F7-4EC2-A464-632EF5D30760");
 
-        public static GraphicsCaptureItem CreateCaptureItem(this DisplayArea displayArea)
+        public static GraphicsCaptureItem CreateCaptureItem(this DisplayItem displayItem)
         {
             var interop = GraphicsCaptureItem.As<IGraphicsCaptureItemInterop>();
-            var itemPointer = interop.CreateForMonitor((nint)displayArea.DisplayId.Value, s_graphicsCaptureItemGuid);
+            var itemPointer = interop.CreateForMonitor((nint)displayItem.DisplayId, s_graphicsCaptureItemGuid);
             var item = GraphicsCaptureItem.FromAbi(itemPointer);
             Marshal.Release(itemPointer);
 
             return item;
         }
 
-        public static DisplayArea? GetCurrentDisplayArea(this Window window)
+        public static DisplayItem? GetCurrentDisplayItem(this Window window)
         {
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            return DisplayArea.GetFromWindowId(new WindowId((ulong)hwnd), DisplayAreaFallback.Nearest);
+            var displayArea = DisplayArea.GetFromWindowId(new WindowId((ulong)hwnd), DisplayAreaFallback.Nearest);
+            return new DisplayItem(displayArea.IsPrimary,
+                displayArea.OuterBounds,
+                displayArea.WorkArea,
+                displayArea.DisplayId.Value);
         }
 
         [ComImport]

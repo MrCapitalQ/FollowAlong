@@ -1,5 +1,5 @@
-﻿using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml.Media.Imaging;
+﻿using Microsoft.UI.Xaml.Media.Imaging;
+using MrCapitalQ.FollowAlong.Core.Display;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,25 +10,25 @@ namespace MrCapitalQ.FollowAlong.ViewModels
 {
     internal class DisplayViewModel
     {
-        public DisplayViewModel(DisplayArea displayArea)
+        public DisplayViewModel(DisplayItem displayItem)
         {
-            DisplayArea = displayArea;
+            DisplayItem = displayItem;
             BitmapImage = new();
 
             _ = LoadThumbnailAsync();
         }
 
-        public DisplayArea DisplayArea { get; }
+        public DisplayItem DisplayItem { get; }
         public BitmapImage BitmapImage { get; }
-        public double AspectRatio => (double)DisplayArea.OuterBounds.Width / DisplayArea.OuterBounds.Height;
+        public double AspectRatio => (double)DisplayItem.OuterBounds.Width / DisplayItem.OuterBounds.Height;
 
         public async Task LoadThumbnailAsync()
         {
             using var memoryStream = await Task.Run(() =>
             {
-                using var bitmap = new Bitmap(DisplayArea.OuterBounds.Width, DisplayArea.OuterBounds.Height);
+                using var bitmap = new Bitmap(DisplayItem.OuterBounds.Width, DisplayItem.OuterBounds.Height);
                 using var graphics = Graphics.FromImage(bitmap);
-                graphics.CopyFromScreen(DisplayArea.OuterBounds.X, DisplayArea.OuterBounds.Y, 0, 0, bitmap.Size);
+                graphics.CopyFromScreen(DisplayItem.OuterBounds.X, DisplayItem.OuterBounds.Y, 0, 0, bitmap.Size);
 
                 var memoryStream = new MemoryStream();
                 bitmap.Save(memoryStream, ImageFormat.Png);

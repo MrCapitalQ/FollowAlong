@@ -68,7 +68,7 @@ namespace MrCapitalQ.FollowAlong
 
         private void RepositionToSharingPosition()
         {
-            var lowestDisplayArea = _displayService.GetAll()
+            var lowestDisplay = _displayService.GetAll()
                 .Select(x => x.OuterBounds.ToRect())
                 .Aggregate((x, y) =>
                 {
@@ -82,7 +82,7 @@ namespace MrCapitalQ.FollowAlong
 
             // Move to the bottom, right most corner of the lowest-positioned display with 1px still in view so the
             // window content is still rendered.
-            AppWindow.Move(new PointInt32((int)lowestDisplayArea.Right - 1, (int)lowestDisplayArea.Bottom - 1));
+            AppWindow.Move(new PointInt32((int)lowestDisplay.Right - 1, (int)lowestDisplay.Bottom - 1));
         }
 
         private void DisplayWatcher_DisplayChanged(object? sender, EventArgs e) => RepositionToSharingPosition();

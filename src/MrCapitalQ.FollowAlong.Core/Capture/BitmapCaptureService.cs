@@ -45,7 +45,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _canvasDevice = new CanvasDevice();
             foreach (var handler in _handlers)
             {
-                handler.Initialize(_canvasDevice, captureItem.DisplayArea.OuterBounds.ToRect());
+                handler.Initialize(_canvasDevice, captureItem.DisplayItem.OuterBounds.ToRect());
             }
 
             _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
@@ -93,7 +93,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _handlers.Add(handler);
 
             if (IsStarted && _captureItem is not null && _canvasDevice is not null)
-                handler.Initialize(_canvasDevice, _captureItem.DisplayArea.OuterBounds.ToRect());
+                handler.Initialize(_canvasDevice, _captureItem.DisplayItem.OuterBounds.ToRect());
         }
 
         public void UnregisterFrameHandler(IBitmapFrameHandler handler)
