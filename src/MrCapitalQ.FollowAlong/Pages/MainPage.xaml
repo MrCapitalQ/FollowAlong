@@ -59,9 +59,9 @@
                                 BorderThickness="4"
                                 CornerRadius="4"
                                 Margin="4">
-                            <Image Source="{Binding BitmapImage, Mode=OneWay}"
+                            <Image Source="{x:Bind BitmapImage, Mode=OneWay}"
                                    Height="120"
-                                   Width="{Binding AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
+                                   Width="{x:Bind AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
                         </Border>
                     </DataTemplate>
                 </GridView.ItemTemplate>
