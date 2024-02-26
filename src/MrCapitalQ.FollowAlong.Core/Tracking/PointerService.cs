@@ -1,8 +1,10 @@
-﻿using Windows.Foundation;
+﻿using System.Diagnostics.CodeAnalysis;
+using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Core.Tracking
 {
-    public class PointerService
+    [ExcludeFromCodeCoverage]
+    public class PointerService : IPointerService
     {
         public Point? GetCurrentPosition() => PointerInterops.GetCursorPosition();
     }

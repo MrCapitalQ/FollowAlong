@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
-using MrCapitalQ.FollowAlong.Core.Display;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using System;
 using System.Collections.Generic;
 using Windows.Graphics;

@@ -7,6 +7,7 @@ using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Pages;
+using MrCapitalQ.FollowAlong.Services;
 using MrCapitalQ.FollowAlong.ViewModels;
 using System;
 
@@ -31,7 +32,8 @@ Host.CreateDefaultBuilder(args)
 
         services.AddTransient<DisplayService>();
         services.AddSingleton<BitmapCaptureService>();
-        services.AddTransient<PointerService>();
+        services.AddTransient<IPointerService, PointerService>();
+        services.AddSingleton<IUpdateSynchronizer, UpdateSynchronizer>();
         services.AddTransient<TrackingTransformService>();
         services.AddSingleton<HotKeysService>();
         services.AddSingleton<DisplayWatcher>();

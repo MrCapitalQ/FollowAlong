@@ -1,8 +1,10 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Core.Tracking
 {
+    [ExcludeFromCodeCoverage]
     internal class PointerInterops
     {
         [DllImport("user32.dll")]

@@ -1,16 +1,18 @@
-﻿using Microsoft.UI.Composition;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+﻿using System;
+using System.Numerics;
 using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Core.Tracking
 {
     public interface ITrackingTransformTarget
     {
-        event SizeChangedEventHandler SizeChanged;
-        CompositionSurfaceBrush? Brush { get; }
+        event EventHandler ViewportSizeChanged;
+
         Rect ContentArea { get; }
         Size ViewportSize { get; }
-        DispatcherQueue DispatcherQueue { get; }
+
+        void SetCenterPoint(Vector2 centerPoint);
+        void SetScale(float scale);
+        void SetOffset(Vector2 offset);
     }
 }

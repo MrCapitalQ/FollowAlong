@@ -2,13 +2,13 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Windows.Foundation;
-using Windows.Graphics;
 using Windows.Graphics.Capture;
 
 namespace MrCapitalQ.FollowAlong.Core.Display
 {
+    [ExcludeFromCodeCoverage]
     public static class DisplayExtensions
     {
         private static readonly Guid s_graphicsCaptureItemGuid = new("79C3F95B-31F7-4EC2-A464-632EF5D30760");
@@ -28,8 +28,6 @@ namespace MrCapitalQ.FollowAlong.Core.Display
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             return DisplayArea.GetFromWindowId(new WindowId((ulong)hwnd), DisplayAreaFallback.Nearest);
         }
-
-        public static Rect ToRect(this RectInt32 rect) => new Rect(rect.X, rect.Y, rect.Width, rect.Height);
 
         [ComImport]
         [Guid("3628E81B-3CAC-4C60-B7F4-23CE0E0C3356")]
