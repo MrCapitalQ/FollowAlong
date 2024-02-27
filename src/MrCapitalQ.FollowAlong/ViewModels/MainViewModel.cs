@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
 using System;
 using System.Collections.ObjectModel;
@@ -58,7 +59,7 @@ namespace MrCapitalQ.FollowAlong.ViewModels
                 return;
 
             var captureItem = SelectedDisplay.DisplayItem.CreateCaptureItem();
-            _captureService.StartCapture(new(captureItem, SelectedDisplay.DisplayItem));
+            _captureService.StartCapture(new DisplayCaptureItem(captureItem, SelectedDisplay.DisplayItem.OuterBounds.ToRect()));
             WeakReferenceMessenger.Default.Send(new ZoomChanged(Zoom));
             ShowSessionControls = true;
         }

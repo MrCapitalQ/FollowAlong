@@ -1,9 +1,10 @@
 ﻿using MrCapitalQ.FollowAlong.Core.Utils;
+using Windows.Foundation;
 using Windows.Graphics;
 
 namespace MrCapitalQ.FollowAlong.Core.Tests.Utils
 {
-    public class RectInt32ExtensionsTests
+    public class RectExtensionsTests
     {
         [Fact]
         public void ToRect_ConvertsRectInt32()
@@ -16,6 +17,17 @@ namespace MrCapitalQ.FollowAlong.Core.Tests.Utils
             Assert.Equal(rectInt32.Y, actual.Y);
             Assert.Equal(rectInt32.Width, actual.Width);
             Assert.Equal(rectInt32.Height, actual.Height);
+        }
+
+        [Fact]
+        public void ToSizeInt32_ConvertsSizeInt32()
+        {
+            var rect = new Rect(100, 200, 300, 400);
+
+            var actual = rect.ToSizeInt32();
+
+            Assert.Equal(rect.Width, actual.Width);
+            Assert.Equal(rect.Height, actual.Height);
         }
     }
 }

@@ -31,6 +31,7 @@ Host.CreateDefaultBuilder(args)
         services.AddSingleton<MainViewModel>();
 
         services.AddTransient<DisplayService>();
+        services.AddSingleton<ICaptureSessionAdapter, CaptureSessionAdapter>();
         services.AddSingleton<BitmapCaptureService>();
         services.AddTransient<IPointerService, PointerService>();
         services.AddSingleton<IUpdateSynchronizer, UpdateSynchronizer>();
