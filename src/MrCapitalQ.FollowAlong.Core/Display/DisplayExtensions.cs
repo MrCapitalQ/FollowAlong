@@ -8,7 +8,7 @@ using Windows.Graphics.Capture;
 
 namespace MrCapitalQ.FollowAlong.Core.Display
 {
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Native interops.")]
     public static class DisplayExtensions
     {
         private static readonly Guid s_graphicsCaptureItemGuid = new("79C3F95B-31F7-4EC2-A464-632EF5D30760");

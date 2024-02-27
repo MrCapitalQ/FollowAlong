@@ -4,7 +4,7 @@ using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Core.Tracking
 {
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Native interops.")]
     internal class PointerInterops
     {
         [DllImport("user32.dll")]
