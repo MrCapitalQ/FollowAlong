@@ -1,0 +1,17 @@
+name: PR-Test
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [feature/ciTests]
+
+jobs:
+
+  build:
+    name: Build
+    uses: ./.github/workflows/build.yml
+    with:
+      PACKAGE_NAME: MrCapitalQ.FollowAlong
+      SOLUTION_NAME: MrCapitalQ.FollowAlong.sln
+      PUBLISH_ARTIFACTS: false
