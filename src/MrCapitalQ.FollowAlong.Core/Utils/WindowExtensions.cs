@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace MrCapitalQ.FollowAlong.Core.Utils
 {
-    [ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage(Justification = "Native interops.")]
     public static class WindowExtensions
     {
         const uint WDA_NONE = 0x00000000;

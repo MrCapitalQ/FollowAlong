@@ -71,10 +71,10 @@ namespace MrCapitalQ.FollowAlong
             Width = s_previewWindowSize.Width;
             Height = s_previewWindowSize.Height;
 
-            var displayArea = this.GetCurrentDisplayArea();
-            if (displayArea is not null)
-                AppWindow.Move(new PointInt32(displayArea.WorkArea.X,
-                    displayArea.WorkArea.Y + displayArea.WorkArea.Height - AppWindow.Size.Height));
+            var displayItem = this.GetCurrentDisplayItem();
+            if (displayItem is not null)
+                AppWindow.Move(new PointInt32(displayItem.WorkArea.X,
+                    displayItem.WorkArea.Y + displayItem.WorkArea.Height - AppWindow.Size.Height));
         }
 
         private void CaptureService_Started(object? sender, CaptureStartedEventArgs e)

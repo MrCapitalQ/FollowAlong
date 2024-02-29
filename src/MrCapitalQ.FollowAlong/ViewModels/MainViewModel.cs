@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
 using System;
 using System.Collections.ObjectModel;
@@ -40,7 +41,7 @@ namespace MrCapitalQ.FollowAlong.ViewModels
             hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
 
             Displays = new(displayService.GetAll().Select(x => new DisplayViewModel(x)));
-            SelectedDisplay = Displays.FirstOrDefault(x => x.DisplayArea.IsPrimary);
+            SelectedDisplay = Displays.FirstOrDefault(x => x.DisplayItem.IsPrimary);
             _captureService = captureService;
 
             WeakReferenceMessenger.Default.Register<StopCapture>(this,
@@ -57,8 +58,8 @@ namespace MrCapitalQ.FollowAlong.ViewModels
             if (_captureService.IsStarted || SelectedDisplay is null)
                 return;
 
-            var captureItem = SelectedDisplay.DisplayArea.CreateCaptureItem();
-            _captureService.StartCapture(new(captureItem, SelectedDisplay.DisplayArea));
+            var captureItem = SelectedDisplay.DisplayItem.CreateCaptureItem();
+            _captureService.StartCapture(new DisplayCaptureItem(captureItem, SelectedDisplay.DisplayItem.OuterBounds.ToRect()));
             WeakReferenceMessenger.Default.Send(new ZoomChanged(Zoom));
             ShowSessionControls = true;
         }

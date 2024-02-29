@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Graphics.Canvas;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using System;
 using System.Collections.Generic;
 using Windows.Graphics;
-using Windows.Graphics.Capture;
-using Windows.Graphics.DirectX;
 
 namespace MrCapitalQ.FollowAlong.Core.Capture
 {
@@ -14,52 +11,43 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
         public event EventHandler<CaptureStartedEventArgs>? Started;
         public event EventHandler? Stopped;
 
-        private const double FrameRate = 30;
-
+        private readonly ICaptureSessionAdapter _captureSessionAdapter;
         private readonly ILogger<BitmapCaptureService> _logger;
         private readonly HashSet<IBitmapFrameHandler> _handlers = new();
-        private DisplayCaptureItem? _captureItem;
-        private CanvasDevice? _canvasDevice;
-        private Direct3D11CaptureFramePool? _framePool;
-        private GraphicsCaptureSession? _session;
-        private SizeInt32 _lastSize;
-        private DateTime _nextFrameTime;
+        private IDisplayCaptureItem? _captureItem;
 
-        public BitmapCaptureService(ILogger<BitmapCaptureService> logger)
+        public BitmapCaptureService(ICaptureSessionAdapter captureSessionAdapter, ILogger<BitmapCaptureService> logger)
         {
+            _captureSessionAdapter = captureSessionAdapter;
+            _captureSessionAdapter.FrameArrived += CaptureSessionAdapter_FrameArrived;
+            _captureSessionAdapter.Recreated += CaptureSessionAdapter_Recreated;
+
             _logger = logger;
         }
 
         public bool IsStarted { get; private set; }
 
-        public void StartCapture(DisplayCaptureItem captureItem)
+        public void StartCapture(IDisplayCaptureItem captureItem)
         {
             if (IsStarted)
                 throw new InvalidOperationException("Cannot start capture because a capture is has already been started.");
 
-            _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.GraphicsCaptureItem.DisplayName);
+            _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.DisplayName);
 
             IsStarted = true;
             _captureItem = captureItem;
 
-            _canvasDevice = new CanvasDevice();
-            foreach (var handler in _handlers)
-            {
-                handler.Initialize(_canvasDevice, captureItem.DisplayArea.OuterBounds.ToRect());
-            }
+            captureItem.Closed += (_, _) => StopCapture();
 
-            _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
-                DirectXPixelFormat.B8G8R8A8UIntNormalized,
-                2,
-                captureItem.GraphicsCaptureItem.Size);
+            _captureSessionAdapter.Start(captureItem);
 
-            _framePool.FrameArrived += FramePool_FrameArrived;
-            captureItem.GraphicsCaptureItem.Closed += (_, _) => StopCapture();
+            if (_captureSessionAdapter.CanvasDevice is not null)
+                foreach (var handler in _handlers)
+                {
+                    handler.Initialize(_captureSessionAdapter.CanvasDevice, captureItem.OuterBounds);
+                }
 
-            _session = _framePool.CreateCaptureSession(captureItem.GraphicsCaptureItem);
-            _session.StartCapture();
-
-            OnStarted(captureItem.GraphicsCaptureItem.Size);
+            OnStarted(captureItem.OuterBounds.ToSizeInt32());
         }
 
         public void StopCapture()
@@ -76,12 +64,8 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
                 handler.Stop();
             }
 
-            _canvasDevice?.Dispose();
-            _canvasDevice = null;
-            _framePool?.Dispose();
-            _framePool = null;
-            _session?.Dispose();
-            _session = null;
+            _captureSessionAdapter.Stop();
+
             _captureItem = null;
 
             if (isStarted)
@@ -92,8 +76,8 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
         {
             _handlers.Add(handler);
 
-            if (IsStarted && _captureItem is not null && _canvasDevice is not null)
-                handler.Initialize(_canvasDevice, _captureItem.DisplayArea.OuterBounds.ToRect());
+            if (IsStarted && _captureItem is not null && _captureSessionAdapter.CanvasDevice is not null)
+                handler.Initialize(_captureSessionAdapter.CanvasDevice, _captureItem.OuterBounds);
         }
 
         public void UnregisterFrameHandler(IBitmapFrameHandler handler)
@@ -116,72 +100,23 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             raiseEvent?.Invoke(this, new());
         }
 
-        private void FramePool_FrameArrived(Direct3D11CaptureFramePool sender, object args)
+        private void CaptureSessionAdapter_FrameArrived(object? sender, FrameArrivedEventArgs e)
         {
-            var needsReset = false;
-
-            using var frame = sender.TryGetNextFrame();
-            if (frame is null || DateTime.Now < _nextFrameTime)
-                return;
-
-            _nextFrameTime = DateTime.Now.AddSeconds(1 / FrameRate);
-
-            if (frame.ContentSize.Width != _lastSize.Width || frame.ContentSize.Height != _lastSize.Height)
+            foreach (var handler in _handlers)
             {
-                needsReset = true;
-                _lastSize = frame.ContentSize;
+                handler.HandleFrame(e.Bitmap);
             }
-
-            try
-            {
-                var canvasBitmap = CanvasBitmap.CreateFromDirect3D11Surface(_canvasDevice, frame.Surface);
-                foreach (var handler in _handlers)
-                {
-                    handler.HandleFrame(canvasBitmap);
-                }
-            }
-            catch (Exception ex) when (_canvasDevice?.IsDeviceLost(ex.HResult) != false)
-            {
-                ResetFramePool(frame.ContentSize);
-            }
-            catch (Exception ex) when (ex is ObjectDisposedException)
-            {
-                if (_framePool is not null)
-                    _framePool.FrameArrived -= FramePool_FrameArrived;
-                StopCapture();
-            }
-
-            if (needsReset)
-                ResetFramePool(frame.ContentSize);
         }
 
-        private void ResetFramePool(SizeInt32 size)
+        private void CaptureSessionAdapter_Recreated(object? sender, EventArgs e)
         {
-            var recreateDevice = false;
-            while (_canvasDevice == null)
-            {
-                try
-                {
-                    if (recreateDevice)
-                    {
-                        _canvasDevice = new CanvasDevice();
-                        foreach (var handler in _handlers)
-                        {
-                            handler.Initialize(_canvasDevice);
-                        };
-                    }
+            if (_captureSessionAdapter.CanvasDevice is null)
+                return;
 
-                    _framePool?.Recreate(_canvasDevice,
-                        DirectXPixelFormat.B8G8R8A8UIntNormalized,
-                        2,
-                        size);
-                }
-                catch (Exception ex) when (_canvasDevice?.IsDeviceLost(ex.HResult) != false)
-                {
-                    _canvasDevice = null;
-                    recreateDevice = true;
-                }
-            }
+            foreach (var handler in _handlers)
+            {
+                handler.Initialize(_captureSessionAdapter.CanvasDevice);
+            };
         }
     }
 }
