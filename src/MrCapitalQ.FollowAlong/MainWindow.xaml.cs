@@ -37,6 +37,8 @@ namespace MrCapitalQ.FollowAlong
             _trackingTransformService.StartTrackingTransforms(Preview);
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
                 (r, m) => _trackingTransformService.Zoom = m.Zoom);
+            WeakReferenceMessenger.Default.Register<TrackingToggled>(this,
+                (r, m) => _trackingTransformService.IsTrackingEnabled = m.IsEnabled);
 
             hotKeysService.RegisterHotKeys(WindowNative.GetWindowHandle(this));
 

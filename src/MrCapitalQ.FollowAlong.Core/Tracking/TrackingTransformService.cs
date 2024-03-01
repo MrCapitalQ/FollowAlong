@@ -56,6 +56,8 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
             }
         }
 
+        public bool IsTrackingEnabled { get; set; } = true;
+
         public void StartTrackingTransforms(ITrackingTransformTarget target)
         {
             StopTrackingTransforms();
@@ -143,6 +145,9 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
 
         private void Synchronizer_UpdateRequested(object? sender, EventArgs e)
         {
+            if (!IsTrackingEnabled)
+                return;
+
             Scale();
             Translate();
         }

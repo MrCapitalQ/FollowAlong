@@ -35,6 +35,9 @@ namespace MrCapitalQ.FollowAlong.ViewModels
         [ObservableProperty]
         private double _sessionControlsOpacity = 0.5;
 
+        [ObservableProperty]
+        private bool _isTrackingEnabled = true;
+
         public MainViewModel(DisplayService displayService,
             HotKeysService hotKeysService,
             BitmapCaptureService captureService)
@@ -104,6 +107,12 @@ namespace MrCapitalQ.FollowAlong.ViewModels
             SessionControlsOpacity = opacity;
         }
 
+        private void ToggleTracking()
+        {
+            IsTrackingEnabled = !IsTrackingEnabled;
+            WeakReferenceMessenger.Default.Send(new TrackingToggled(IsTrackingEnabled));
+        }
+
         private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
         {
             if (e.HotKeyType is HotKeyType.StartStop)
@@ -117,6 +126,8 @@ namespace MrCapitalQ.FollowAlong.ViewModels
                 ZoomIn();
             else if (e.HotKeyType == HotKeyType.ZoomOut)
                 ZoomOut();
+            else if (e.HotKeyType == HotKeyType.ToggleTracking)
+                ToggleTracking();
         }
     }
 }
