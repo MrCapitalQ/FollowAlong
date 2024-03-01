@@ -11,53 +11,10 @@ jobs:
 
   build:
     name: Build
-
-    strategy:
-      matrix:
-        platform: [x64, x86]
-
-    runs-on: windows-latest
-
-    env:
-      CONFIGURATION: Release
+    uses: ./.github/workflows/build.yml
+    with:
+      PACKAGE_NAME: MrCapitalQ.FollowAlong # Must match PACKAGE_NAME env above
       SOLUTION_NAME: MrCapitalQ.FollowAlong.sln
-
-    steps:
-
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 6.0.x
-
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
-
-    - name: Restore
-      run: msbuild $env:SOLUTION_NAME /t:Restore /p:Configuration=$env:CONFIGURATION
-      env:
-        SOLUTION_NAME: ${{ env.SOLUTION_NAME }}
-        CONFIGURATION: ${{ env.CONFIGURATION }}
-
-    - name: Build
-      run: msbuild $env:SOLUTION_NAME /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /p:AppxPackageDir="$env:APPX_PACKAGE_DIR" /p:AppxPackageTestDir="$($env:APPX_PACKAGE_DIR)/$($env:APPX_PACKAGE_NAME)/" /p:AppxPackageName="$env:APPX_PACKAGE_NAME" /p:GenerateAppxPackageOnBuild=true
-      env:
-        SOLUTION_NAME: ${{ env.SOLUTION_NAME }}
-        CONFIGURATION: ${{ env.CONFIGURATION }}
-        PLATFORM: ${{ matrix.platform }}
-        APPX_PACKAGE_DIR: ${{ github.workspace }}/Packages/
-        APPX_PACKAGE_NAME: ${{ env.PACKAGE_NAME }}_${{ matrix.platform }}
-
-    - name: Upload MSIX Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.platform }} MSIX Package
-        path: |
-          ${{ github.workspace }}/Packages/**/*.msix
-          ${{ github.workspace }}/Packages/**/*.msixsym
-          !**/Dependencies/**
 
   publish:
     name: MS Store Publish
