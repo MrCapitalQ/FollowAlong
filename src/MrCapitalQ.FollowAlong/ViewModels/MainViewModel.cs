@@ -9,6 +9,7 @@ using MrCapitalQ.FollowAlong.Messages;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Windows.Graphics.Capture;
 
 namespace MrCapitalQ.FollowAlong.ViewModels
 {
@@ -58,7 +59,10 @@ namespace MrCapitalQ.FollowAlong.ViewModels
             if (_captureService.IsStarted || SelectedDisplay is null)
                 return;
 
-            var captureItem = SelectedDisplay.DisplayItem.CreateCaptureItem();
+            var captureItem = GraphicsCaptureItem.TryCreateFromDisplayId(new(SelectedDisplay.DisplayItem.DisplayId));
+            if (captureItem is null)
+                return;
+
             _captureService.StartCapture(new DisplayCaptureItem(captureItem, SelectedDisplay.DisplayItem.OuterBounds.ToRect()));
             WeakReferenceMessenger.Default.Send(new ZoomChanged(Zoom));
             ShowSessionControls = true;
