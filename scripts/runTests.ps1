@@ -8,7 +8,7 @@ try {
     Get-ChildItem -Path . -Recurse | Where-Object { $_.Name -ilike "TestResults" } | Remove-Item -Force -Recurse
 
     # EnableMsixTooling MSBuild property is needed to build tests from dotnet CLI
-    dotnet test --collect:"XPlat Code Coverage" /p:EnableMsixTooling=true
+    dotnet test --collect:"XPlat Code Coverage" /p:EnableMsixTooling=true /p:Platform=x64
     if (!$?) { Exit $LASTEXITCODE }
 
     reportgenerator -reports:"./test/**/coverage.cobertura.xml" -targetdir:"./TestResults/CoverageReport" -reporttypes:Html
