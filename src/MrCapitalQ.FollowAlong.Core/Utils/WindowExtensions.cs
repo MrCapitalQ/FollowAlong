@@ -6,13 +6,13 @@ using System.Runtime.InteropServices;
 namespace MrCapitalQ.FollowAlong.Core.Utils
 {
     [ExcludeFromCodeCoverage(Justification = "Native interops.")]
-    public static class WindowExtensions
+    public static partial class WindowExtensions
     {
         const uint WDA_NONE = 0x00000000;
         const uint WDA_EXCLUDEFROMCAPTURE = 0x00000011;
 
-        [DllImport("user32.dll")]
-        private static extern uint SetWindowDisplayAffinity(IntPtr hwnd, uint dwAffinity);
+        [LibraryImport("user32.dll")]
+        private static partial uint SetWindowDisplayAffinity(IntPtr hwnd, uint dwAffinity);
 
         public static void SetIsExcludedFromCapture(this Window window, bool isExcludedFromCapture)
         {

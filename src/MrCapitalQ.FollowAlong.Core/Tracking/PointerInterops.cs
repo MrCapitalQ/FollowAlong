@@ -5,10 +5,11 @@ using Windows.Foundation;
 namespace MrCapitalQ.FollowAlong.Core.Tracking
 {
     [ExcludeFromCodeCoverage(Justification = "Native interops.")]
-    internal class PointerInterops
+    internal partial class PointerInterops
     {
-        [DllImport("user32.dll")]
-        private static extern bool GetCursorPos(out POINT lpPoint);
+        [LibraryImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial bool GetCursorPos(out POINT lpPoint);
 
         public static Point? GetCursorPosition()
         {
