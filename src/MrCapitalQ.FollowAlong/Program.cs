@@ -6,6 +6,7 @@ using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Tracking;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Pages;
 using MrCapitalQ.FollowAlong.Services;
 using MrCapitalQ.FollowAlong.ViewModels;

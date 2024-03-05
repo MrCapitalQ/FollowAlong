@@ -1,4 +1,5 @@
 ﻿using MrCapitalQ.FollowAlong.Core.Tracking;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using NSubstitute;
 using System.Numerics;
 using Windows.Foundation;

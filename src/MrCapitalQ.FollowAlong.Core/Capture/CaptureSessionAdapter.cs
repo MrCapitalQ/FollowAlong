@@ -14,12 +14,21 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
         public event EventHandler<FrameArrivedEventArgs>? FrameArrived;
         public event EventHandler? Recreated;
 
+        private readonly IUpdateSynchronizer _updateSynchronizer;
         private CanvasDevice? _canvasDevice;
         private Direct3D11CaptureFramePool? _framePool;
         private GraphicsCaptureSession? _session;
         private SizeInt32 _lastSize;
+        private bool _shouldEmitNextFrame = true;
+        private bool _hasStaleFrameInPool;
 
         public CanvasDevice? CanvasDevice => _canvasDevice;
+
+        public CaptureSessionAdapter(IUpdateSynchronizer updateSynchronizer)
+        {
+            _updateSynchronizer = updateSynchronizer;
+            _updateSynchronizer.UpdateRequested += UpdateSynchronizer_UpdateRequested;
+        }
 
         public void Start(IDisplayCaptureItem captureItem)
         {
@@ -30,7 +39,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
             _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
                 DirectXPixelFormat.B8G8R8A8UIntNormalized,
-                2,
+                1,
                 captureItem.OuterBounds.ToSizeInt32());
 
             _framePool.FrameArrived += FramePool_FrameArrived;
@@ -49,7 +58,11 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
             _session = null;
         }
 
-        public void Dispose() => Stop();
+        public void Dispose()
+        {
+            Stop();
+            _updateSynchronizer.UpdateRequested += UpdateSynchronizer_UpdateRequested;
+        }
 
         private void OnFrameArrived(CanvasBitmap bitmap)
         {
@@ -61,38 +74,6 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
         {
             var raiseEvent = Recreated;
             raiseEvent?.Invoke(this, new());
-        }
-
-        private void FramePool_FrameArrived(Direct3D11CaptureFramePool sender, object args)
-        {
-            var needsReset = false;
-
-            using var frame = sender.TryGetNextFrame();
-
-            if (frame.ContentSize.Width != _lastSize.Width || frame.ContentSize.Height != _lastSize.Height)
-            {
-                needsReset = true;
-                _lastSize = frame.ContentSize;
-            }
-
-            try
-            {
-                var canvasBitmap = CanvasBitmap.CreateFromDirect3D11Surface(_canvasDevice, frame.Surface);
-                OnFrameArrived(canvasBitmap);
-            }
-            catch (Exception ex) when (_canvasDevice?.IsDeviceLost(ex.HResult) != false)
-            {
-                ResetFramePool(frame.ContentSize);
-            }
-            catch (Exception ex) when (ex is ObjectDisposedException)
-            {
-                if (_framePool is not null)
-                    _framePool.FrameArrived -= FramePool_FrameArrived;
-                Stop();
-            }
-
-            if (needsReset)
-                ResetFramePool(frame.ContentSize);
         }
 
         private void ResetFramePool(SizeInt32 size)
@@ -120,12 +101,61 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
                 }
             }
         }
-    }
 
-    public class FrameArrivedEventArgs : EventArgs
-    {
-        public FrameArrivedEventArgs(CanvasBitmap bitmap) => Bitmap = bitmap;
+        private void FramePool_FrameArrived(Direct3D11CaptureFramePool sender, object args)
+        {
+            if (!_shouldEmitNextFrame)
+            {
+                _hasStaleFrameInPool = true;
+                return;
+            }
 
-        public CanvasBitmap Bitmap { get; }
+            var needsReset = false;
+
+            // Do not remove frame from pool unless to process it. Since the frame pool is of size 1, This prevents new
+            // frames from being captured to reduce processing. To allow new frames to be captured, the stale frame is
+            // removed to make room in UpdateSynchronizer_UpdateRequested.
+            using var frame = sender.TryGetNextFrame();
+            if (frame is null)
+                return;
+
+            _shouldEmitNextFrame = false;
+
+            if (frame.ContentSize.Width != _lastSize.Width || frame.ContentSize.Height != _lastSize.Height)
+            {
+                needsReset = true;
+                _lastSize = frame.ContentSize;
+            }
+
+            try
+            {
+                var canvasBitmap = CanvasBitmap.CreateFromDirect3D11Surface(_canvasDevice, frame.Surface);
+                OnFrameArrived(canvasBitmap);
+            }
+            catch (Exception ex) when (_canvasDevice?.IsDeviceLost(ex.HResult) != false)
+            {
+                ResetFramePool(frame.ContentSize);
+            }
+            catch (Exception ex) when (ex is ObjectDisposedException)
+            {
+                if (_framePool is not null)
+                    _framePool.FrameArrived -= FramePool_FrameArrived;
+                Stop();
+            }
+
+            if (needsReset)
+                ResetFramePool(frame.ContentSize);
+        }
+
+        private void UpdateSynchronizer_UpdateRequested(object? sender, EventArgs e)
+        {
+            _shouldEmitNextFrame = true;
+
+            if (!_hasStaleFrameInPool)
+                return;
+
+            // Clear outdated frame in the pool so latest frame can enter.            
+            using var frame = _framePool?.TryGetNextFrame();
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MrCapitalQ.FollowAlong.Core.Tracking
+namespace MrCapitalQ.FollowAlong.Core.Utils
 {
     public interface IUpdateSynchronizer
     {
