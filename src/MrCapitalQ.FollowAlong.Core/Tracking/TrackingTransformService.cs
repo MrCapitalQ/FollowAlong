@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MrCapitalQ.FollowAlong.Core.Utils;
+using System;
 using System.Numerics;
 using Windows.Foundation;
 
