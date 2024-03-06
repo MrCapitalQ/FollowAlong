@@ -1,6 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using MrCapitalQ.FollowAlong.Core.Utils;
 using System;
-using WinUIEx.Messaging;
 
 namespace MrCapitalQ.FollowAlong.Core.Display
 {
@@ -9,32 +8,36 @@ namespace MrCapitalQ.FollowAlong.Core.Display
         public event EventHandler? DisplayChanged;
 
         private const uint WM_DISPLAYCHANGE = 0x07E;
+
+        private readonly IWindowMessageMonitor _windowMessageMonitor;
         private IntPtr? _hwnd;
-        private WindowMessageMonitor? _monitor;
 
-        public void Register(Window window)
+        public DisplayWatcher(IWindowMessageMonitor windowMessageMonitor)
         {
-            if (_hwnd.HasValue)
-                throw new InvalidOperationException($"This service can only be registered to one window at a time.");
-
-            _hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-
-            _monitor = new WindowMessageMonitor(_hwnd.Value);
-            _monitor.WindowMessageReceived += Monitor_WindowMessageReceived;
+            _windowMessageMonitor = windowMessageMonitor;
         }
 
-        public void Unregister() => Dispose();
+        public void Register(IntPtr hwnd)
+        {
+            if (_hwnd.HasValue)
+                throw new InvalidOperationException("This service can only be registered to one window at a time.");
+
+            _hwnd = hwnd;
+
+            _windowMessageMonitor.Init(_hwnd.Value);
+            _windowMessageMonitor.WindowMessageReceived += WindowMessageMonitor_WindowMessageReceived;
+        }
+
+        public void Unregister()
+        {
+            _hwnd = null;
+            _windowMessageMonitor.Reset();
+        }
 
         public void Dispose()
         {
-            _hwnd = null;
-
-            if (_monitor is not null)
-            {
-                _monitor.WindowMessageReceived -= Monitor_WindowMessageReceived;
-                _monitor.Dispose();
-                _monitor = null;
-            }
+            Unregister();
+            _windowMessageMonitor.WindowMessageReceived -= WindowMessageMonitor_WindowMessageReceived;
         }
 
         private void OnDisplayChanged()
@@ -43,9 +46,9 @@ namespace MrCapitalQ.FollowAlong.Core.Display
             raiseEvent?.Invoke(this, new());
         }
 
-        private void Monitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
+        private void WindowMessageMonitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
         {
-            if (e.Message.MessageId != WM_DISPLAYCHANGE)
+            if (e.MessageId != WM_DISPLAYCHANGE)
                 return;
 
             OnDisplayChanged();

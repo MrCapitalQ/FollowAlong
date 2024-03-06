@@ -1,14 +1,16 @@
 ﻿using Microsoft.UI.Windowing;
 using System.Collections.Generic;
-using Windows.Graphics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Core.Display
 {
+    [ExcludeFromCodeCoverage(Justification = "Uses native static APIs that can't be mocked.")]
     public class DisplayService
     {
         public IEnumerable<DisplayItem> GetAll()
         {
-            // Must use for loop like this to work around a known issue that causes invalid cast exception.
+            // Must use for loop like this to work around a known issue that causes invalid cast exception when using
+            // LINQ Select().
             var displayAreas = DisplayArea.FindAll();
             for (var i = 0; i < displayAreas.Count; i++)
             {
@@ -20,6 +22,4 @@ namespace MrCapitalQ.FollowAlong.Core.Display
             }
         }
     }
-
-    public record DisplayItem(bool IsPrimary, RectInt32 OuterBounds, RectInt32 WorkArea, ulong DisplayId);
 }
