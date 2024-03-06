@@ -39,6 +39,7 @@ Host.CreateDefaultBuilder(args)
         services.AddTransient<TrackingTransformService>();
         services.AddSingleton<HotKeysService>();
         services.AddSingleton<DisplayWatcher>();
+        services.AddTransient<IWindowMessageMonitor, WindowMessageMonitorAdapter>();
     })
     .Build()
     .Run();

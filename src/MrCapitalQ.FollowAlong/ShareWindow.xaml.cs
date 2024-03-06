@@ -9,6 +9,7 @@ using MrCapitalQ.FollowAlong.Messages;
 using System;
 using System.Linq;
 using Windows.Graphics;
+using WinRT.Interop;
 
 namespace MrCapitalQ.FollowAlong
 {
@@ -37,7 +38,7 @@ namespace MrCapitalQ.FollowAlong
             _displayService = displayService;
 
             _displayWatcher = displayWatcher;
-            _displayWatcher.Register(this);
+            _displayWatcher.Register(WindowNative.GetWindowHandle(this));
             _displayWatcher.DisplayChanged += DisplayWatcher_DisplayChanged;
 
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
