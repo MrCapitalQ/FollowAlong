@@ -33,18 +33,26 @@ namespace MrCapitalQ.FollowAlong.Core.Tests.HotKeys
             _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)HotKeyType.StartStop, (uint)modifiers, (uint)VirtualKey.F);
             _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)HotKeyType.ZoomIn, (uint)modifiers, (uint)AdditionalKeys.Plus);
             _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)HotKeyType.ZoomOut, (uint)modifiers, (uint)AdditionalKeys.Minus);
+            _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)HotKeyType.ToggleTracking, (uint)modifiers, (uint)VirtualKey.P);
             _windowMessageMonitor.Received(1).Init(windowHwnd);
         }
 
         [Fact]
         public void RegisterHotKeys_RegistrationFails_RaisesHotKeyRegistrationFailedEvent()
         {
+            var expectedFailed = new List<HotKeyType>
+            {
+                HotKeyType.StartStop,
+                HotKeyType.ZoomIn,
+                HotKeyType.ZoomOut,
+                HotKeyType.ToggleTracking
+            };
             var failedHotKeyRegistrations = new List<HotKeyType>();
             _hotKeysService.HotKeyRegistrationFailed += (_, e) => failedHotKeyRegistrations.Add(e.HotKeyType);
 
             _hotKeysService.RegisterHotKeys(new IntPtr(1));
 
-            Assert.Equal([HotKeyType.StartStop, HotKeyType.ZoomIn, HotKeyType.ZoomOut], failedHotKeyRegistrations);
+            Assert.Equal(expectedFailed, failedHotKeyRegistrations);
         }
 
         [Fact]

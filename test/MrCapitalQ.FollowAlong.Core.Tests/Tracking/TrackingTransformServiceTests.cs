@@ -174,16 +174,31 @@ namespace MrCapitalQ.FollowAlong.Core.Tests.Tracking
         }
 
         [Fact]
-        public void UpdateRequested_PointerServiceReturnsNull_DoesNotUpdateOffset()
+        public void UpdateRequested_TrackingIsNotEnabled_TranslateUsingPausedPointerPosition()
         {
+            // When tracking enabled, move pointer to top left and verify offset is updated accordingly.
             _target.ViewportSize.Returns(new Size(400, 300));
             _target.ContentArea.Returns(new Rect(0, 0, 800, 600));
+            _pointerService.GetCurrentPosition().Returns(new Point(0, 0));
+            _trackingTransformService.Zoom = 2;
             _trackingTransformService.StartTrackingTransforms(_target);
 
             _synchronizer.UpdateRequested += Raise.Event();
 
-            _target.Received(1).SetScale(0.5f);
-            _target.DidNotReceiveWithAnyArgs().SetOffset(default);
+            _target.Received(1).SetScale(1);
+            _target.Received(1).SetOffset(new Vector2(200, 150));
+
+            _target.ClearReceivedCalls();
+
+            // With tracking disabled, move pointer to bottom right and verify offset is updated based on previous
+            // pointer position.
+            _pointerService.GetCurrentPosition().Returns(new Point(800, 600));
+            _trackingTransformService.IsTrackingEnabled = false;
+
+            _synchronizer.UpdateRequested += Raise.Event();
+
+            _target.Received(1).SetScale(1);
+            _target.Received(1).SetOffset(new Vector2(200, 150));
         }
 
         [Fact]
