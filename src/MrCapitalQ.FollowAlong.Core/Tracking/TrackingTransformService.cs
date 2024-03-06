@@ -15,6 +15,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
         private ITrackingTransformTarget? _target;
         private double _currentScale = 1;
         private Point _currentTranslate;
+        private Point _latestPointerPosition;
 
         public TrackingTransformService(IPointerService pointerService, IUpdateSynchronizer synchronizer)
         {
@@ -103,10 +104,13 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
 
         private void Translate()
         {
-            if (_target is null || _pointerService.GetCurrentPosition() is not Point point)
+            if (_pointerService.GetCurrentPosition() is Point currentPoint && IsTrackingEnabled)
+                _latestPointerPosition = currentPoint;
+
+            if (_target is null)
                 return;
 
-            point = new Point(point.X - _target.ContentArea.Left, point.Y - _target.ContentArea.Top);
+            var point = new Point(_latestPointerPosition.X - _target.ContentArea.Left, _latestPointerPosition.Y - _target.ContentArea.Top);
 
             var viewportBounds = GetViewportBounds(_target);
 
@@ -145,9 +149,6 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking
 
         private void Synchronizer_UpdateRequested(object? sender, EventArgs e)
         {
-            if (!IsTrackingEnabled)
-                return;
-
             Scale();
             Translate();
         }
