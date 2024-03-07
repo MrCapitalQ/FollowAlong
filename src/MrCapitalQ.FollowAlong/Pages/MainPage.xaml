@@ -59,7 +59,7 @@
                                 BorderThickness="4"
                                 CornerRadius="4"
                                 Margin="4">
-                            <Image Source="{x:Bind BitmapImage, Mode=OneWay}"
+                            <Image Source="{x:Bind BitmapImage}"
                                    Height="120"
                                    Width="{x:Bind AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
                         </Border>
