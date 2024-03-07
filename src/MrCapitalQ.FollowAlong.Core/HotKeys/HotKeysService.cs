@@ -1,7 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using MrCapitalQ.FollowAlong.Core.Utils;
 using System;
 using Windows.System;
-using WinUIEx.Messaging;
 
 namespace MrCapitalQ.FollowAlong.Core.HotKeys
 {
@@ -11,40 +10,44 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
 
         private const uint WM_HOTKEY = 0x0312;
         private const ModifierKeys HotKeyModifiers = ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt;
-        private IntPtr? _hwnd;
-        private WindowMessageMonitor? _monitor;
 
-        public void RegisterHotKeys(Window window)
+        private readonly IWindowMessageMonitor _windowMessageMonitor;
+        private IntPtr? _hwnd;
+
+        public HotKeysService(IWindowMessageMonitor windowMessageMonitor)
+        {
+            _windowMessageMonitor = windowMessageMonitor;
+        }
+
+        public void RegisterHotKeys(IntPtr hwnd)
         {
             if (_hwnd.HasValue)
                 throw new InvalidOperationException($"This service can only be registered to one window at a time.");
 
-            _hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            _hwnd = hwnd;
 
             HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.StartStop, (uint)HotKeyModifiers, (uint)VirtualKey.F);
             HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomIn, (uint)HotKeyModifiers, (uint)AdditionalKeys.Plus);
             HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomOut, (uint)HotKeyModifiers, (uint)AdditionalKeys.Minus);
 
-            _monitor = new WindowMessageMonitor(_hwnd.Value);
-            _monitor.WindowMessageReceived += Monitor_WindowMessageReceived;
+            _windowMessageMonitor.Init(hwnd);
+            _windowMessageMonitor.WindowMessageReceived += WindowMessageMonitor_WindowMessageReceived;
         }
 
-        public void UnregisterHotKey() => Dispose();
-
-        public void Dispose()
+        public void Unregister()
         {
             if (_hwnd.HasValue)
             {
                 HotKeyInterops.UnregisterHotKey(_hwnd.Value, 0);
                 _hwnd = null;
             }
+            _windowMessageMonitor.Reset();
+        }
 
-            if (_monitor is not null)
-            {
-                _monitor.WindowMessageReceived -= Monitor_WindowMessageReceived;
-                _monitor.Dispose();
-                _monitor = null;
-            }
+        public void Dispose()
+        {
+            Unregister();
+            _windowMessageMonitor.WindowMessageReceived -= WindowMessageMonitor_WindowMessageReceived;
         }
 
         private void OnHotKeyInvoked(HotKeyInvokedEventArgs e)
@@ -53,12 +56,12 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
             raiseEvent?.Invoke(this, e);
         }
 
-        private void Monitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
+        private void WindowMessageMonitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
         {
-            if (e.Message.MessageId != WM_HOTKEY)
+            if (e.MessageId != WM_HOTKEY)
                 return;
 
-            OnHotKeyInvoked(new((HotKeyType)e.Message.WParam));
+            OnHotKeyInvoked(new((HotKeyType)e.WParam));
         }
 
         [Flags]

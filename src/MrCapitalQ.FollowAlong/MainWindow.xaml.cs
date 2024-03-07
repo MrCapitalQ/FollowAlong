@@ -10,6 +10,7 @@ using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
 using System;
 using Windows.Graphics;
+using WinRT.Interop;
 using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong
@@ -37,7 +38,7 @@ namespace MrCapitalQ.FollowAlong
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
                 (r, m) => _trackingTransformService.Zoom = m.Zoom);
 
-            hotKeysService.RegisterHotKeys(this);
+            hotKeysService.RegisterHotKeys(WindowNative.GetWindowHandle(this));
 
             ExtendsContentIntoTitleBar = true;
             SetWindowToDefaultMode();
