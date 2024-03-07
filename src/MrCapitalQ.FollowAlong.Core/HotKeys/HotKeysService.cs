@@ -41,7 +41,9 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
         {
             if (_hwnd.HasValue)
             {
-                _hotKeysInterops.UnregisterHotKey(_hwnd.Value, 0);
+                _hotKeysInterops.UnregisterHotKey(_hwnd.Value, (int)HotKeyType.StartStop);
+                _hotKeysInterops.UnregisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomIn);
+                _hotKeysInterops.UnregisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomOut);
                 _hwnd = null;
             }
             _windowMessageMonitor.Reset();
