@@ -13,7 +13,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
 
         private readonly ICaptureSessionAdapter _captureSessionAdapter;
         private readonly ILogger<BitmapCaptureService> _logger;
-        private readonly HashSet<IBitmapFrameHandler> _handlers = new();
+        private readonly HashSet<IBitmapFrameHandler> _handlers = [];
         private IDisplayCaptureItem? _captureItem;
 
         public BitmapCaptureService(ICaptureSessionAdapter captureSessionAdapter, ILogger<BitmapCaptureService> logger)

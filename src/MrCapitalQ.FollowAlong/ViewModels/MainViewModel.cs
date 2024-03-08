@@ -24,7 +24,7 @@ namespace MrCapitalQ.FollowAlong.ViewModels
         private double _zoom = 1.5;
 
         [ObservableProperty]
-        private ObservableCollection<DisplayViewModel> _displays = new();
+        private ObservableCollection<DisplayViewModel> _displays = [];
 
         [ObservableProperty]
         private DisplayViewModel? _selectedDisplay;

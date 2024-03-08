@@ -9,6 +9,6 @@ namespace MrCapitalQ.FollowAlong
             AppWindow.SetIcon(Icon);
         }
 
-        public string Icon => "Assets/AppIcon.ico";
+        public virtual string Icon => "Assets/AppIcon.ico";
     }
 }

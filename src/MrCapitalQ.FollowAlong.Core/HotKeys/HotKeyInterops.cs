@@ -3,12 +3,14 @@ using System.Runtime.InteropServices;
 
 namespace MrCapitalQ.FollowAlong.Core.HotKeys
 {
-    internal class HotKeyInterops
+    internal partial class HotKeyInterops
     {
-        [DllImport("user32.dll")]
-        internal static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+        [LibraryImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static partial bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
-        [DllImport("user32.dll")]
-        internal static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        [LibraryImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static partial bool UnregisterHotKey(IntPtr hWnd, int id);
     }
 }
