@@ -1,5 +1,6 @@
 ﻿using MrCapitalQ.FollowAlong.Core.Utils;
 using System;
+using System.Collections.Generic;
 using Windows.System;
 
 namespace MrCapitalQ.FollowAlong.Core.HotKeys
@@ -15,6 +16,7 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
         private readonly IWindowMessageMonitor _windowMessageMonitor;
         private readonly IHotKeysInterops _hotKeysInterops;
         private IntPtr? _hwnd;
+        private HashSet<HotKeyType> _registeredHotKeys = [];
 
         public HotKeysService(IWindowMessageMonitor windowMessageMonitor, IHotKeysInterops hotKeysInterops)
         {
@@ -41,11 +43,13 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
         {
             if (_hwnd.HasValue)
             {
-                _hotKeysInterops.UnregisterHotKey(_hwnd.Value, (int)HotKeyType.StartStop);
-                _hotKeysInterops.UnregisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomIn);
-                _hotKeysInterops.UnregisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomOut);
-                _hwnd = null;
+                foreach (var hotKeyType in _registeredHotKeys)
+                {
+                    _hotKeysInterops.UnregisterHotKey(_hwnd.Value, (int)hotKeyType);
+                }
             }
+
+            _hwnd = null;
             _windowMessageMonitor.Reset();
         }
 
@@ -57,7 +61,9 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
 
         private void RegisterHotKey(IntPtr _hwnd, HotKeyType hotKeyType, ModifierKeys modifiers, uint key)
         {
-            if (!_hotKeysInterops.RegisterHotKey(_hwnd, (int)hotKeyType, (uint)modifiers, key))
+            if (_hotKeysInterops.RegisterHotKey(_hwnd, (int)hotKeyType, (uint)modifiers, key))
+                _registeredHotKeys.Add(hotKeyType);
+            else
                 OnHotKeyRegistrationFailed(new(hotKeyType));
         }
 
