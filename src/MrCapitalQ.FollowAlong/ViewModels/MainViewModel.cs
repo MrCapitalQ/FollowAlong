@@ -38,11 +38,15 @@ namespace MrCapitalQ.FollowAlong.ViewModels
         [ObservableProperty]
         private bool _isTrackingEnabled = true;
 
+        [ObservableProperty]
+        private ObservableCollection<AlertViewModel> _alerts = [];
+
         public MainViewModel(DisplayService displayService,
             HotKeysService hotKeysService,
             BitmapCaptureService captureService)
         {
             hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
+            hotKeysService.HotKeyRegistrationFailed += HotKeysService_HotKeyRegistrationFailed;
 
             Displays = new(displayService.GetAll().Select(x => new DisplayViewModel(x)));
             SelectedDisplay = Displays.FirstOrDefault(x => x.DisplayItem.IsPrimary);
@@ -128,6 +132,22 @@ namespace MrCapitalQ.FollowAlong.ViewModels
                 ZoomOut();
             else if (e.HotKeyType == HotKeyType.ToggleTracking)
                 ToggleTracking();
+        }
+
+        private void HotKeysService_HotKeyRegistrationFailed(object? sender, HotKeyRegistrationFailedEventArgs e)
+        {
+            var shortcutTypeDisplayName = e.HotKeyType switch
+            {
+                HotKeyType.StartStop => "Start and stop",
+                HotKeyType.ZoomIn => "Zoom in",
+                HotKeyType.ZoomOut => "Zoom out",
+                HotKeyType.ResetZoom => "Reset zoom",
+                HotKeyType.ToggleTracking => "Pause and resume tracking",
+                _ => e.HotKeyType.ToString()
+            };
+
+            if (shortcutTypeDisplayName is not null)
+                Alerts.Add(AlertViewModel.Warning($"{shortcutTypeDisplayName} keyboard shortcut could not be registered."));
         }
     }
 }

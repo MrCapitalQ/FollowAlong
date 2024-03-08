@@ -16,11 +16,8 @@
     </winuiex:WindowEx.SystemBackdrop>
 
     <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
+          VerticalAlignment="Stretch"
+          RowDefinitions="Auto,*">
         <controls:TitleBar x:Name="TitleBar"
                            Icon="{x:Bind Icon}"
                            Title="{x:Bind Title}"

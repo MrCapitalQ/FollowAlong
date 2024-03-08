@@ -34,66 +34,78 @@
             </ic:EventTriggerBehavior>
         </i:Interaction.Behaviors>
 
-        <StackPanel VerticalAlignment="Center"
-                    Visibility="{x:Bind _viewModel.ShowSessionControls, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}"
-                    Grid.Row="1">
-            <TextBlock Text="Select a display, click start, and share the window named &quot;Follow Along - Share Window&quot;."
-                       TextAlignment="Center"
-                       TextWrapping="Wrap" />
-            <GridView ItemsSource="{x:Bind _viewModel.Displays}"
-                      SelectedItem="{x:Bind _viewModel.SelectedDisplay, Mode=TwoWay}"
-                      SelectionMode="Single"
-                      Padding="32,16"
-                      ScrollViewer.HorizontalScrollMode="Enabled"
-                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                      ScrollViewer.VerticalScrollMode="Disabled">
-                <GridView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsStackPanel Orientation="Horizontal"
-                                         HorizontalAlignment="Center" />
-                    </ItemsPanelTemplate>
-                </GridView.ItemsPanel>
-                <GridView.ItemTemplate>
-                    <DataTemplate x:DataType="vm:DisplayViewModel">
-                        <Border BorderBrush="Black"
-                                BorderThickness="4"
-                                CornerRadius="4"
-                                Margin="4">
-                            <Image Source="{x:Bind BitmapImage}"
-                                   Height="120"
-                                   Width="{x:Bind AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
-                        </Border>
+        <Grid Visibility="{x:Bind _viewModel.ShowSessionControls, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}"
+              RowDefinitions="*,Auto,*"
+              RowSpacing="16"
+              Grid.Row="1">
+            <ItemsView ItemsSource="{x:Bind _viewModel.Alerts}">
+                <ItemsView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AlertViewModel">
+                        <ItemContainer>
+                            <InfoBar Severity="{x:Bind Severity}"
+                                     Title="{x:Bind Title}"
+                                     Message="{x:Bind Message}"
+                                     IsOpen="True"
+                                     Margin="4,0" />
+                        </ItemContainer>
                     </DataTemplate>
-                </GridView.ItemTemplate>
-            </GridView>
-            <Button HorizontalAlignment="Center"
-                    Command="{x:Bind _viewModel.StartCommand}"
-                    ToolTipService.ToolTip="Ctrl + Shift + Alt + F">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <FontIcon Glyph="&#xE768;"
-                                  Margin="0,0,8,0" />
-                        <TextBlock Text="Start" />
-                    </StackPanel>
-                </Button.Content>
-            </Button>
-        </StackPanel>
+                </ItemsView.ItemTemplate>
+            </ItemsView>
+            <StackPanel Grid.Row="1">
+                <TextBlock Text="Select a display, click start, and share the window named &quot;Follow Along - Share Window&quot;."
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+                <GridView ItemsSource="{x:Bind _viewModel.Displays}"
+                          SelectedItem="{x:Bind _viewModel.SelectedDisplay, Mode=TwoWay}"
+                          SelectionMode="Single"
+                          Padding="32,16"
+                          ScrollViewer.HorizontalScrollMode="Enabled"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          ScrollViewer.VerticalScrollMode="Disabled">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel Orientation="Horizontal"
+                                             HorizontalAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DisplayViewModel">
+                            <Border BorderBrush="Black"
+                                    BorderThickness="4"
+                                    CornerRadius="4"
+                                    Margin="4">
+                                <Image Source="{x:Bind BitmapImage}"
+                                       Height="120"
+                                       Width="{x:Bind AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+                <Button HorizontalAlignment="Center"
+                        Command="{x:Bind _viewModel.StartCommand}"
+                        ToolTipService.ToolTip="Ctrl + Shift + Alt + F">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE768;"
+                                      Margin="0,0,8,0" />
+                            <TextBlock Text="Start" />
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+        </Grid>
 
         <Grid x:Name="SessionControls"
               HorizontalAlignment="Center"
               Visibility="{x:Bind _viewModel.ShowSessionControls, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
               Opacity="{x:Bind _viewModel.SessionControlsOpacity, Mode=OneWay}"
+              ColumnDefinitions="*,*"
               ColumnSpacing="8"
               Margin="8">
 
             <Grid.OpacityTransition>
                 <ScalarTransition />
             </Grid.OpacityTransition>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
