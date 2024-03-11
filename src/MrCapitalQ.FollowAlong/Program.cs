@@ -40,6 +40,7 @@ Host.CreateDefaultBuilder(args)
         services.AddSingleton<HotKeysService>();
         services.AddSingleton<DisplayWatcher>();
         services.AddTransient<IWindowMessageMonitor, WindowMessageMonitorAdapter>();
+        services.AddTransient<IHotKeysInterops, HotKeysInteropsAdapter>();
     })
     .Build()
     .Run();

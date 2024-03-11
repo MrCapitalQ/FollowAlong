@@ -1,50 +1,70 @@
-﻿using Microsoft.UI.Xaml;
+﻿using MrCapitalQ.FollowAlong.Core.Utils;
 using System;
+using System.Collections.Generic;
 using Windows.System;
-using WinUIEx.Messaging;
 
 namespace MrCapitalQ.FollowAlong.Core.HotKeys
 {
     public sealed class HotKeysService : IDisposable
     {
         public event EventHandler<HotKeyInvokedEventArgs>? HotKeyInvoked;
+        public event EventHandler<HotKeyRegistrationFailedEventArgs>? HotKeyRegistrationFailed;
 
         private const uint WM_HOTKEY = 0x0312;
         private const ModifierKeys HotKeyModifiers = ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt;
-        private IntPtr? _hwnd;
-        private WindowMessageMonitor? _monitor;
 
-        public void RegisterHotKeys(Window window)
+        private readonly IWindowMessageMonitor _windowMessageMonitor;
+        private readonly IHotKeysInterops _hotKeysInterops;
+        private IntPtr? _hwnd;
+        private HashSet<HotKeyType> _registeredHotKeys = [];
+
+        public HotKeysService(IWindowMessageMonitor windowMessageMonitor, IHotKeysInterops hotKeysInterops)
+        {
+            _windowMessageMonitor = windowMessageMonitor;
+            _hotKeysInterops = hotKeysInterops;
+        }
+
+        public void RegisterHotKeys(IntPtr hwnd)
         {
             if (_hwnd.HasValue)
                 throw new InvalidOperationException($"This service can only be registered to one window at a time.");
 
-            _hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            _hwnd = hwnd;
 
-            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.StartStop, (uint)HotKeyModifiers, (uint)VirtualKey.F);
-            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomIn, (uint)HotKeyModifiers, (uint)AdditionalKeys.Plus);
-            HotKeyInterops.RegisterHotKey(_hwnd.Value, (int)HotKeyType.ZoomOut, (uint)HotKeyModifiers, (uint)AdditionalKeys.Minus);
+            RegisterHotKey(_hwnd.Value, HotKeyType.StartStop, HotKeyModifiers, (uint)VirtualKey.F);
+            RegisterHotKey(_hwnd.Value, HotKeyType.ZoomIn, HotKeyModifiers, (uint)AdditionalKeys.Plus);
+            RegisterHotKey(_hwnd.Value, HotKeyType.ZoomOut, HotKeyModifiers, (uint)AdditionalKeys.Minus);
 
-            _monitor = new WindowMessageMonitor(_hwnd.Value);
-            _monitor.WindowMessageReceived += Monitor_WindowMessageReceived;
+            _windowMessageMonitor.Init(hwnd);
+            _windowMessageMonitor.WindowMessageReceived += WindowMessageMonitor_WindowMessageReceived;
         }
 
-        public void UnregisterHotKey() => Dispose();
-
-        public void Dispose()
+        public void Unregister()
         {
             if (_hwnd.HasValue)
             {
-                HotKeyInterops.UnregisterHotKey(_hwnd.Value, 0);
-                _hwnd = null;
+                foreach (var hotKeyType in _registeredHotKeys)
+                {
+                    _hotKeysInterops.UnregisterHotKey(_hwnd.Value, (int)hotKeyType);
+                }
             }
 
-            if (_monitor is not null)
-            {
-                _monitor.WindowMessageReceived -= Monitor_WindowMessageReceived;
-                _monitor.Dispose();
-                _monitor = null;
-            }
+            _hwnd = null;
+            _windowMessageMonitor.Reset();
+        }
+
+        public void Dispose()
+        {
+            Unregister();
+            _windowMessageMonitor.WindowMessageReceived -= WindowMessageMonitor_WindowMessageReceived;
+        }
+
+        private void RegisterHotKey(IntPtr _hwnd, HotKeyType hotKeyType, ModifierKeys modifiers, uint key)
+        {
+            if (_hotKeysInterops.RegisterHotKey(_hwnd, (int)hotKeyType, (uint)modifiers, key))
+                _registeredHotKeys.Add(hotKeyType);
+            else
+                OnHotKeyRegistrationFailed(new(hotKeyType));
         }
 
         private void OnHotKeyInvoked(HotKeyInvokedEventArgs e)
@@ -53,28 +73,18 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
             raiseEvent?.Invoke(this, e);
         }
 
-        private void Monitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
+        private void OnHotKeyRegistrationFailed(HotKeyRegistrationFailedEventArgs e)
         {
-            if (e.Message.MessageId != WM_HOTKEY)
+            var raiseEvent = HotKeyRegistrationFailed;
+            raiseEvent?.Invoke(this, e);
+        }
+
+        private void WindowMessageMonitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
+        {
+            if (e.MessageId != WM_HOTKEY)
                 return;
 
-            OnHotKeyInvoked(new((HotKeyType)e.Message.WParam));
-        }
-
-        [Flags]
-        private enum ModifierKeys
-        {
-            None = 0,
-            Alt = 1,
-            Control = 2,
-            Shift = 4,
-            WinKey = 8
-        }
-
-        private enum AdditionalKeys : uint
-        {
-            Plus = 187,
-            Minus = 189
+            OnHotKeyInvoked(new((HotKeyType)e.WParam));
         }
     }
 }
