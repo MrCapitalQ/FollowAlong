@@ -34,6 +34,7 @@ namespace MrCapitalQ.FollowAlong.Core.HotKeys
             RegisterHotKey(_hwnd.Value, HotKeyType.StartStop, HotKeyModifiers, (uint)VirtualKey.F);
             RegisterHotKey(_hwnd.Value, HotKeyType.ZoomIn, HotKeyModifiers, (uint)AdditionalKeys.Plus);
             RegisterHotKey(_hwnd.Value, HotKeyType.ZoomOut, HotKeyModifiers, (uint)AdditionalKeys.Minus);
+            RegisterHotKey(_hwnd.Value, HotKeyType.ToggleTracking, HotKeyModifiers, (uint)VirtualKey.P);
 
             _windowMessageMonitor.Init(hwnd);
             _windowMessageMonitor.WindowMessageReceived += WindowMessageMonitor_WindowMessageReceived;

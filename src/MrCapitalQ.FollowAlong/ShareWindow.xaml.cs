@@ -43,6 +43,8 @@ namespace MrCapitalQ.FollowAlong
 
             WeakReferenceMessenger.Default.Register<ZoomChanged>(this,
                 (r, m) => _trackingTransformService.Zoom = m.Zoom);
+            WeakReferenceMessenger.Default.Register<TrackingToggled>(this,
+                (r, m) => _trackingTransformService.IsTrackingEnabled = m.IsEnabled);
 
             if (AppWindow.Presenter is OverlappedPresenter presenter)
             {

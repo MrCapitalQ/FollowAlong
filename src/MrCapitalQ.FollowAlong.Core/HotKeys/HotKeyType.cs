@@ -5,6 +5,7 @@
         StartStop,
         ZoomIn,
         ZoomOut,
-        ResetZoom
+        ResetZoom,
+        ToggleTracking
     }
 }
