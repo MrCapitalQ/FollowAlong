@@ -19,6 +19,7 @@ namespace MrCapitalQ.FollowAlong.ViewModels
         private const double MinZoom = 1;
         private const double ZoomStepSize = 0.5;
         private readonly BitmapCaptureService _captureService;
+        private readonly IScreenshotService _screenshotService;
 
         [ObservableProperty]
         private double _zoom = 1.5;
@@ -43,14 +44,17 @@ namespace MrCapitalQ.FollowAlong.ViewModels
 
         public MainViewModel(DisplayService displayService,
             HotKeysService hotKeysService,
-            BitmapCaptureService captureService)
+            BitmapCaptureService captureService,
+            IScreenshotService screenshotService)
         {
+            _captureService = captureService;
+            _screenshotService = screenshotService;
+
             hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
             hotKeysService.HotKeyRegistrationFailed += HotKeysService_HotKeyRegistrationFailed;
 
-            Displays = new(displayService.GetAll().Select(x => new DisplayViewModel(x)));
+            Displays = new(displayService.GetAll().Select(x => new DisplayViewModel(x, _screenshotService)));
             SelectedDisplay = Displays.FirstOrDefault(x => x.DisplayItem.IsPrimary);
-            _captureService = captureService;
 
             WeakReferenceMessenger.Default.Register<StopCapture>(this,
                 (r, m) =>

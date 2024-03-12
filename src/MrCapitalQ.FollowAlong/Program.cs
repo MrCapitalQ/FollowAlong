@@ -41,6 +41,8 @@ Host.CreateDefaultBuilder(args)
         services.AddSingleton<DisplayWatcher>();
         services.AddTransient<IWindowMessageMonitor, WindowMessageMonitorAdapter>();
         services.AddTransient<IHotKeysInterops, HotKeysInteropsAdapter>();
+        services.AddTransient<IScreenshotService, ScreenshotService>();
+        services.AddTransient<IGraphicsCreator, GraphicsCreator>();
     })
     .Build()
     .Run();
