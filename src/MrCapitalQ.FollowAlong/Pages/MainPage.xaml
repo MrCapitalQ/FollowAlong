@@ -15,6 +15,7 @@
       mc:Ignorable="d">
     <Page.Resources>
         <converters:AspectRatioConverter x:Key="AspectRatioConverter" />
+        <converters:StreamToImageConverter x:Key="StreamToImageConverter" />
         <toolkitConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <toolkitConverters:StringFormatConverter x:Key="StringFormatConverter" />
     </Page.Resources>
@@ -74,7 +75,7 @@
                                     BorderThickness="4"
                                     CornerRadius="4"
                                     Margin="4">
-                                <Image Source="{x:Bind BitmapImage}"
+                                <Image Source="{x:Bind Thumbnail, Mode=OneWay, Converter={StaticResource StreamToImageConverter}}"
                                        Height="120"
                                        Width="{x:Bind AspectRatio, Converter={StaticResource AspectRatioConverter}, ConverterParameter=120}" />
                             </Border>

@@ -33,6 +33,10 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="MrCapitalQ.FollowAlong.Tests" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\MrCapitalQ.FollowAlong.Core\MrCapitalQ.FollowAlong.Core.csproj" />

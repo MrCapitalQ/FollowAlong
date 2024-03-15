@@ -1,33 +1,41 @@
-﻿using Microsoft.UI.Xaml.Media.Imaging;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace MrCapitalQ.FollowAlong.ViewModels
 {
-    internal class DisplayViewModel
+    internal class DisplayViewModel : ObservableObject
     {
         private readonly IScreenshotService _screenshotService;
+
+        public Stream? _thumbnail;
 
         public DisplayViewModel(DisplayItem displayItem, IScreenshotService screenshotService)
         {
             DisplayItem = displayItem;
             _screenshotService = screenshotService;
-            BitmapImage = new();
 
             _ = LoadThumbnailAsync();
         }
 
         public DisplayItem DisplayItem { get; }
-        public BitmapImage BitmapImage { get; }
+
+        public Stream? Thumbnail
+        {
+            get => _thumbnail;
+            private set
+            {
+                _thumbnail?.Dispose();
+                _thumbnail = value;
+                OnPropertyChanged(nameof(Thumbnail));
+            }
+        }
+
         public double AspectRatio => (double)DisplayItem.OuterBounds.Width / DisplayItem.OuterBounds.Height;
 
         public async Task LoadThumbnailAsync()
-        {
-            using var memoryStream = await _screenshotService.GetDisplayImageAsync(DisplayItem);
-            await BitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());
-        }
+            => Thumbnail = await _screenshotService.GetDisplayImageAsync(DisplayItem);
     }
 }

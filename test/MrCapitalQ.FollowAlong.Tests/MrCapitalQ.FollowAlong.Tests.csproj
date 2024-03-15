@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MrCapitalQ.FollowAlong.Core\MrCapitalQ.FollowAlong.Core.csproj" />
+    <ProjectReference Include="..\..\src\MrCapitalQ.FollowAlong\MrCapitalQ.FollowAlong.csproj" />
   </ItemGroup>
 
   <ItemGroup>

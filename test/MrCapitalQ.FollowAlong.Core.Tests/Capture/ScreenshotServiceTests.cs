@@ -31,8 +31,8 @@ namespace MrCapitalQ.FollowAlong.Core.Tests.Capture
 
         private class TestGraphics : IGraphics
         {
-            private Image _image;
-            private Graphics _graphics;
+            private readonly Image _image;
+            private readonly Graphics _graphics;
 
             public TestGraphics(Image image)
             {
