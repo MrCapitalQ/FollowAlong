@@ -1,29 +1,21 @@
-name: CI/CD
-
 on:
-  push:
-    branches: [main]
-
-env:
-  PACKAGE_NAME: FollowAlong
+  workflow_call:
+    inputs:
+      PACKAGE_NAME:
+        required: true
+        type: string
+      ENVIRONMENT:
+        required: true
+        type: string
 
 jobs:
-
-  build:
-    name: Build
-    uses: ./.github/workflows/build.yml
-    with:
-      PACKAGE_NAME: FollowAlong # Must match PACKAGE_NAME env above
-      SOLUTION_NAME: FollowAlong.sln
 
   publish:
     name: MS Store Publish
 
-    needs: build
-
     runs-on: windows-latest
 
-    environment: CD
+    environment: ${{ inputs.ENVIRONMENT }}
 
     steps:
 
@@ -33,17 +25,29 @@ jobs:
         git clone https://github.com/microsoft/MSIX-Toolkit.git
         "${{ github.workspace }}/MSIX-Toolkit/WindowsSDK/11/10.0.22000.0/x64" | Out-File -FilePath $env:GITHUB_PATH -Append
 
-    - name: Download x64 MSIX Package
+    - name: Download MSIX Packages
       uses: actions/download-artifact@v4
       with:
-        name: x64 MSIX Package
+        pattern: '* MSIX Package'
+        merge-multiple: true
 
-    - name: Download x86 MSIX Package
-      uses: actions/download-artifact@v4
-      with:
-        name: x86 MSIX Package
+    - name: Determine Package Publish Version
+      id: determine-version
+      shell: pwsh
+      run: |
+        if ("$env:TAG_NAME" -match '^v(\d+\.\d+\.\d+)') {
+            $packageVersion = "$($matches[1]).0"
+            Write-Output "Package version is $($packageVersion)."
+            
+            "PACKAGE_VERSION=$($packageVersion)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+        } else {
+            Write-Output "::error::Couldn't determine package version from tag."
+            exit 1
+        }
+      env:
+        TAG_NAME: ${{ github.ref_name }}
 
-    - name: Re-package for v${{ vars.NEXT_STORE_VERSION }} Store Submission
+    - name: Re-package for v${{ steps.determine-version.outputs.PACKAGE_VERSION }} Store Submission
       shell: pwsh
       run: |
         $msixFiles = Get-ChildItem ./ -Recurse -File -Filter *.msix
@@ -64,9 +68,10 @@ jobs:
 
             $appxManifestXml.Package.Identity.Name = "$env:PACKAGE_ID_NAME"
             $appxManifestXml.Package.Identity.Publisher = "$env:PACKAGE_ID_PUBLISHER"
-            $appxManifestXml.Package["mp:PhoneIdentity"].PhoneProductId = "$env:PACKAGE_PHONE_PRODUCT_ID"
+            $appxManifestXml.Package.PhoneIdentity.PhoneProductId = "$env:PACKAGE_PHONE_PRODUCT_ID"
             $appxManifestXml.Package.Properties.DisplayName = "$env:PACKAGE_DISPLAY_NAME"
             $appxManifestXml.Package.Identity.Version = "$env:PACKAGE_VERSION"
+            $appxManifestXml.Package.Applications.Application.VisualElements.DisplayName = "$env:APP_DISPLAY_NAME"
 
             $appxManifestXml.Save($appxManifestPath);
 
@@ -84,21 +89,23 @@ jobs:
             }
         }
       env:
+        APP_DISPLAY_NAME: ${{ vars.APP_DISPLAY_NAME }}
         PACKAGE_ID_NAME: ${{ vars.PACKAGE_ID_NAME }}
         PACKAGE_ID_PUBLISHER: ${{ vars.PACKAGE_ID_PUBLISHER }}
         PACKAGE_PHONE_PRODUCT_ID: ${{ vars.PACKAGE_PHONE_PRODUCT_ID }}
         PACKAGE_DISPLAY_NAME: ${{ vars.PACKAGE_DISPLAY_NAME }}
-        PACKAGE_VERSION: ${{ vars.NEXT_STORE_VERSION }}
-        PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
+        PACKAGE_VERSION: ${{ steps.determine-version.outputs.PACKAGE_VERSION }}
+        PACKAGE_NAME: ${{ inputs.PACKAGE_NAME }}
 
     - name: Create MSIX Bundle
       shell: pwsh
       run: |
         New-Item -Path "${{ github.workspace }}" -Name "Bundle" -ItemType Directory
-        Get-ChildItem ./* -Include "*.msix" -Exclude "Bundle/**" -Recurse | Copy-Item -Destination "${{ github.workspace }}/Bundle"
+        $msixFiles = Get-ChildItem . -Include "*.msix" -Recurse
+        $msixFiles | Copy-Item -Destination "${{ github.workspace }}/Bundle"
         MakeAppx bundle /d ${{ github.workspace }}/Bundle /p "$env:MSIX_BUNDLE_PATH"
       env:
-        MSIX_BUNDLE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}_x86_x64.msixbundle
+        MSIX_BUNDLE_PATH: ${{ github.workspace }}/${{ inputs.PACKAGE_NAME }}_${{ steps.determine-version.outputs.PACKAGE_VERSION }}_x86_x64.msixbundle
 
     - name: Create MS Store Package
       shell: pwsh
@@ -106,16 +113,16 @@ jobs:
         Get-ChildItem *.msixsym -Recurse | Rename-Item -NewName { $_.name -replace ".msixsym", ".appxsym" }
         Get-ChildItem ./* -Include "*.msixbundle", "*.appxsym" -Recurse | Compress-Archive -DestinationPath "$env:MSIX_UPLOAD_PATH"
       env:
-        MSIX_UPLOAD_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}.msixupload
+        MSIX_UPLOAD_PATH: ${{ github.workspace }}/${{ inputs.PACKAGE_NAME }}_${{ steps.determine-version.outputs.PACKAGE_VERSION }}.msixupload
 
     - name: Upload MS Store Package
       uses: actions/upload-artifact@v4
       with:
         name: Store Upload Package
-        path: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}.msixupload
+        path: ${{ github.workspace }}/${{ inputs.PACKAGE_NAME }}_${{ steps.determine-version.outputs.PACKAGE_VERSION }}.msixupload
 
-    - name: Publish v${{ vars.NEXT_STORE_VERSION }} MS Store Submission
-      shell: powershell # Using Windows Powershell to workaround serialization error introduced in newer PWSH versions.
+    - name: Publish v${{ steps.determine-version.outputs.PACKAGE_VERSION }} MS Store Submission
+      shell: pwsh
       run: |
         Install-Module -Name StoreBroker -Force
 
@@ -192,28 +199,4 @@ jobs:
         MS_STORE_CLIENT_ID: ${{ secrets.MS_STORE_CLIENT_ID }}
         MS_STORE_CLIENT_SECRET: ${{ secrets.MS_STORE_CLIENT_SECRET }}
         MS_STORE_APP_ID: ${{ secrets.MS_STORE_APP_ID }}
-        APP_PACKAGE_PATH: ${{ github.workspace }}/${{ env.PACKAGE_NAME }}_${{ vars.NEXT_STORE_VERSION }}.msixupload
-
-    - name: Increment Version
-      shell: pwsh
-      run: |
-        $variableName = "NEXT_STORE_VERSION"
-        $variableUrl = "https://api.github.com/repos/${{ github.repository }}/environments/$($env:ENVIRONMENT_NAME)/variables/$variableName"
-        $headers = @{
-            "Accept" = "application/vnd.github+json"
-            "Content-Type" = "application/json"
-            "Authorization" = "Bearer $env:ACCESS_TOKEN"
-            "X-GitHub-Api-Version" = "2022-11-28"
-        }
-
-        $currentValue = [version]$(Invoke-RestMethod -Uri $variableUrl -Headers $headers).value
-
-        $body = @{
-            "name" = $variableName
-            "value" = "$($currentValue.Major).$($currentValue.Minor).$($currentValue.Build + 1).$($currentValue.Revision)"
-        } | ConvertTo-Json
-
-        Invoke-RestMethod -Uri $variableUrl -Method Patch -Headers $headers -Body $body
-      env:
-        ACCESS_TOKEN: ${{ secrets.ENVIRONMENT_ACCESS_TOKEN }}
-        ENVIRONMENT_NAME: CD
+        APP_PACKAGE_PATH: ${{ github.workspace }}/${{ inputs.PACKAGE_NAME }}_${{ steps.determine-version.outputs.PACKAGE_VERSION }}.msixupload
