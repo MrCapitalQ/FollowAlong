@@ -1,0 +1,14 @@
+name: CI Test for Release
+
+on:
+  push:
+    branches: [feature/tagRelease]
+
+jobs:
+
+  build:
+    name: Build
+    uses: ./.github/workflows/build.yml
+    with:
+      PACKAGE_NAME: MrCapitalQ.FollowAlong
+      SOLUTION_NAME: MrCapitalQ.FollowAlong.sln
