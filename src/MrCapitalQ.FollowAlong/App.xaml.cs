@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using System;
 
@@ -20,6 +21,18 @@ namespace MrCapitalQ.FollowAlong
         {
             Window = Services.GetRequiredService<MainWindow>();
             Window.Activate();
+            Window.Closed += Window_Closed;
+        }
+
+        private void Window_Closed(object sender, WindowEventArgs args)
+        {
+            if (sender is Window window)
+                window.Closed -= Window_Closed;
+
+            Window = null;
+
+            var hostApplicationLifetime = Services.GetRequiredService<IHostApplicationLifetime>();
+            hostApplicationLifetime.StopApplication();
         }
     }
 }

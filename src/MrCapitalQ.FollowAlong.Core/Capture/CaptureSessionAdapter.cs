@@ -61,7 +61,7 @@ namespace MrCapitalQ.FollowAlong.Core.Capture
         public void Dispose()
         {
             Stop();
-            _updateSynchronizer.UpdateRequested += UpdateSynchronizer_UpdateRequested;
+            _updateSynchronizer.UpdateRequested -= UpdateSynchronizer_UpdateRequested;
         }
 
         private void OnFrameArrived(CanvasBitmap bitmap)
