@@ -4,7 +4,7 @@ using System.Timers;
 
 namespace MrCapitalQ.FollowAlong.Services
 {
-    internal sealed class UpdateSynchronizer : IUpdateSynchronizer
+    internal sealed class UpdateSynchronizer : IUpdateSynchronizer, IDisposable
     {
         public event EventHandler? UpdateRequested;
 
@@ -26,5 +26,7 @@ namespace MrCapitalQ.FollowAlong.Services
 
         private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
             => App.Current.Window?.DispatcherQueue?.TryEnqueue(() => OnUpdateRequested());
+
+        public void Dispose() => _timer.Stop();
     }
 }
