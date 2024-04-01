@@ -20,29 +20,29 @@ if (!keyInstance.IsCurrent)
     return;
 }
 
-Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
-    {
-        services.AddHostedService<WinUIHostedService<App>>();
-        services.AddSingleton<App>();
-        services.AddSingleton<MainWindow>();
-        services.AddTransient<ShareWindow>();
-        services.AddTransient<MainPage>();
+var builder = Host.CreateApplicationBuilder(args);
 
-        services.AddSingleton<MainViewModel>();
+builder.Services.AddHostedService<WindowsAppHostedService<App>>();
 
-        services.AddTransient<DisplayService>();
-        services.AddSingleton<ICaptureSessionAdapter, CaptureSessionAdapter>();
-        services.AddSingleton<BitmapCaptureService>();
-        services.AddTransient<IPointerService, PointerService>();
-        services.AddSingleton<IUpdateSynchronizer, UpdateSynchronizer>();
-        services.AddTransient<TrackingTransformService>();
-        services.AddSingleton<HotKeysService>();
-        services.AddSingleton<DisplayWatcher>();
-        services.AddTransient<IWindowMessageMonitor, WindowMessageMonitorAdapter>();
-        services.AddTransient<IHotKeysInterops, HotKeysInteropsAdapter>();
-        services.AddTransient<IScreenshotService, ScreenshotService>();
-        services.AddTransient<IGraphicsCreator, GraphicsCreator>();
-    })
-    .Build()
-    .Run();
+builder.Services.AddSingleton<App>();
+builder.Services.AddSingleton<MainWindow>();
+builder.Services.AddTransient<ShareWindow>();
+builder.Services.AddTransient<MainPage>();
+
+builder.Services.AddSingleton<MainViewModel>();
+
+builder.Services.AddTransient<DisplayService>();
+builder.Services.AddSingleton<ICaptureSessionAdapter, CaptureSessionAdapter>();
+builder.Services.AddSingleton<BitmapCaptureService>();
+builder.Services.AddTransient<IPointerService, PointerService>();
+builder.Services.AddSingleton<IUpdateSynchronizer, UpdateSynchronizer>();
+builder.Services.AddTransient<TrackingTransformService>();
+builder.Services.AddSingleton<HotKeysService>();
+builder.Services.AddSingleton<DisplayWatcher>();
+builder.Services.AddTransient<IWindowMessageMonitor, WindowMessageMonitorAdapter>();
+builder.Services.AddTransient<IHotKeysInterops, HotKeysInteropsAdapter>();
+builder.Services.AddTransient<IScreenshotService, ScreenshotService>();
+builder.Services.AddTransient<IGraphicsCreator, GraphicsCreator>();
+
+var host = builder.Build();
+host.Run();
