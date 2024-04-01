@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
 using System;
+using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong
 {
@@ -11,6 +13,8 @@ namespace MrCapitalQ.FollowAlong
         {
             InitializeComponent();
             Services = services;
+
+            AppInstance.GetCurrent().Activated += App_Activated;
         }
 
         public static new App Current => (App)Application.Current;
@@ -33,6 +37,16 @@ namespace MrCapitalQ.FollowAlong
 
             var hostApplicationLifetime = Services.GetRequiredService<IHostApplicationLifetime>();
             hostApplicationLifetime.StopApplication();
+        }
+
+        private void App_Activated(object? sender, AppActivationArguments e)
+        {
+            if (e.Kind == ExtendedActivationKind.Launch)
+                Window?.DispatcherQueue.TryEnqueue(() =>
+                {
+                    Window.Activate();
+                    Window.SetForegroundWindow();
+                });
         }
     }
 }
