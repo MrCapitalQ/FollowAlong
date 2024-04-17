@@ -4,119 +4,118 @@ using System;
 using System.Collections.Generic;
 using Windows.Graphics;
 
-namespace MrCapitalQ.FollowAlong.Core.Capture
+namespace MrCapitalQ.FollowAlong.Core.Capture;
+
+public sealed class BitmapCaptureService : IBitmapCaptureService, IDisposable
 {
-    public sealed class BitmapCaptureService : IDisposable
+    public event EventHandler<CaptureStartedEventArgs>? Started;
+    public event EventHandler? Stopped;
+
+    private readonly ICaptureSessionAdapter _captureSessionAdapter;
+    private readonly ILogger<BitmapCaptureService> _logger;
+    private readonly HashSet<IBitmapFrameHandler> _handlers = [];
+    private IDisplayCaptureItem? _captureItem;
+
+    public BitmapCaptureService(ICaptureSessionAdapter captureSessionAdapter, ILogger<BitmapCaptureService> logger)
     {
-        public event EventHandler<CaptureStartedEventArgs>? Started;
-        public event EventHandler? Stopped;
+        _captureSessionAdapter = captureSessionAdapter;
+        _captureSessionAdapter.FrameArrived += CaptureSessionAdapter_FrameArrived;
+        _captureSessionAdapter.Recreated += CaptureSessionAdapter_Recreated;
 
-        private readonly ICaptureSessionAdapter _captureSessionAdapter;
-        private readonly ILogger<BitmapCaptureService> _logger;
-        private readonly HashSet<IBitmapFrameHandler> _handlers = [];
-        private IDisplayCaptureItem? _captureItem;
+        _logger = logger;
+    }
 
-        public BitmapCaptureService(ICaptureSessionAdapter captureSessionAdapter, ILogger<BitmapCaptureService> logger)
-        {
-            _captureSessionAdapter = captureSessionAdapter;
-            _captureSessionAdapter.FrameArrived += CaptureSessionAdapter_FrameArrived;
-            _captureSessionAdapter.Recreated += CaptureSessionAdapter_Recreated;
+    public bool IsStarted { get; private set; }
 
-            _logger = logger;
-        }
+    public void StartCapture(IDisplayCaptureItem captureItem)
+    {
+        if (IsStarted)
+            throw new InvalidOperationException("Cannot start capture because a capture is has already been started.");
 
-        public bool IsStarted { get; private set; }
+        _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.DisplayName);
 
-        public void StartCapture(IDisplayCaptureItem captureItem)
-        {
-            if (IsStarted)
-                throw new InvalidOperationException("Cannot start capture because a capture is has already been started.");
+        IsStarted = true;
+        _captureItem = captureItem;
 
-            _logger.LogInformation("Starting capture session of {CaptureItemDisplayName}.", captureItem.DisplayName);
+        captureItem.Closed += (_, _) => StopCapture();
 
-            IsStarted = true;
-            _captureItem = captureItem;
+        _captureSessionAdapter.Start(captureItem);
 
-            captureItem.Closed += (_, _) => StopCapture();
-
-            _captureSessionAdapter.Start(captureItem);
-
-            if (_captureSessionAdapter.CanvasDevice is not null)
-                foreach (var handler in _handlers)
-                {
-                    handler.Initialize(_captureSessionAdapter.CanvasDevice, captureItem.OuterBounds);
-                }
-
-            OnStarted(captureItem.OuterBounds.ToSizeInt32());
-        }
-
-        public void StopCapture()
-        {
-            var isStarted = IsStarted;
-
-            if (isStarted)
-                _logger.LogInformation("Stopping capture session.");
-
-            IsStarted = false;
-
+        if (_captureSessionAdapter.CanvasDevice is not null)
             foreach (var handler in _handlers)
             {
-                handler.Stop();
+                handler.Initialize(_captureSessionAdapter.CanvasDevice, captureItem.OuterBounds);
             }
 
-            _captureSessionAdapter.Stop();
+        OnStarted(captureItem.OuterBounds.ToSizeInt32());
+    }
 
-            _captureItem = null;
+    public void StopCapture()
+    {
+        var isStarted = IsStarted;
 
-            if (isStarted)
-                OnStopped();
-        }
+        if (isStarted)
+            _logger.LogInformation("Stopping capture session.");
 
-        public void RegisterFrameHandler(IBitmapFrameHandler handler)
+        IsStarted = false;
+
+        foreach (var handler in _handlers)
         {
-            _handlers.Add(handler);
-
-            if (IsStarted && _captureItem is not null && _captureSessionAdapter.CanvasDevice is not null)
-                handler.Initialize(_captureSessionAdapter.CanvasDevice, _captureItem.OuterBounds);
-        }
-
-        public void UnregisterFrameHandler(IBitmapFrameHandler handler)
-        {
-            _handlers.Remove(handler);
             handler.Stop();
         }
 
-        public void Dispose() => StopCapture();
+        _captureSessionAdapter.Stop();
 
-        private void OnStarted(SizeInt32 size)
+        _captureItem = null;
+
+        if (isStarted)
+            OnStopped();
+    }
+
+    public void RegisterFrameHandler(IBitmapFrameHandler handler)
+    {
+        _handlers.Add(handler);
+
+        if (IsStarted && _captureItem is not null && _captureSessionAdapter.CanvasDevice is not null)
+            handler.Initialize(_captureSessionAdapter.CanvasDevice, _captureItem.OuterBounds);
+    }
+
+    public void UnregisterFrameHandler(IBitmapFrameHandler handler)
+    {
+        _handlers.Remove(handler);
+        handler.Stop();
+    }
+
+    public void Dispose() => StopCapture();
+
+    private void OnStarted(SizeInt32 size)
+    {
+        var raiseEvent = Started;
+        raiseEvent?.Invoke(this, new(size));
+    }
+
+    private void OnStopped()
+    {
+        var raiseEvent = Stopped;
+        raiseEvent?.Invoke(this, new());
+    }
+
+    private void CaptureSessionAdapter_FrameArrived(object? sender, FrameArrivedEventArgs e)
+    {
+        foreach (var handler in _handlers)
         {
-            var raiseEvent = Started;
-            raiseEvent?.Invoke(this, new(size));
+            handler.HandleFrame(e.Bitmap);
         }
+    }
 
-        private void OnStopped()
+    private void CaptureSessionAdapter_Recreated(object? sender, EventArgs e)
+    {
+        if (_captureSessionAdapter.CanvasDevice is null)
+            return;
+
+        foreach (var handler in _handlers)
         {
-            var raiseEvent = Stopped;
-            raiseEvent?.Invoke(this, new());
-        }
-
-        private void CaptureSessionAdapter_FrameArrived(object? sender, FrameArrivedEventArgs e)
-        {
-            foreach (var handler in _handlers)
-            {
-                handler.HandleFrame(e.Bitmap);
-            }
-        }
-
-        private void CaptureSessionAdapter_Recreated(object? sender, EventArgs e)
-        {
-            if (_captureSessionAdapter.CanvasDevice is null)
-                return;
-
-            foreach (var handler in _handlers)
-            {
-                handler.Initialize(_captureSessionAdapter.CanvasDevice);
-            };
-        }
+            handler.Initialize(_captureSessionAdapter.CanvasDevice);
+        };
     }
 }

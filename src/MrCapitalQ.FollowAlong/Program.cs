@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.AppLifecycle;
 using MrCapitalQ.FollowAlong;
@@ -31,18 +32,20 @@ builder.Services.AddTransient<MainPage>();
 
 builder.Services.AddSingleton<MainViewModel>();
 
-builder.Services.AddTransient<DisplayService>();
+builder.Services.AddTransient<IDisplayService, DisplayService>();
 builder.Services.AddSingleton<ICaptureSessionAdapter, CaptureSessionAdapter>();
-builder.Services.AddSingleton<BitmapCaptureService>();
+builder.Services.AddSingleton<IBitmapCaptureService, BitmapCaptureService>();
 builder.Services.AddTransient<IPointerService, PointerService>();
 builder.Services.AddSingleton<IUpdateSynchronizer, UpdateSynchronizer>();
 builder.Services.AddTransient<TrackingTransformService>();
-builder.Services.AddSingleton<HotKeysService>();
+builder.Services.AddSingleton<IHotKeysService, HotKeysService>();
 builder.Services.AddSingleton<DisplayWatcher>();
 builder.Services.AddTransient<IWindowMessageMonitor, WindowMessageMonitorAdapter>();
 builder.Services.AddTransient<IHotKeysInterops, HotKeysInteropsAdapter>();
 builder.Services.AddTransient<IScreenshotService, ScreenshotService>();
 builder.Services.AddTransient<IGraphicsCreator, GraphicsCreator>();
+builder.Services.AddTransient<IDisplayCaptureItemCreator, DisplayCaptureItemCreator>();
+builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
 
 var host = builder.Build();
 host.Run();
