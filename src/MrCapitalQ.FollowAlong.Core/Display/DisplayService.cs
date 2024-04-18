@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace MrCapitalQ.FollowAlong.Core.Display
 {
     [ExcludeFromCodeCoverage(Justification = "Uses native static APIs that can't be mocked.")]
-    public class DisplayService
+    public class DisplayService : IDisplayService
     {
         public IEnumerable<DisplayItem> GetAll()
         {
