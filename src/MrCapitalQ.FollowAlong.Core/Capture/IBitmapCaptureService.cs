@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MrCapitalQ.FollowAlong.Core.Capture;
+﻿namespace MrCapitalQ.FollowAlong.Core.Capture;
 
 public interface IBitmapCaptureService
 {

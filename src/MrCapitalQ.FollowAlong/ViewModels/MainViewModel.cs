@@ -5,9 +5,7 @@ using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
-using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;
 

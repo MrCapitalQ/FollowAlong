@@ -3,11 +3,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace MrCapitalQ.FollowAlong;
 
+[ExcludeFromCodeCoverage]
 internal sealed class WindowsAppHostedService<TApplication> : IHostedService
     where TApplication : Application
 {

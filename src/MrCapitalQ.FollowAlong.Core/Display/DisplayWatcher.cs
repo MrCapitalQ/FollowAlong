@@ -1,57 +1,55 @@
 ﻿using MrCapitalQ.FollowAlong.Core.Utils;
-using System;
 
-namespace MrCapitalQ.FollowAlong.Core.Display
+namespace MrCapitalQ.FollowAlong.Core.Display;
+
+public sealed class DisplayWatcher : IDisposable
 {
-    public sealed class DisplayWatcher : IDisposable
+    public event EventHandler? DisplayChanged;
+
+    private const uint WM_DISPLAYCHANGE = 0x07E;
+
+    private readonly IWindowMessageMonitor _windowMessageMonitor;
+    private IntPtr? _hwnd;
+
+    public DisplayWatcher(IWindowMessageMonitor windowMessageMonitor)
     {
-        public event EventHandler? DisplayChanged;
+        _windowMessageMonitor = windowMessageMonitor;
+    }
 
-        private const uint WM_DISPLAYCHANGE = 0x07E;
+    public void Register(IntPtr hwnd)
+    {
+        if (_hwnd.HasValue)
+            throw new InvalidOperationException("This service can only be registered to one window at a time.");
 
-        private readonly IWindowMessageMonitor _windowMessageMonitor;
-        private IntPtr? _hwnd;
+        _hwnd = hwnd;
 
-        public DisplayWatcher(IWindowMessageMonitor windowMessageMonitor)
-        {
-            _windowMessageMonitor = windowMessageMonitor;
-        }
+        _windowMessageMonitor.Init(_hwnd.Value);
+        _windowMessageMonitor.WindowMessageReceived += WindowMessageMonitor_WindowMessageReceived;
+    }
 
-        public void Register(IntPtr hwnd)
-        {
-            if (_hwnd.HasValue)
-                throw new InvalidOperationException("This service can only be registered to one window at a time.");
+    public void Unregister()
+    {
+        _hwnd = null;
+        _windowMessageMonitor.Reset();
+    }
 
-            _hwnd = hwnd;
+    public void Dispose()
+    {
+        Unregister();
+        _windowMessageMonitor.WindowMessageReceived -= WindowMessageMonitor_WindowMessageReceived;
+    }
 
-            _windowMessageMonitor.Init(_hwnd.Value);
-            _windowMessageMonitor.WindowMessageReceived += WindowMessageMonitor_WindowMessageReceived;
-        }
+    private void OnDisplayChanged()
+    {
+        var raiseEvent = DisplayChanged;
+        raiseEvent?.Invoke(this, new());
+    }
 
-        public void Unregister()
-        {
-            _hwnd = null;
-            _windowMessageMonitor.Reset();
-        }
+    private void WindowMessageMonitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
+    {
+        if (e.MessageId != WM_DISPLAYCHANGE)
+            return;
 
-        public void Dispose()
-        {
-            Unregister();
-            _windowMessageMonitor.WindowMessageReceived -= WindowMessageMonitor_WindowMessageReceived;
-        }
-
-        private void OnDisplayChanged()
-        {
-            var raiseEvent = DisplayChanged;
-            raiseEvent?.Invoke(this, new());
-        }
-
-        private void WindowMessageMonitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)
-        {
-            if (e.MessageId != WM_DISPLAYCHANGE)
-                return;
-
-            OnDisplayChanged();
-        }
+        OnDisplayChanged();
     }
 }

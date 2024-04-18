@@ -148,7 +148,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tests.Capture
 
         private static CanvasBitmap CreateTestCanvasBitmap(ICanvasResourceCreator resourceCreator)
             => CanvasBitmap.CreateFromColors(resourceCreator,
-                new Windows.UI.Color[] { Windows.UI.Color.FromArgb(0, 0, 0, 0) },
+                [Windows.UI.Color.FromArgb(0, 0, 0, 0)],
                 1,
                 1,
                 1);

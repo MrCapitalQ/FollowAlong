@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace MrCapitalQ.FollowAlong.Core.Display;
+﻿namespace MrCapitalQ.FollowAlong.Core.Display;
 
 public interface IDisplayService
 {

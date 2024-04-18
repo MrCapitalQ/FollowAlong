@@ -1,7 +1,4 @@
-﻿using MrCapitalQ.FollowAlong.Core.Display;
-using MrCapitalQ.FollowAlong.Core.Utils;
-using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Windows.Foundation;
 using Windows.Graphics.Capture;
 
@@ -12,14 +9,11 @@ public class DisplayCaptureItem : IDisplayCaptureItem
 {
     public event EventHandler? Closed;
 
-    public DisplayCaptureItem(DisplayItem displayItem)
+    internal DisplayCaptureItem(GraphicsCaptureItem graphicsCaptureItem, Rect outerBounds)
     {
-        var graphicsCaptureItem = GraphicsCaptureItem.TryCreateFromDisplayId(new(displayItem.DisplayId))
-            ?? throw new InvalidOperationException($"Failed to create graphics capture item from display ID {displayItem.DisplayId}.");
-
         GraphicsCaptureItem = graphicsCaptureItem;
         GraphicsCaptureItem.Closed += (_, _) => OnClosed();
-        OuterBounds = displayItem.OuterBounds.ToRect();
+        OuterBounds = outerBounds;
     }
 
     public GraphicsCaptureItem GraphicsCaptureItem { get; }

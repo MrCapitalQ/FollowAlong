@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace MrCapitalQ.FollowAlong.Core.HotKeys;
 
-namespace MrCapitalQ.FollowAlong.Core.HotKeys
+public class HotKeyInvokedEventArgs : EventArgs
 {
-    public class HotKeyInvokedEventArgs : EventArgs
-    {
-        public HotKeyInvokedEventArgs(HotKeyType hotKeyType) => HotKeyType = hotKeyType;
+    public HotKeyInvokedEventArgs(HotKeyType hotKeyType) => HotKeyType = hotKeyType;
 
-        public HotKeyType HotKeyType { get; }
-    }
+    public HotKeyType HotKeyType { get; }
 }
