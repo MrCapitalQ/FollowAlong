@@ -5,7 +5,7 @@ namespace MrCapitalQ.FollowAlong.Converters;
 
 internal class StreamToImageConverter : IValueConverter
 {
-    public object? Convert(object value, Type targetType, object parameter, string language)
+    public object? Convert(object? value, Type targetType, object? parameter, string language)
     {
         if (value is not Stream stream)
             return null;
@@ -16,6 +16,6 @@ internal class StreamToImageConverter : IValueConverter
         return image;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    public object ConvertBack(object? value, Type targetType, object? parameter, string language)
         => throw new NotImplementedException();
 }
