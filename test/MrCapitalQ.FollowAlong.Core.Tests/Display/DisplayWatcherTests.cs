@@ -1,106 +1,104 @@
 ﻿using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.Utils;
-using NSubstitute;
 
-namespace MrCapitalQ.FollowAlong.Core.Tests.Display
+namespace MrCapitalQ.FollowAlong.Core.Tests.Display;
+
+public class DisplayWatcherTests
 {
-    public class DisplayWatcherTests
+    private readonly IWindowMessageMonitor _windowMessageMonitor;
+
+    private readonly DisplayWatcher _displayWatcher;
+
+    public DisplayWatcherTests()
     {
-        private readonly IWindowMessageMonitor _windowMessageMonitor;
+        _windowMessageMonitor = Substitute.For<IWindowMessageMonitor>();
 
-        private readonly DisplayWatcher _displayWatcher;
+        _displayWatcher = new(_windowMessageMonitor);
+    }
 
-        public DisplayWatcherTests()
-        {
-            _windowMessageMonitor = Substitute.For<IWindowMessageMonitor>();
+    [Fact]
+    public void Register_Unregistered_InitializesWindowMessageMonitor()
+    {
+        var windowHwnd = new IntPtr(1);
 
-            _displayWatcher = new(_windowMessageMonitor);
-        }
+        _displayWatcher.Register(windowHwnd);
 
-        [Fact]
-        public void Register_Unregistered_InitializesWindowMessageMonitor()
-        {
-            var windowHwnd = new IntPtr(1);
+        _windowMessageMonitor.Received(1).Init(windowHwnd);
+    }
 
-            _displayWatcher.Register(windowHwnd);
+    [Fact]
+    public void Register_AlreadyRegistered_ThrowsException()
+    {
+        var windowHwnd = new IntPtr(1);
+        _displayWatcher.Register(windowHwnd);
 
-            _windowMessageMonitor.Received(1).Init(windowHwnd);
-        }
+        var ex = Assert.Throws<InvalidOperationException>(() => _displayWatcher.Register(windowHwnd));
 
-        [Fact]
-        public void Register_AlreadyRegistered_ThrowsException()
-        {
-            var windowHwnd = new IntPtr(1);
-            _displayWatcher.Register(windowHwnd);
+        Assert.Equal("This service can only be registered to one window at a time.", ex.Message);
+    }
 
-            var ex = Assert.Throws<InvalidOperationException>(() => _displayWatcher.Register(windowHwnd));
+    [Fact]
+    public void Unregister_ResetsWindowMessageMonitor()
+    {
+        _displayWatcher.Unregister();
 
-            Assert.Equal("This service can only be registered to one window at a time.", ex.Message);
-        }
+        _windowMessageMonitor.Received(1).Reset();
+    }
 
-        [Fact]
-        public void Unregister_ResetsWindowMessageMonitor()
-        {
-            _displayWatcher.Unregister();
+    [Fact]
+    public void Dispose_ResetsWindowMessageMonitor()
+    {
+        _displayWatcher.Dispose();
 
-            _windowMessageMonitor.Received(1).Reset();
-        }
+        _windowMessageMonitor.Received(1).Reset();
+    }
 
-        [Fact]
-        public void Dispose_ResetsWindowMessageMonitor()
-        {
-            _displayWatcher.Dispose();
+    [Fact]
+    public void MonitorWindowMessageReceived_DisplayChangedMessageWhenRegistered_RaisesEvent()
+    {
+        uint displayChangedMessageId = 0x07E;
+        var windowHwnd = new IntPtr(1);
+        _displayWatcher.Register(windowHwnd);
+        var eventRaised = false;
+        _displayWatcher.DisplayChanged += (_, _) => eventRaised = true;
 
-            _windowMessageMonitor.Received(1).Reset();
-        }
+        _windowMessageMonitor.WindowMessageReceived += Raise.EventWith(new WindowMessageEventArgs(windowHwnd,
+            displayChangedMessageId,
+            0,
+            0));
 
-        [Fact]
-        public void MonitorWindowMessageReceived_DisplayChangedMessageWhenRegistered_RaisesEvent()
-        {
-            uint displayChangedMessageId = 0x07E;
-            var windowHwnd = new IntPtr(1);
-            _displayWatcher.Register(windowHwnd);
-            var eventRaised = false;
-            _displayWatcher.DisplayChanged += (_, _) => eventRaised = true;
+        Assert.True(eventRaised);
+    }
 
-            _windowMessageMonitor.WindowMessageReceived += Raise.EventWith(new WindowMessageEventArgs(windowHwnd,
-                displayChangedMessageId,
-                0,
-                0));
+    [Fact]
+    public void MonitorWindowMessageReceived_OtherWindowMessagesWhenRegistered_DoesNothing()
+    {
+        uint messageId = 1;
+        var windowHwnd = new IntPtr(1);
+        _displayWatcher.Register(windowHwnd);
+        var eventRaised = false;
+        _displayWatcher.DisplayChanged += (_, _) => eventRaised = true;
 
-            Assert.True(eventRaised);
-        }
+        _windowMessageMonitor.WindowMessageReceived += Raise.EventWith(new WindowMessageEventArgs(windowHwnd,
+            messageId,
+            0,
+            0));
 
-        [Fact]
-        public void MonitorWindowMessageReceived_OtherWindowMessagesWhenRegistered_DoesNothing()
-        {
-            uint messageId = 1;
-            var windowHwnd = new IntPtr(1);
-            _displayWatcher.Register(windowHwnd);
-            var eventRaised = false;
-            _displayWatcher.DisplayChanged += (_, _) => eventRaised = true;
+        Assert.False(eventRaised);
+    }
 
-            _windowMessageMonitor.WindowMessageReceived += Raise.EventWith(new WindowMessageEventArgs(windowHwnd,
-                messageId,
-                0,
-                0));
+    [Fact]
+    public void MonitorWindowMessageReceived_AnyWindowMessageWhenNotRegistered_DoesNothing()
+    {
+        uint displayChangedMessageId = 0x07E;
+        var eventRaised = false;
+        _displayWatcher.DisplayChanged += (_, _) => eventRaised = true;
 
-            Assert.False(eventRaised);
-        }
+        _windowMessageMonitor.WindowMessageReceived += Raise.EventWith(new WindowMessageEventArgs(new IntPtr(1),
+            displayChangedMessageId,
+            0,
+            0));
 
-        [Fact]
-        public void MonitorWindowMessageReceived_AnyWindowMessageWhenNotRegistered_DoesNothing()
-        {
-            uint displayChangedMessageId = 0x07E;
-            var eventRaised = false;
-            _displayWatcher.DisplayChanged += (_, _) => eventRaised = true;
-
-            _windowMessageMonitor.WindowMessageReceived += Raise.EventWith(new WindowMessageEventArgs(new IntPtr(1),
-                displayChangedMessageId,
-                0,
-                0));
-
-            Assert.False(eventRaised);
-        }
+        Assert.False(eventRaised);
     }
 }

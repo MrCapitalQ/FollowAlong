@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="NSubstitute" />
     <Using Include="Xunit" />
   </ItemGroup>
 
