@@ -1,8 +1,10 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Converters;
 
+[ExcludeFromCodeCoverage(Justification = "Creates BitmapImage that won't work during test execution.")]
 internal class StreamToImageConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, string language)

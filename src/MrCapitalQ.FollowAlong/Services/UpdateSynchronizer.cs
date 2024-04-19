@@ -1,9 +1,11 @@
 ﻿using MrCapitalQ.FollowAlong.Core.Utils;
+using System.Diagnostics.CodeAnalysis;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
 namespace MrCapitalQ.FollowAlong.Services;
 
+[ExcludeFromCodeCoverage(Justification = "Uses a DispatcherQueue that won't work during test execution.")]
 internal sealed class UpdateSynchronizer : IUpdateSynchronizer, IDisposable
 {
     public event EventHandler? UpdateRequested;
