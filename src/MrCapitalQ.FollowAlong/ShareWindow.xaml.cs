@@ -6,8 +6,6 @@ using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
-using System;
-using System.Linq;
 using Windows.Graphics;
 using WinRT.Interop;
 
@@ -64,8 +62,8 @@ public sealed partial class ShareWindow : WindowBase
     public void SetScreenSize(SizeInt32 size)
     {
         var viewportSize = (size.Width / size.Height) > ViewportAspectRatio
-                        ? new SizeInt32((int)(size.Height * ViewportAspectRatio), size.Height)
-                        : new SizeInt32(size.Width, (int)(size.Width / ViewportAspectRatio));
+            ? new SizeInt32((int)(size.Height * ViewportAspectRatio), size.Height)
+            : new SizeInt32(size.Width, (int)(size.Width / ViewportAspectRatio));
         AppWindow.Resize(viewportSize);
     }
 

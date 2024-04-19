@@ -1,13 +1,12 @@
 ﻿using System;
 using Windows.Foundation;
 
-namespace MrCapitalQ.FollowAlong.Core.Capture
-{
-    public interface IDisplayCaptureItem
-    {
-        event EventHandler? Closed;
+namespace MrCapitalQ.FollowAlong.Core.Capture;
 
-        string DisplayName { get; }
-        Rect OuterBounds { get; }
-    }
+public interface IDisplayCaptureItem
+{
+    event EventHandler? Closed;
+
+    string DisplayName { get; }
+    Rect OuterBounds { get; }
 }

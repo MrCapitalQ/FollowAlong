@@ -8,7 +8,6 @@ using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
-using System;
 using Windows.Graphics;
 using WinRT.Interop;
 using WinUIEx;

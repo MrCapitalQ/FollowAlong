@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using MrCapitalQ.FollowAlong.Core.Utils;
-using System;
-using System.Collections.Generic;
 using Windows.Graphics;
 
 namespace MrCapitalQ.FollowAlong.Core.Capture;

@@ -2,11 +2,9 @@
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
-using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.ViewModels;
 using NSubstitute;
-using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Tests.ViewModels;
 
@@ -70,7 +68,7 @@ public class MainViewModelTests
     [Fact]
     public void StartCommand_WhileStopped_StartsCapture()
     {
-        var displayCaptureItem = new TestDisplayCaptureItem(_primaryDisplayItem.OuterBounds.ToRect());
+        var displayCaptureItem = Substitute.For<IDisplayCaptureItem>();
         _displayCaptureItemCreator.Create(_primaryDisplayItem).Returns(displayCaptureItem);
 
         _mainViewModel.StartCommand.Execute(null);
@@ -183,7 +181,7 @@ public class MainViewModelTests
     [Fact]
     public void HotKeysService_HotKeyInvoked_StartStopWhileStopped_StartsCapture()
     {
-        var displayCaptureItem = new TestDisplayCaptureItem(_primaryDisplayItem.OuterBounds.ToRect());
+        var displayCaptureItem = Substitute.For<IDisplayCaptureItem>();
         _displayCaptureItemCreator.Create(_primaryDisplayItem).Returns(displayCaptureItem);
 
         _hotKeysService.HotKeyInvoked += Raise.EventWith(new HotKeyInvokedEventArgs(HotKeyType.StartStop));
@@ -244,17 +242,6 @@ public class MainViewModelTests
 
         var alertViewModel = Assert.Single(_mainViewModel.Alerts);
         Assert.Equal(expectedMessage, alertViewModel.Message);
-    }
-
-    private class TestDisplayCaptureItem : IDisplayCaptureItem
-    {
-        public TestDisplayCaptureItem(Rect outerBounds) => OuterBounds = outerBounds;
-
-        public string DisplayName => "Display";
-
-        public Rect OuterBounds { get; }
-
-        public event EventHandler? Closed;
     }
 
     private class TestToken : Arg.AnyType, IEquatable<TestToken>

@@ -1,6 +1,4 @@
 ﻿using MrCapitalQ.FollowAlong.Core.Utils;
-using System;
-using System.Collections.Generic;
 using Windows.System;
 
 namespace MrCapitalQ.FollowAlong.Core.HotKeys;
@@ -15,8 +13,8 @@ public sealed class HotKeysService : IHotKeysService, IDisposable
 
     private readonly IWindowMessageMonitor _windowMessageMonitor;
     private readonly IHotKeysInterops _hotKeysInterops;
+    private readonly HashSet<HotKeyType> _registeredHotKeys = [];
     private nint? _hwnd;
-    private HashSet<HotKeyType> _registeredHotKeys = [];
 
     public HotKeysService(IWindowMessageMonitor windowMessageMonitor, IHotKeysInterops hotKeysInterops)
     {

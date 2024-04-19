@@ -1,16 +1,14 @@
 ﻿using Microsoft.Graphics.Canvas;
-using System;
 
-namespace MrCapitalQ.FollowAlong.Core.Capture
+namespace MrCapitalQ.FollowAlong.Core.Capture;
+
+public interface ICaptureSessionAdapter
 {
-    public interface ICaptureSessionAdapter
-    {
-        event EventHandler<FrameArrivedEventArgs>? FrameArrived;
-        event EventHandler? Recreated;
+    event EventHandler<FrameArrivedEventArgs>? FrameArrived;
+    event EventHandler? Recreated;
 
-        CanvasDevice? CanvasDevice { get; }
+    CanvasDevice? CanvasDevice { get; }
 
-        void Start(IDisplayCaptureItem captureItem);
-        void Stop();
-    }
+    void Start(IDisplayCaptureItem captureItem);
+    void Stop();
 }

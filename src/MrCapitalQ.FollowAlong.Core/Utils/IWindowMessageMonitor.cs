@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace MrCapitalQ.FollowAlong.Core.Utils;
 
-namespace MrCapitalQ.FollowAlong.Core.Utils
+public interface IWindowMessageMonitor
 {
-    public interface IWindowMessageMonitor
-    {
-        event EventHandler<WindowMessageEventArgs>? WindowMessageReceived;
-        void Init(IntPtr hwnd);
-        void Reset();
-    }
+    event EventHandler<WindowMessageEventArgs>? WindowMessageReceived;
+    void Init(IntPtr hwnd);
+    void Reset();
 }

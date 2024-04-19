@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace MrCapitalQ.FollowAlong.Core.Utils;
 
-namespace MrCapitalQ.FollowAlong.Core.Utils
+public interface IUpdateSynchronizer
 {
-    public interface IUpdateSynchronizer
-    {
-        event EventHandler? UpdateRequested;
-    }
+    event EventHandler? UpdateRequested;
 }

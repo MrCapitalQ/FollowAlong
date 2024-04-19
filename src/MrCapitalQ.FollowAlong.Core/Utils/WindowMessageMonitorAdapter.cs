@@ -1,34 +1,32 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
-namespace MrCapitalQ.FollowAlong.Core.Utils
+namespace MrCapitalQ.FollowAlong.Core.Utils;
+
+[ExcludeFromCodeCoverage(Justification = "Adapter class for WindowMessageMonitor class that can't be mocked.")]
+public sealed class WindowMessageMonitorAdapter : IWindowMessageMonitor
 {
-    [ExcludeFromCodeCoverage(Justification = "Adapter class for WindowMessageMonitor class that can't be mocked.")]
-    public sealed class WindowMessageMonitorAdapter : IWindowMessageMonitor
+    public event EventHandler<WindowMessageEventArgs>? WindowMessageReceived;
+
+    private WinUIEx.Messaging.WindowMessageMonitor? _monitor;
+
+    public void Init(IntPtr hwnd)
     {
-        public event EventHandler<WindowMessageEventArgs>? WindowMessageReceived;
+        _monitor = new WinUIEx.Messaging.WindowMessageMonitor(hwnd);
+        _monitor.WindowMessageReceived += Monitor_WindowMessageReceived;
+    }
 
-        private WinUIEx.Messaging.WindowMessageMonitor? _monitor;
+    public void Reset()
+    {
+        if (_monitor is null)
+            return;
 
-        public void Init(IntPtr hwnd)
-        {
-            _monitor = new WinUIEx.Messaging.WindowMessageMonitor(hwnd);
-            _monitor.WindowMessageReceived += Monitor_WindowMessageReceived;
-        }
+        _monitor.WindowMessageReceived -= Monitor_WindowMessageReceived;
+        _monitor.Dispose();
+    }
 
-        public void Reset()
-        {
-            if (_monitor is null)
-                return;
-
-            _monitor.WindowMessageReceived -= Monitor_WindowMessageReceived;
-            _monitor.Dispose();
-        }
-
-        private void Monitor_WindowMessageReceived(object? sender, WinUIEx.Messaging.WindowMessageEventArgs e)
-        {
-            var raiseEvent = WindowMessageReceived;
-            raiseEvent?.Invoke(this, new(e.Message.Hwnd, e.Message.MessageId, e.Message.WParam, e.Message.LParam));
-        }
+    private void Monitor_WindowMessageReceived(object? sender, WinUIEx.Messaging.WindowMessageEventArgs e)
+    {
+        var raiseEvent = WindowMessageReceived;
+        raiseEvent?.Invoke(this, new(e.Message.Hwnd, e.Message.MessageId, e.Message.WParam, e.Message.LParam));
     }
 }
