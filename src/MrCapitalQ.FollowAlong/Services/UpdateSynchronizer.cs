@@ -1,9 +1,12 @@
-﻿using MrCapitalQ.FollowAlong.Core.Utils;
+﻿using MrCapitalQ.FollowAlong.Core;
+using MrCapitalQ.FollowAlong.Core.Utils;
+using System.Diagnostics.CodeAnalysis;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
 namespace MrCapitalQ.FollowAlong.Services;
 
+[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
 internal sealed class UpdateSynchronizer : IUpdateSynchronizer, IDisposable
 {
     public event EventHandler? UpdateRequested;

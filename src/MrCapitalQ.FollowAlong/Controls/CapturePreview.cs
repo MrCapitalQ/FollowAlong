@@ -5,13 +5,16 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
+using MrCapitalQ.FollowAlong.Core;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Tracking;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Controls;
 
+[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
 public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTransformTarget
 {
     public event EventHandler? ViewportSizeChanged;

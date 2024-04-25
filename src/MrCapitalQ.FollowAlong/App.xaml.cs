@@ -2,10 +2,12 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using System.Diagnostics.CodeAnalysis;
 using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong;
 
+[ExcludeFromCodeCoverage]
 public partial class App : Application
 {
     public App(IServiceProvider services)

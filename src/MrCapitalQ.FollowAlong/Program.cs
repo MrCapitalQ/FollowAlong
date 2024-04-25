@@ -11,7 +11,9 @@ using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Pages;
 using MrCapitalQ.FollowAlong.Services;
 using MrCapitalQ.FollowAlong.ViewModels;
+using System.Diagnostics.CodeAnalysis;
 
+[ExcludeFromCodeCoverage]
 internal class Program
 {
     private static async Task Main(string[] args)

@@ -2,18 +2,21 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using MrCapitalQ.FollowAlong.Core;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Messages;
+using System.Diagnostics.CodeAnalysis;
 using Windows.Graphics;
 using WinRT.Interop;
 using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong;
 
+[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
 internal sealed partial class MainWindow : WindowBase
 {
     private readonly static SizeInt32 s_minWindowSize = new(600, 450);

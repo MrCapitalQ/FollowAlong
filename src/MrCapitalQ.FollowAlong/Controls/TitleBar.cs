@@ -1,9 +1,12 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using MrCapitalQ.FollowAlong.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Controls;
 
+[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
 public sealed class TitleBar : Control
 {
     public static readonly DependencyProperty IconProperty =

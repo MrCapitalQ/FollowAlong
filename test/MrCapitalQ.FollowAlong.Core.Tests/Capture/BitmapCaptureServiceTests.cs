@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
 using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.Utils;
+using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Core.Tests.Capture;
 
@@ -25,16 +27,19 @@ public class BitmapCaptureServiceTests
         var handler = Substitute.For<IBitmapFrameHandler>();
         _bitmapCaptureService.RegisterFrameHandler(handler);
         handler.ClearReceivedCalls();
+        var captureItemRect = new Rect(0, 0, 10, 20);
         var captureItem = Substitute.For<IDisplayCaptureItem>();
-        var eventRaised = false;
-        _bitmapCaptureService.Started += (_, _) => eventRaised = true;
+        captureItem.OuterBounds.Returns(captureItemRect);
+        CaptureStartedEventArgs? eventRaisedArgs = null;
+        _bitmapCaptureService.Started += (_, e) => eventRaisedArgs = e;
 
         _bitmapCaptureService.StartCapture(captureItem);
 
         Assert.True(_bitmapCaptureService.IsStarted);
-        Assert.True(eventRaised);
+        Assert.NotNull(eventRaisedArgs);
+        Assert.Equal(captureItemRect.ToSizeInt32(), eventRaisedArgs.Size);
         _captureSessionAdapter.Received(1).Start(captureItem);
-        handler.Received(1).Initialize(canvasDevice, new());
+        handler.Received(1).Initialize(canvasDevice, captureItemRect);
     }
 
     [Fact]
