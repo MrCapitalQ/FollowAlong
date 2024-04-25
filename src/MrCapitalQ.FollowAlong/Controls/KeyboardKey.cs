@@ -1,9 +1,12 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Markup;
+using MrCapitalQ.FollowAlong.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Controls
 {
+    [ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
     [ContentProperty(Name = nameof(MainContent))]
     public sealed class KeyboardKey : Control
     {
