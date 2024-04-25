@@ -36,11 +36,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="MrCapitalQ.FollowAlong.Tests" />
+    <InternalsVisibleTo Include="FollowAlong.Tests" />
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\MrCapitalQ.FollowAlong.Core\MrCapitalQ.FollowAlong.Core.csproj" />
+    <ProjectReference Include="..\FollowAlong.Core\FollowAlong.Core.csproj" />
   </ItemGroup>
 
   <!-- 

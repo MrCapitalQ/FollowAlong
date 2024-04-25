@@ -4,7 +4,6 @@ using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.ViewModels;
-using NSubstitute;
 
 namespace MrCapitalQ.FollowAlong.Tests.ViewModels;
 

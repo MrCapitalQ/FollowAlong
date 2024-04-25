@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <RootNamespace>MrCapitalQ.FollowAlong.Core.Tests</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -29,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MrCapitalQ.FollowAlong.Core\MrCapitalQ.FollowAlong.Core.csproj" />
+    <ProjectReference Include="..\..\src\FollowAlong.Core\FollowAlong.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

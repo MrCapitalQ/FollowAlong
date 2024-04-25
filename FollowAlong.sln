@@ -5,15 +5,15 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D6571453-2B25-4051-9FAB-AA815635D7BF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MrCapitalQ.FollowAlong", "src\MrCapitalQ.FollowAlong\MrCapitalQ.FollowAlong.csproj", "{3EAB4E43-2AA6-404B-B57A-E5299D63F09C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FollowAlong", "src\FollowAlong\FollowAlong.csproj", "{3EAB4E43-2AA6-404B-B57A-E5299D63F09C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MrCapitalQ.FollowAlong.Core", "src\MrCapitalQ.FollowAlong.Core\MrCapitalQ.FollowAlong.Core.csproj", "{E68D2B6A-F6CC-467D-AD10-DE887F559C04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FollowAlong.Core", "src\FollowAlong.Core\FollowAlong.Core.csproj", "{E68D2B6A-F6CC-467D-AD10-DE887F559C04}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{06775EB5-A7A8-469B-8474-5528DF049C7E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MrCapitalQ.FollowAlong.Core.Tests", "test\MrCapitalQ.FollowAlong.Core.Tests\MrCapitalQ.FollowAlong.Core.Tests.csproj", "{D4A1EA3F-1BA0-41CE-930A-1DA2FD5F6762}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FollowAlong.Core.Tests", "test\FollowAlong.Core.Tests\FollowAlong.Core.Tests.csproj", "{D4A1EA3F-1BA0-41CE-930A-1DA2FD5F6762}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrCapitalQ.FollowAlong.Tests", "test\MrCapitalQ.FollowAlong.Tests\MrCapitalQ.FollowAlong.Tests.csproj", "{9129E1C3-9286-4E21-90C8-4BDB14CB9972}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FollowAlong.Tests", "test\FollowAlong.Tests\FollowAlong.Tests.csproj", "{9129E1C3-9286-4E21-90C8-4BDB14CB9972}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
