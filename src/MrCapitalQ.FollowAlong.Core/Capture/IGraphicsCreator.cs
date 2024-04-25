@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
 
-namespace MrCapitalQ.FollowAlong.Core.Capture
+namespace MrCapitalQ.FollowAlong.Core.Capture;
+
+public interface IGraphicsCreator
 {
-    public interface IGraphicsCreator
-    {
-        IGraphics FromImage(Image image);
-    }
+    IGraphics FromImage(Image image);
 }

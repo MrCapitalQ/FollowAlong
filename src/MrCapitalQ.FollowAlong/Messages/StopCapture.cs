@@ -1,4 +1,3 @@
-﻿namespace MrCapitalQ.FollowAlong.Messages
-{
-    public record StopCapture;
-}
+﻿namespace MrCapitalQ.FollowAlong.Messages;
+
+public record StopCapture;
