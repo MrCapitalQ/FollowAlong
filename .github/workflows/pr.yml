@@ -10,6 +10,6 @@ jobs:
     name: Build
     uses: ./.github/workflows/build.yml
     with:
-      PACKAGE_NAME: MrCapitalQ.FollowAlong
-      SOLUTION_NAME: MrCapitalQ.FollowAlong.sln
+      PACKAGE_NAME: FollowAlong
+      SOLUTION_NAME: FollowAlong.sln
       PUBLISH_ARTIFACTS: false

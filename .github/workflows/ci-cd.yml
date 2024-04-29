@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  PACKAGE_NAME: MrCapitalQ.FollowAlong
+  PACKAGE_NAME: FollowAlong
 
 jobs:
 
@@ -13,8 +13,8 @@ jobs:
     name: Build
     uses: ./.github/workflows/build.yml
     with:
-      PACKAGE_NAME: MrCapitalQ.FollowAlong # Must match PACKAGE_NAME env above
-      SOLUTION_NAME: MrCapitalQ.FollowAlong.sln
+      PACKAGE_NAME: FollowAlong # Must match PACKAGE_NAME env above
+      SOLUTION_NAME: FollowAlong.sln
 
   publish:
     name: MS Store Publish
