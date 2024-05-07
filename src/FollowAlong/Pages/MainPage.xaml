@@ -5,146 +5,78 @@
       xmlns:local="using:MrCapitalQ.FollowAlong.Pages"
       xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
       xmlns:converters="using:MrCapitalQ.FollowAlong.Converters"
-      xmlns:toolkitConverters="using:CommunityToolkit.WinUI.Converters"
       xmlns:vm="using:MrCapitalQ.FollowAlong.ViewModels"
-      xmlns:i="using:Microsoft.Xaml.Interactivity"
-      xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
       mc:Ignorable="d">
     <Page.Resources>
         <converters:StreamToImageConverter x:Key="StreamToImageConverter" />
-        <toolkitConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <toolkitConverters:StringFormatConverter x:Key="StringFormatConverter" />
     </Page.Resources>
 
-    <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"
-          Background="Transparent">
+    <Grid RowSpacing="16">
 
-        <i:Interaction.Behaviors>
-            <ic:EventTriggerBehavior EventName="PointerEntered">
-                <ic:InvokeCommandAction Command="{x:Bind _viewModel.UpdateSessionControlOpacityCommand }"
-                                        CommandParameter="1" />
-            </ic:EventTriggerBehavior>
-            <ic:EventTriggerBehavior EventName="PointerExited">
-                <ic:InvokeCommandAction Command="{x:Bind _viewModel.UpdateSessionControlOpacityCommand }"
-                                        CommandParameter="0.5" />
-            </ic:EventTriggerBehavior>
-        </i:Interaction.Behaviors>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
 
-        <Grid Visibility="{x:Bind _viewModel.ShowSessionControls, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}"
-              RowDefinitions="*,Auto,*"
-              RowSpacing="16"
-              Grid.Row="1">
-            <ItemsView ItemsSource="{x:Bind _viewModel.Alerts}">
-                <ItemsView.ItemTemplate>
-                    <DataTemplate x:DataType="vm:AlertViewModel">
-                        <ItemContainer>
-                            <InfoBar Severity="{x:Bind Severity}"
-                                     Title="{x:Bind Title}"
-                                     Message="{x:Bind Message}"
-                                     IsOpen="True"
-                                     Margin="4,0" />
-                        </ItemContainer>
+        <ItemsView ItemsSource="{x:Bind _viewModel.Alerts}">
+            <ItemsView.ItemTemplate>
+                <DataTemplate x:DataType="vm:AlertViewModel">
+                    <ItemContainer>
+                        <InfoBar Severity="{x:Bind Severity}"
+                                 Title="{x:Bind Title}"
+                                 Message="{x:Bind Message}"
+                                 IsOpen="True"
+                                 Margin="4,0" />
+                    </ItemContainer>
+                </DataTemplate>
+            </ItemsView.ItemTemplate>
+        </ItemsView>
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="Select a display, click start, and share the window named &quot;Follow Along - Share Window&quot;."
+                       TextAlignment="Center"
+                       TextWrapping="Wrap" />
+            <GridView ItemsSource="{x:Bind _viewModel.Displays, Mode=OneWay}"
+                      SelectedItem="{x:Bind _viewModel.SelectedDisplay, Mode=TwoWay}"
+                      SelectionMode="Single"
+                      Padding="32,16"
+                      ScrollViewer.HorizontalScrollMode="Enabled"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ScrollViewer.VerticalScrollMode="Disabled">
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel Orientation="Horizontal"
+                                         HorizontalAlignment="Center" />
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:DisplayViewModel">
+                        <Border BorderBrush="Black"
+                                BorderThickness="4"
+                                CornerRadius="4"
+                                Margin="4">
+                            <Image Source="{x:Bind Thumbnail, Mode=OneWay, Converter={StaticResource StreamToImageConverter}}"
+                                   Height="{x:Bind Height}"
+                                   Width="{x:Bind Width}" />
+                        </Border>
                     </DataTemplate>
-                </ItemsView.ItemTemplate>
-            </ItemsView>
-            <StackPanel Grid.Row="1">
-                <TextBlock Text="Select a display, click start, and share the window named &quot;Follow Along - Share Window&quot;."
-                           TextAlignment="Center"
-                           TextWrapping="Wrap" />
-                <GridView ItemsSource="{x:Bind _viewModel.Displays}"
-                          SelectedItem="{x:Bind _viewModel.SelectedDisplay, Mode=TwoWay}"
-                          SelectionMode="Single"
-                          Padding="32,16"
-                          ScrollViewer.HorizontalScrollMode="Enabled"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                          ScrollViewer.VerticalScrollMode="Disabled">
-                    <GridView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsStackPanel Orientation="Horizontal"
-                                             HorizontalAlignment="Center" />
-                        </ItemsPanelTemplate>
-                    </GridView.ItemsPanel>
-                    <GridView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:DisplayViewModel">
-                            <Border BorderBrush="Black"
-                                    BorderThickness="4"
-                                    CornerRadius="4"
-                                    Margin="4">
-                                <Image Source="{x:Bind Thumbnail, Mode=OneWay, Converter={StaticResource StreamToImageConverter}}"
-                                       Height="{x:Bind Height}"
-                                       Width="{x:Bind Width}" />
-                            </Border>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                </GridView>
-                <Button HorizontalAlignment="Center"
-                        Command="{x:Bind _viewModel.StartCommand}"
-                        ToolTipService.ToolTip="Ctrl + Shift + Alt + F">
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE768;"
-                                      Margin="0,0,8,0" />
-                            <TextBlock Text="Start" />
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
-        </Grid>
-
-        <Grid x:Name="SessionControls"
-              HorizontalAlignment="Center"
-              Visibility="{x:Bind _viewModel.ShowSessionControls, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-              Opacity="{x:Bind _viewModel.SessionControlsOpacity, Mode=OneWay}"
-              ColumnDefinitions="*,*"
-              ColumnSpacing="8"
-              Margin="8">
-
-            <Grid.OpacityTransition>
-                <ScalarTransition />
-            </Grid.OpacityTransition>
-
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
-                        CornerRadius="{ThemeResource ControlCornerRadius}"
-                        VerticalAlignment="Bottom">
-                <Button Command="{x:Bind _viewModel.StopCommand}"
-                        Style="{ThemeResource DateTimePickerFlyoutButtonStyle}"
-                        ToolTipService.ToolTip="Ctrl + Shift + Alt + F">
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Glyph="&#xE71A;"
-                                      Margin="0,0,8,0" />
-                            <TextBlock Text="Stop" />
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal"
-                        Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
-                        CornerRadius="{ThemeResource ControlCornerRadius}"
-                        VerticalAlignment="Bottom"
-                        Grid.Column="1">
-                <Button Command="{x:Bind _viewModel.ZoomOutCommand}"
-                        Style="{ThemeResource DateTimePickerFlyoutButtonStyle}"
-                        ToolTipService.ToolTip="Ctrl + Shift + Alt + Minus">
-                    <FontIcon Glyph="&#xE71F;" />
-                </Button>
-                <TextBlock Text="{x:Bind _viewModel.Zoom, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:P0}'}"
-                           TextAlignment="Center"
-                           VerticalAlignment="Center"
-                           Width="50"
-                           TextLineBounds="Tight" />
-                <Button Command="{x:Bind _viewModel.ZoomInCommand}"
-                        Style="{ThemeResource DateTimePickerFlyoutButtonStyle}"
-                        ToolTipService.ToolTip="Ctrl + Shift + Alt + Plus">
-                    <FontIcon Glyph="&#xE8A3;" />
-                </Button>
-            </StackPanel>
-        </Grid>
+                </GridView.ItemTemplate>
+            </GridView>
+            <Button HorizontalAlignment="Center"
+                    Command="{x:Bind _viewModel.StartCommand}"
+                    ToolTipService.ToolTip="Ctrl + Shift + Alt + F">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon Glyph="&#xE768;"
+                                  Margin="0,0,8,0" />
+                        <TextBlock Text="Start" />
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </StackPanel>
     </Grid>
 </Page>

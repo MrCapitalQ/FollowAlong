@@ -31,11 +31,16 @@ internal class Program
         builder.Services.AddHostedService<WindowsAppHostedService<App>>();
 
         builder.Services.AddSingleton<App>();
-        builder.Services.AddSingleton<MainWindow>();
+        builder.Services.AddSingleton<LifetimeWindow>();
+        builder.Services.AddTransient<MainWindow>();
+        builder.Services.AddTransient<PreviewWindow>();
         builder.Services.AddTransient<ShareWindow>();
-        builder.Services.AddTransient<MainPage>();
 
-        builder.Services.AddSingleton<MainViewModel>();
+        builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<PreviewPage>();
+
+        builder.Services.AddTransient<MainViewModel>();
+        builder.Services.AddSingleton<PreviewViewModel>();
 
         builder.Services.AddTransient<IDisplayService, DisplayService>();
         builder.Services.AddSingleton<ICaptureSessionAdapter, CaptureSessionAdapter>();

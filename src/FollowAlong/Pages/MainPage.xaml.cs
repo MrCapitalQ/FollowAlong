@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Pages;
 
-[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
+[ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
 internal sealed partial class MainPage : Page
 {
     private readonly MainViewModel _viewModel;
@@ -15,5 +15,6 @@ internal sealed partial class MainPage : Page
     {
         InitializeComponent();
         _viewModel = App.Current.Services.GetRequiredService<MainViewModel>();
+        _viewModel.Load();
     }
 }

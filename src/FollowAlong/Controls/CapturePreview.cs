@@ -14,7 +14,7 @@ using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Controls;
 
-[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
+[ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
 public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTransformTarget
 {
     public event EventHandler? ViewportSizeChanged;

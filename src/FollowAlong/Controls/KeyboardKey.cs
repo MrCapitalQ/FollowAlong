@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Controls;
 
-[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
+[ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
 [ContentProperty(Name = nameof(MainContent))]
 public sealed class KeyboardKey : Control
 {

@@ -11,15 +11,10 @@ namespace MrCapitalQ.FollowAlong.ViewModels;
 
 internal partial class MainViewModel : ObservableObject
 {
-    private const double MaxZoom = 3;
-    private const double MinZoom = 1;
-    private const double ZoomStepSize = 0.5;
-    private readonly IBitmapCaptureService _captureService;
+    private readonly IDisplayService _displayService;
     private readonly IScreenshotService _screenshotService;
     private readonly IDisplayCaptureItemCreator _displayCaptureItemCreator;
     private readonly IMessenger _messenger;
-
-    private double _zoom = 1.5;
 
     [ObservableProperty]
     private ObservableCollection<DisplayViewModel> _displays = [];
@@ -28,119 +23,57 @@ internal partial class MainViewModel : ObservableObject
     private DisplayViewModel? _selectedDisplay;
 
     [ObservableProperty]
-    private bool _showSessionControls;
-
-    [ObservableProperty]
-    private double _sessionControlsOpacity = 0.5;
-
-    [ObservableProperty]
-    private bool _isTrackingEnabled = true;
-
-    [ObservableProperty]
     private ObservableCollection<AlertViewModel> _alerts = [];
 
     public MainViewModel(IDisplayService displayService,
         IHotKeysService hotKeysService,
-        IBitmapCaptureService captureService,
         IScreenshotService screenshotService,
         IDisplayCaptureItemCreator displayCaptureItemCreator,
         IMessenger messenger)
     {
-        _captureService = captureService;
+        _displayService = displayService;
         _screenshotService = screenshotService;
         _displayCaptureItemCreator = displayCaptureItemCreator;
         _messenger = messenger;
+        _messenger.Register<MainViewModel, StopCapture>(this, (r, m) => r.Load());
 
-        hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
-        hotKeysService.HotKeyRegistrationFailed += HotKeysService_HotKeyRegistrationFailed;
-
-        Displays = new(displayService.GetAll().Select(x => new DisplayViewModel(x, _screenshotService)));
-        SelectedDisplay = Displays.FirstOrDefault(x => x.DisplayItem.IsPrimary);
-
-        _messenger.Register<MainViewModel, StopCapture>(this, (r, m) => r.Stop());
+        foreach (var hotKeyType in Enum.GetValues<HotKeyType>().Except(hotKeysService.RegisteredHotKeys))
+            AddFailedHotKeyRegistration(hotKeyType);
     }
 
-    public double Zoom
+    public void Load()
     {
-        get => _zoom;
-        set
-        {
-            _zoom = Math.Clamp(value, MinZoom, MaxZoom);
-            OnPropertyChanged();
-            _messenger.Send(new ZoomChanged(_zoom));
-        }
+        var selectedDisplayId = SelectedDisplay?.DisplayItem.DisplayId;
+
+        Displays = new(_displayService.GetAll().Select(x => new DisplayViewModel(x, _screenshotService)));
+
+        if (selectedDisplayId is not null)
+            SelectedDisplay = Displays.FirstOrDefault(x => x.DisplayItem.DisplayId == selectedDisplayId);
+
+        SelectedDisplay ??= Displays.FirstOrDefault(x => x.DisplayItem.IsPrimary);
     }
 
     [RelayCommand]
     private void Start()
     {
-        if (_captureService.IsStarted || SelectedDisplay is null)
+        if (SelectedDisplay is null)
             return;
 
-        _captureService.StartCapture(_displayCaptureItemCreator.Create(SelectedDisplay.DisplayItem));
-        _messenger.Send(new ZoomChanged(Zoom));
-        ShowSessionControls = true;
+        _messenger.Send(new StartCapture(_displayCaptureItemCreator.Create(SelectedDisplay.DisplayItem)));
     }
 
-    [RelayCommand]
-    private void Stop()
+    private void AddFailedHotKeyRegistration(HotKeyType hotKeyType)
     {
-        if (!_captureService.IsStarted)
-            return;
-
-        foreach (var display in Displays)
-            _ = display.LoadThumbnailAsync();
-
-        _captureService.StopCapture();
-        ShowSessionControls = false;
-    }
-
-    [RelayCommand]
-    private void ZoomIn() => Zoom += ZoomStepSize;
-
-    [RelayCommand]
-    private void ZoomOut() => Zoom -= ZoomStepSize;
-
-    [RelayCommand]
-    private void UpdateSessionControlOpacity(string parameterValue)
-    {
-        if (!double.TryParse(parameterValue, out var opacity))
-            return;
-
-        SessionControlsOpacity = opacity;
-    }
-
-    private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
-    {
-        if (e.HotKeyType is HotKeyType.StartStop)
-        {
-            if (!_captureService.IsStarted)
-                Start();
-            else
-                Stop();
-        }
-        else if (e.HotKeyType == HotKeyType.ZoomIn)
-            ZoomIn();
-        else if (e.HotKeyType == HotKeyType.ZoomOut)
-            ZoomOut();
-        else if (e.HotKeyType == HotKeyType.ToggleTracking)
-            IsTrackingEnabled = !IsTrackingEnabled;
-    }
-
-    private void HotKeysService_HotKeyRegistrationFailed(object? sender, HotKeyRegistrationFailedEventArgs e)
-    {
-        var shortcutTypeDisplayName = e.HotKeyType switch
+        var shortcutTypeDisplayName = hotKeyType switch
         {
             HotKeyType.StartStop => "Start and stop",
             HotKeyType.ZoomIn => "Zoom in",
             HotKeyType.ZoomOut => "Zoom out",
             HotKeyType.ResetZoom => "Reset zoom",
             HotKeyType.ToggleTracking => "Pause and resume tracking",
-            _ => $"HotKeyType {e.HotKeyType}"
+            _ => $"HotKeyType {hotKeyType}"
         };
 
         Alerts.Add(AlertViewModel.Warning($"{shortcutTypeDisplayName} keyboard shortcut could not be registered."));
     }
-
-    partial void OnIsTrackingEnabledChanged(bool value) => _messenger.Send(new TrackingToggled(value));
 }

@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Controls;
 
-[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
+[ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
 public sealed class TitleBar : Control
 {
     public static readonly DependencyProperty IconProperty =

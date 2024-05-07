@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using MrCapitalQ.FollowAlong.Core.Capture;
 using System.Diagnostics.CodeAnalysis;
 using WinUIEx;
 
@@ -20,21 +21,40 @@ public partial class App : Application
 
     public static new App Current => (App)Application.Current;
     public IServiceProvider Services { get; }
-    public Window? Window { get; protected set; }
+    public LifetimeWindow? LifetimeWindow { get; protected set; }
+    public MainWindow? MainWindow { get; protected set; }
+
+    public void ShowMainWindow()
+    {
+        if (Services.GetRequiredService<IBitmapCaptureService>().IsStarted)
+            return;
+
+        if (MainWindow is null)
+        {
+            MainWindow = Services.GetRequiredService<MainWindow>();
+            MainWindow.Closed += MainWindow_Closed;
+        }
+
+        MainWindow.Activate();
+        MainWindow.SetForegroundWindow();
+    }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        Window = Services.GetRequiredService<MainWindow>();
-        Window.Activate();
-        Window.Closed += Window_Closed;
+        LifetimeWindow = Services.GetRequiredService<LifetimeWindow>();
+        LifetimeWindow.Closed += LifetimeWindow_Closed;
+
+        if (AppInstance.GetCurrent().GetActivatedEventArgs().Kind != ExtendedActivationKind.StartupTask)
+            ShowMainWindow();
     }
 
-    private void Window_Closed(object sender, WindowEventArgs args)
+    private void LifetimeWindow_Closed(object sender, WindowEventArgs args)
     {
-        if (sender is Window window)
-            window.Closed -= Window_Closed;
+        if (sender is LifetimeWindow window)
+            window.Closed -= LifetimeWindow_Closed;
 
-        Window = null;
+        MainWindow?.Close();
+        LifetimeWindow = null;
 
         var hostApplicationLifetime = Services.GetRequiredService<IHostApplicationLifetime>();
         hostApplicationLifetime.StopApplication();
@@ -42,11 +62,17 @@ public partial class App : Application
 
     private void App_Activated(object? sender, AppActivationArguments e)
     {
-        if (e.Kind == ExtendedActivationKind.Launch)
-            Window?.DispatcherQueue.TryEnqueue(() =>
-            {
-                Window.Activate();
-                Window.SetForegroundWindow();
-            });
+        if (e.Kind != ExtendedActivationKind.Launch)
+            return;
+
+        LifetimeWindow?.DispatcherQueue.TryEnqueue(ShowMainWindow);
+    }
+
+    private void MainWindow_Closed(object sender, WindowEventArgs args)
+    {
+        if (sender is MainWindow window)
+            window.Closed -= MainWindow_Closed;
+
+        MainWindow = null;
     }
 }
