@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
+using System.Drawing;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;
 
@@ -19,6 +20,8 @@ internal class DisplayViewModel : ObservableObject
     }
 
     public DisplayItem DisplayItem { get; }
+    public int Width => (int)(Height * (double)DisplayItem.OuterBounds.Width / DisplayItem.OuterBounds.Height);
+    public int Height { get; } = 120;
 
     public Stream? Thumbnail
     {
@@ -31,8 +34,6 @@ internal class DisplayViewModel : ObservableObject
         }
     }
 
-    public double AspectRatio => (double)DisplayItem.OuterBounds.Width / DisplayItem.OuterBounds.Height;
-
     public async Task LoadThumbnailAsync()
-        => Thumbnail = await _screenshotService.GetDisplayImageAsync(DisplayItem);
+        => Thumbnail = await _screenshotService.GetDisplayImageAsync(DisplayItem, new Size(Width, Height));
 }

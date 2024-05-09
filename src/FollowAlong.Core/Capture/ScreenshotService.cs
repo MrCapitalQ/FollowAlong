@@ -10,15 +10,16 @@ public class ScreenshotService : IScreenshotService
 
     public ScreenshotService(IGraphicsCreator graphicsCreator) => _graphicsCreator = graphicsCreator;
 
-    public async Task<Stream> GetDisplayImageAsync(DisplayItem displayItem)
+    public async Task<Stream> GetDisplayImageAsync(DisplayItem displayItem, Size size)
         => await Task.Run(() =>
         {
             using var bitmap = new Bitmap(displayItem.OuterBounds.Width, displayItem.OuterBounds.Height);
             using var graphics = _graphicsCreator.FromImage(bitmap);
             graphics.CopyFromScreen(displayItem.OuterBounds.X, displayItem.OuterBounds.Y, 0, 0, bitmap.Size);
 
+            using var resizedBitmap = new Bitmap(bitmap, size);
             var memoryStream = new MemoryStream();
-            bitmap.Save(memoryStream, ImageFormat.Png);
+            resizedBitmap.Save(memoryStream, ImageFormat.Jpeg);
             memoryStream.Position = 0;
             return memoryStream;
         });

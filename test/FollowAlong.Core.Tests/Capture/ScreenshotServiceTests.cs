@@ -22,7 +22,7 @@ public class ScreenshotServiceTests
         var displayItem = new DisplayItem(true, new(10, 10, 10, 10), new(), 1);
         _graphicsCreator.FromImage(Arg.Any<Image>()).Returns(x => new TestGraphics((Image)x[0]));
 
-        var stream = await _screenshotService.GetDisplayImageAsync(displayItem);
+        var stream = await _screenshotService.GetDisplayImageAsync(displayItem, new Size(10, 10));
 
         Assert.True(stream.Length > 0);
         Assert.Equal(0, stream.Position);

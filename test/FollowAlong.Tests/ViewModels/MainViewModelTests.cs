@@ -4,6 +4,7 @@ using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.ViewModels;
+using System.Drawing;
 
 namespace MrCapitalQ.FollowAlong.Tests.ViewModels;
 
@@ -109,7 +110,7 @@ public class MainViewModelTests
 
         Assert.False(_mainViewModel.ShowSessionControls);
         _bitmapCaptureService.Received(1).StopCapture();
-        _screenshotService.Received(1).GetDisplayImageAsync(_primaryDisplayItem);
+        _screenshotService.Received(1).GetDisplayImageAsync(_primaryDisplayItem, Arg.Any<Size>());
     }
 
     [Fact]
@@ -120,7 +121,7 @@ public class MainViewModelTests
         _mainViewModel.StopCommand.Execute(null);
 
         _bitmapCaptureService.DidNotReceive().StopCapture();
-        _screenshotService.DidNotReceive().GetDisplayImageAsync(_primaryDisplayItem);
+        _screenshotService.DidNotReceive().GetDisplayImageAsync(_primaryDisplayItem, Arg.Any<Size>());
     }
 
 
@@ -135,7 +136,7 @@ public class MainViewModelTests
 
         Assert.False(_mainViewModel.ShowSessionControls);
         _bitmapCaptureService.Received(1).StopCapture();
-        _screenshotService.Received(1).GetDisplayImageAsync(_primaryDisplayItem);
+        _screenshotService.Received(1).GetDisplayImageAsync(_primaryDisplayItem, Arg.Any<Size>());
     }
 
     [Fact]
@@ -147,7 +148,7 @@ public class MainViewModelTests
         _stopCaptureMessageHandler.Invoke(_mainViewModel, new());
 
         _bitmapCaptureService.DidNotReceive().StopCapture();
-        _screenshotService.DidNotReceive().GetDisplayImageAsync(_primaryDisplayItem);
+        _screenshotService.DidNotReceive().GetDisplayImageAsync(_primaryDisplayItem, Arg.Any<Size>());
     }
 
     [Fact]
@@ -200,7 +201,7 @@ public class MainViewModelTests
 
         Assert.False(_mainViewModel.ShowSessionControls);
         _bitmapCaptureService.Received(1).StopCapture();
-        _screenshotService.Received(1).GetDisplayImageAsync(_primaryDisplayItem);
+        _screenshotService.Received(1).GetDisplayImageAsync(_primaryDisplayItem, Arg.Any<Size>());
     }
 
     [Fact]
