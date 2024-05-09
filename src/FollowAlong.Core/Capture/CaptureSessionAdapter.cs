@@ -34,7 +34,7 @@ public sealed class CaptureSessionAdapter : ICaptureSessionAdapter, IDisposable
         if (captureItem is not DisplayCaptureItem displayCaptureItem)
             return;
 
-        _canvasDevice = new CanvasDevice();
+        _canvasDevice ??= new CanvasDevice();
 
         _framePool = Direct3D11CaptureFramePool.Create(_canvasDevice,
             DirectXPixelFormat.B8G8R8A8UIntNormalized,
@@ -49,8 +49,6 @@ public sealed class CaptureSessionAdapter : ICaptureSessionAdapter, IDisposable
 
     public void Stop()
     {
-        _canvasDevice?.Dispose();
-        _canvasDevice = null;
         _framePool?.Dispose();
         _framePool = null;
         _session?.Dispose();
@@ -59,8 +57,12 @@ public sealed class CaptureSessionAdapter : ICaptureSessionAdapter, IDisposable
 
     public void Dispose()
     {
-        Stop();
         _updateSynchronizer.UpdateRequested -= UpdateSynchronizer_UpdateRequested;
+
+        Stop();
+
+        _canvasDevice?.Dispose();
+        _canvasDevice = null;
     }
 
     private void OnFrameArrived(CanvasBitmap bitmap)
