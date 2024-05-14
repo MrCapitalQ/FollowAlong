@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using H.NotifyIcon.EfficiencyMode;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
@@ -11,10 +12,14 @@ namespace MrCapitalQ.FollowAlong;
 [ExcludeFromCodeCoverage]
 public partial class App : Application
 {
-    public App(IServiceProvider services)
+    private readonly IBitmapCaptureService _captureService;
+
+    public App(IServiceProvider services, IBitmapCaptureService captureService)
     {
         InitializeComponent();
+
         Services = services;
+        _captureService = captureService;
 
         AppInstance.GetCurrent().Activated += App_Activated;
     }
@@ -26,8 +31,10 @@ public partial class App : Application
 
     public void ShowMainWindow()
     {
-        if (Services.GetRequiredService<IBitmapCaptureService>().IsStarted)
+        if (_captureService.IsStarted)
             return;
+
+        EfficiencyModeUtilities.SetEfficiencyMode(false);
 
         if (MainWindow is null)
         {
@@ -70,6 +77,8 @@ public partial class App : Application
 
     private void MainWindow_Closed(object sender, WindowEventArgs args)
     {
+        EfficiencyModeUtilities.SetEfficiencyMode(true);
+
         if (sender is MainWindow window)
             window.Closed -= MainWindow_Closed;
 
