@@ -26,16 +26,30 @@ public class HotKeysServiceTests
         var modifiers = ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt;
         _hotKeysInterops.RegisterHotKey(Arg.Any<IntPtr>(), Arg.Any<int>(), Arg.Any<uint>(), Arg.Any<uint>())
             .Returns(true);
-        var expectedRegisteredHotKeys = new[] { HotKeyType.StartStop, HotKeyType.ZoomIn, HotKeyType.ZoomOut, HotKeyType.ToggleTracking };
 
         _hotKeysService.RegisterHotKeys(windowHwnd);
 
-        Assert.Equivalent(expectedRegisteredHotKeys, _hotKeysService.RegisteredHotKeys);
         _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)HotKeyType.StartStop, (uint)modifiers, (uint)VirtualKey.F);
         _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)HotKeyType.ZoomIn, (uint)modifiers, (uint)AdditionalKeys.Plus);
         _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)HotKeyType.ZoomOut, (uint)modifiers, (uint)AdditionalKeys.Minus);
         _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)HotKeyType.ToggleTracking, (uint)modifiers, (uint)VirtualKey.P);
         _windowMessageMonitor.Received(1).Init(windowHwnd);
+    }
+
+    [Fact]
+    public void RegisterHotKeys_RegistrationFails_RaisesHotKeyRegistrationFailedEvent()
+    {
+        var expectedFailed = new List<HotKeyType>
+        {
+            HotKeyType.StartStop,
+            HotKeyType.ZoomIn,
+            HotKeyType.ZoomOut,
+            HotKeyType.ToggleTracking
+        };
+
+        _hotKeysService.RegisterHotKeys(new IntPtr(1));
+
+        Assert.Equivalent(expectedFailed, _hotKeysService.HotKeyRegistrationFailures);
     }
 
     [Fact]
