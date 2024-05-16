@@ -2,8 +2,9 @@
 
 public interface IHotKeysService
 {
-    event System.EventHandler<HotKeyInvokedEventArgs>? HotKeyInvoked;
-    event System.EventHandler<HotKeyRegistrationFailedEventArgs>? HotKeyRegistrationFailed;
+    event EventHandler<HotKeyInvokedEventArgs>? HotKeyInvoked;
+
+    IReadOnlyCollection<HotKeyType> RegisteredHotKeys { get; }
 
     void RegisterHotKeys(nint hwnd);
     void Unregister();

@@ -3,24 +3,20 @@ using Windows.System;
 
 namespace MrCapitalQ.FollowAlong.Core.HotKeys;
 
-public sealed class HotKeysService : IHotKeysService, IDisposable
+public sealed class HotKeysService(IWindowMessageMonitor windowMessageMonitor, IHotKeysInterops hotKeysInterops)
+    : IHotKeysService, IDisposable
 {
     public event EventHandler<HotKeyInvokedEventArgs>? HotKeyInvoked;
-    public event EventHandler<HotKeyRegistrationFailedEventArgs>? HotKeyRegistrationFailed;
 
     private const uint WM_HOTKEY = 0x0312;
     private const ModifierKeys HotKeyModifiers = ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt;
 
-    private readonly IWindowMessageMonitor _windowMessageMonitor;
-    private readonly IHotKeysInterops _hotKeysInterops;
+    private readonly IWindowMessageMonitor _windowMessageMonitor = windowMessageMonitor;
+    private readonly IHotKeysInterops _hotKeysInterops = hotKeysInterops;
     private readonly HashSet<HotKeyType> _registeredHotKeys = [];
     private nint? _hwnd;
 
-    public HotKeysService(IWindowMessageMonitor windowMessageMonitor, IHotKeysInterops hotKeysInterops)
-    {
-        _windowMessageMonitor = windowMessageMonitor;
-        _hotKeysInterops = hotKeysInterops;
-    }
+    public IReadOnlyCollection<HotKeyType> RegisteredHotKeys => [.. _registeredHotKeys];
 
     public void RegisterHotKeys(nint hwnd)
     {
@@ -62,19 +58,11 @@ public sealed class HotKeysService : IHotKeysService, IDisposable
     {
         if (_hotKeysInterops.RegisterHotKey(_hwnd, (int)hotKeyType, (uint)modifiers, key))
             _registeredHotKeys.Add(hotKeyType);
-        else
-            OnHotKeyRegistrationFailed(new(hotKeyType));
     }
 
     private void OnHotKeyInvoked(HotKeyInvokedEventArgs e)
     {
         var raiseEvent = HotKeyInvoked;
-        raiseEvent?.Invoke(this, e);
-    }
-
-    private void OnHotKeyRegistrationFailed(HotKeyRegistrationFailedEventArgs e)
-    {
-        var raiseEvent = HotKeyRegistrationFailed;
         raiseEvent?.Invoke(this, e);
     }
 

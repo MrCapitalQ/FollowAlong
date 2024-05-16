@@ -10,7 +10,9 @@
                   xmlns:winuiex="using:WinUIEx"
                   mc:Ignorable="d"
                   Width="800"
-                  Height="600">
+                  Height="600"
+                  MinWidth="600"
+                  MinHeight="450">
     <winuiex:WindowEx.SystemBackdrop>
         <MicaBackdrop />
     </winuiex:WindowEx.SystemBackdrop>

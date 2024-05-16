@@ -13,7 +13,7 @@ using WinRT.Interop;
 
 namespace MrCapitalQ.FollowAlong;
 
-[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
+[ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
 public sealed partial class ShareWindow : WindowBase
 {
     private const double ViewportAspectRatio = 16 / 9d;

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Converters;
 
-[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
+[ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
 internal class StreamToImageConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, string language)

@@ -4,7 +4,7 @@ using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong;
 
-[ExcludeFromCodeCoverage(Justification = JustificationConstants.UIThreadTestExclusionJustification)]
+[ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
 public abstract class WindowBase : WindowEx
 {
     public WindowBase() => AppWindow.SetIcon(Icon);
