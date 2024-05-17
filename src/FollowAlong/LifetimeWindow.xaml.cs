@@ -1,6 +1,9 @@
 using CommunityToolkit.Mvvm.Messaging;
+using H.NotifyIcon.Core;
+using H.NotifyIcon.EfficiencyMode;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
 using MrCapitalQ.FollowAlong.Core;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
@@ -46,6 +49,8 @@ public sealed partial class LifetimeWindow : Window
 
         _messenger.Register<LifetimeWindow, StartCapture>(this, (r, m) =>
         {
+            EfficiencyModeUtilities.SetEfficiencyMode(false);
+
             if (m.CaptureItem is IDisplayCaptureItem captureItem)
             {
                 r.Start(captureItem);
@@ -63,9 +68,15 @@ public sealed partial class LifetimeWindow : Window
 
             r.Start(r._displayCaptureItemCreator.Create(currentPointerDisplay));
         });
-        _messenger.Register<LifetimeWindow, StopCapture>(this, (r, m) => r.Stop());
+        _messenger.Register<LifetimeWindow, StopCapture>(this, (r, m) =>
+        {
+            EfficiencyModeUtilities.SetEfficiencyMode(true);
+            r.Stop();
+        });
 
         Closed += LifetimeWindow_Closed;
+
+        TrayIcon.ToolTipText = Windows.ApplicationModel.Package.Current.GetAppListEntries()[0].DisplayInfo.DisplayName;
     }
 
     private void Start(IDisplayCaptureItem captureItem)
@@ -142,4 +153,13 @@ public sealed partial class LifetimeWindow : Window
     private void PreviewWindow_Closed(object sender, WindowEventArgs args) => Stop();
 
     private void ShareWindow_Closed(object sender, WindowEventArgs args) => Stop();
+
+    private void OpenApplicationCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
+        => App.Current.ShowMainWindow();
+
+    private void StartSessionCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
+        => _messenger.Send(StartCapture.Empty);
+
+    private void ExitApplicationCommand_ExecuteRequested(XamlUICommand sender, ExecuteRequestedEventArgs args)
+        => App.Current.Exit();
 }
