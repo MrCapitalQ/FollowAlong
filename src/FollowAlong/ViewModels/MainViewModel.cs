@@ -37,7 +37,7 @@ internal partial class MainViewModel : ObservableObject
         _messenger = messenger;
         _messenger.Register<MainViewModel, StopCapture>(this, (r, m) => r.Load());
 
-        foreach (var hotKeyType in Enum.GetValues<HotKeyType>().Except(hotKeysService.RegisteredHotKeys))
+        foreach (var hotKeyType in hotKeysService.HotKeyRegistrationFailures)
             AddFailedHotKeyRegistration(hotKeyType);
     }
 

@@ -14,9 +14,10 @@ public sealed class HotKeysService(IWindowMessageMonitor windowMessageMonitor, I
     private readonly IWindowMessageMonitor _windowMessageMonitor = windowMessageMonitor;
     private readonly IHotKeysInterops _hotKeysInterops = hotKeysInterops;
     private readonly HashSet<HotKeyType> _registeredHotKeys = [];
+    private readonly HashSet<HotKeyType> _hotKeyRegistrationFailures = [];
     private nint? _hwnd;
 
-    public IReadOnlyCollection<HotKeyType> RegisteredHotKeys => [.. _registeredHotKeys];
+    public IReadOnlyCollection<HotKeyType> HotKeyRegistrationFailures => [.. _hotKeyRegistrationFailures];
 
     public void RegisterHotKeys(nint hwnd)
     {
@@ -25,6 +26,7 @@ public sealed class HotKeysService(IWindowMessageMonitor windowMessageMonitor, I
 
         _hwnd = hwnd;
 
+        _hotKeyRegistrationFailures.Clear();
         RegisterHotKey(_hwnd.Value, HotKeyType.StartStop, HotKeyModifiers, (uint)VirtualKey.F);
         RegisterHotKey(_hwnd.Value, HotKeyType.ZoomIn, HotKeyModifiers, (uint)AdditionalKeys.Plus);
         RegisterHotKey(_hwnd.Value, HotKeyType.ZoomOut, HotKeyModifiers, (uint)AdditionalKeys.Minus);
@@ -58,6 +60,8 @@ public sealed class HotKeysService(IWindowMessageMonitor windowMessageMonitor, I
     {
         if (_hotKeysInterops.RegisterHotKey(_hwnd, (int)hotKeyType, (uint)modifiers, key))
             _registeredHotKeys.Add(hotKeyType);
+        else
+            _hotKeyRegistrationFailures.Add(hotKeyType);
     }
 
     private void OnHotKeyInvoked(HotKeyInvokedEventArgs e)

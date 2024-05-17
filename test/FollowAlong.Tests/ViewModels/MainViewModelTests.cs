@@ -45,10 +45,11 @@ public class MainViewModelTests
     [InlineData(HotKeyType.ZoomOut, "Zoom out keyboard shortcut could not be registered.")]
     [InlineData(HotKeyType.ResetZoom, "Reset zoom keyboard shortcut could not be registered.")]
     [InlineData(HotKeyType.ToggleTracking, "Pause and resume tracking keyboard shortcut could not be registered.")]
+    [InlineData((HotKeyType)1000, "HotKeyType 1000 keyboard shortcut could not be registered.")]
     [Theory]
     public void Ctor_PopulatesFailedHotKeyRegistrations(HotKeyType hotKeyType, string expectedMessage)
     {
-        _hotKeysService.RegisteredHotKeys.Returns(Enum.GetValues<HotKeyType>().Except([hotKeyType]).ToList().AsReadOnly());
+        _hotKeysService.HotKeyRegistrationFailures.Returns(new HotKeyType[] { hotKeyType }.AsReadOnly());
 
         var mainViewModel = new MainViewModel(_displayService,
             _hotKeysService,
