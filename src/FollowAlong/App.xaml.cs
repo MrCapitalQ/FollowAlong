@@ -53,6 +53,8 @@ public partial class App : Application
 
         if (AppInstance.GetCurrent().GetActivatedEventArgs().Kind != ExtendedActivationKind.StartupTask)
             ShowMainWindow();
+        else
+            EfficiencyModeUtilities.SetEfficiencyMode(true);
     }
 
     private void LifetimeWindow_Closed(object sender, WindowEventArgs args)

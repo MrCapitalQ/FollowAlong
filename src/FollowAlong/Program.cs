@@ -6,6 +6,7 @@ using MrCapitalQ.FollowAlong;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
+using MrCapitalQ.FollowAlong.Core.Startup;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Pages;
@@ -56,6 +57,7 @@ internal class Program
         builder.Services.AddTransient<IGraphicsCreator, GraphicsCreator>();
         builder.Services.AddTransient<IDisplayCaptureItemCreator, DisplayCaptureItemCreator>();
         builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
+        builder.Services.AddSingleton<IStartupTaskService, StartupTaskService>();
 
         var host = builder.Build();
         host.Run();
