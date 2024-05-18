@@ -3,6 +3,7 @@ using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
+using MrCapitalQ.FollowAlong.Pages;
 using MrCapitalQ.FollowAlong.ViewModels;
 using System.Drawing;
 
@@ -91,6 +92,16 @@ public class MainViewModelTests
         _mainViewModel.StartCommand.Execute(null);
 
         _messenger.DidNotReceive().Send(Arg.Any<StartCapture>(), Arg.Any<TestMessengerToken>());
+    }
+
+    [Fact]
+    public void SettingsCommand_SendsNavigateMessage()
+    {
+        var navigateMessage = new EntranceNavigateMessage(typeof(SettingsPage));
+
+        _mainViewModel.SettingsCommand.Execute(null);
+
+        _messenger.Received(1).Send<NavigateMessage, TestMessengerToken>(navigateMessage, Arg.Any<TestMessengerToken>());
     }
 
     [Fact]

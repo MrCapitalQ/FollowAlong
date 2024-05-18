@@ -9,8 +9,8 @@ using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Core.Startup;
 using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
-using MrCapitalQ.FollowAlong.Pages;
 using MrCapitalQ.FollowAlong.Services;
+using MrCapitalQ.FollowAlong.Shared;
 using MrCapitalQ.FollowAlong.ViewModels;
 using System.Diagnostics.CodeAnalysis;
 
@@ -37,11 +37,9 @@ internal class Program
         builder.Services.AddTransient<PreviewWindow>();
         builder.Services.AddTransient<ShareWindow>();
 
-        builder.Services.AddTransient<MainPage>();
-        builder.Services.AddTransient<PreviewPage>();
-
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddSingleton<PreviewViewModel>();
+        builder.Services.AddSingleton<SettingsViewModel>();
 
         builder.Services.AddTransient<IDisplayService, DisplayService>();
         builder.Services.AddSingleton<ICaptureSessionAdapter, CaptureSessionAdapter>();
@@ -58,6 +56,7 @@ internal class Program
         builder.Services.AddTransient<IDisplayCaptureItemCreator, DisplayCaptureItemCreator>();
         builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
         builder.Services.AddSingleton<IStartupTaskService, StartupTaskService>();
+        builder.Services.AddSingleton<IPackageInfo, PackageInfo>();
 
         var host = builder.Build();
         host.Run();

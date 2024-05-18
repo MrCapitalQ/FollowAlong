@@ -22,19 +22,19 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <ItemsView ItemsSource="{x:Bind _viewModel.Alerts}">
-            <ItemsView.ItemTemplate>
-                <DataTemplate x:DataType="vm:AlertViewModel">
-                    <ItemContainer>
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{x:Bind _viewModel.Alerts}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AlertViewModel">
                         <InfoBar Severity="{x:Bind Severity}"
                                  Title="{x:Bind Title}"
                                  Message="{x:Bind Message}"
                                  IsOpen="True"
                                  Margin="4,0" />
-                    </ItemContainer>
-                </DataTemplate>
-            </ItemsView.ItemTemplate>
-        </ItemsView>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
         <StackPanel Grid.Row="1">
             <TextBlock Text="Select a display, click start, and share the window named &quot;Follow Along - Share Window&quot;."
@@ -72,11 +72,22 @@
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <FontIcon Glyph="&#xE768;"
-                                  Margin="0,0,8,0" />
-                        <TextBlock Text="Start" />
+                                  Style="{StaticResource ButtonFontIconStyle}" />
+                        <TextBlock Text="Start"
+                                   Margin="8,0,0,0" />
                     </StackPanel>
                 </Button.Content>
             </Button>
         </StackPanel>
+
+        <Button Command="{x:Bind _viewModel.SettingsCommand}"
+                Style="{StaticResource AlternateCloseButtonStyle}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Grid.Row="2"
+                ToolTipService.ToolTip="Settings">
+            <FontIcon Glyph="&#xE713;"
+                      Style="{StaticResource ButtonFontIconStyle}" />
+        </Button>
     </Grid>
 </Page>
