@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "MrCapitalQ.FollowAlong (Package)": {
+    "FollowAlong (Package)": {
       "commandName": "MsixPackage"
     },
-    "MrCapitalQ.FollowAlong (Unpackaged)": {
+    "FollowAlong (Unpackaged)": {
       "commandName": "Project"
     }
   }
