@@ -18,8 +18,13 @@
     </winuiex:WindowEx.SystemBackdrop>
 
     <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"
-          RowDefinitions="Auto,*">
+          VerticalAlignment="Stretch">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
         <controls:TitleBar x:Name="TitleBar"
                            Icon="{x:Bind Icon}"
                            Title="{x:Bind Title}"

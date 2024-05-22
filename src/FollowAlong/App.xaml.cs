@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using MrCapitalQ.FollowAlong.Core.Capture;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using WinUIEx;
 
 namespace MrCapitalQ.FollowAlong;
@@ -48,6 +49,8 @@ public partial class App : Application
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        _ = SetPreferredAppMode(PreferredAppMode.AllowDark);
+
         LifetimeWindow = Services.GetRequiredService<LifetimeWindow>();
         LifetimeWindow.Closed += LifetimeWindow_Closed;
 
@@ -86,4 +89,16 @@ public partial class App : Application
 
         MainWindow = null;
     }
+
+    [LibraryImport("uxtheme.dll", EntryPoint = "#135", SetLastError = true)]
+    private static partial int SetPreferredAppMode(PreferredAppMode preferredAppMode);
+
+    private enum PreferredAppMode
+    {
+        Default,
+        AllowDark,
+        ForceDark,
+        ForceLight,
+        Max
+    };
 }
