@@ -3,10 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.AppLifecycle;
 using MrCapitalQ.FollowAlong;
+using MrCapitalQ.FollowAlong.Core;
+using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Display;
 using MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
-using MrCapitalQ.FollowAlong.Infrastructure.Startup;
 using MrCapitalQ.FollowAlong.Infrastructure.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using MrCapitalQ.FollowAlong.Services;
@@ -55,8 +56,11 @@ internal class Program
         builder.Services.AddTransient<IGraphicsCreator, GraphicsCreator>();
         builder.Services.AddTransient<IDisplayCaptureItemCreator, DisplayCaptureItemCreator>();
         builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
-        builder.Services.AddSingleton<IStartupTaskService, StartupTaskService>();
         builder.Services.AddSingleton<IPackageInfo, PackageInfo>();
+
+        builder.Services.AddStartupTaskService();
+        builder.Services.AddLocalApplicationDataStore();
+        builder.Services.AddSettingsService();
 
         var host = builder.Build();
         host.Run();
