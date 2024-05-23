@@ -3,7 +3,6 @@
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:local="using:MrCapitalQ.FollowAlong"
-                  xmlns:p="using:MrCapitalQ.FollowAlong.Pages"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
@@ -18,19 +17,33 @@
     </winuiex:WindowEx.SystemBackdrop>
 
     <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch">
+          VerticalAlignment="Stretch"
+          Background="Transparent"
+          PointerPressed="Grid_PointerPressed"
+          Grid.KeyboardAcceleratorPlacementMode="Hidden">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <Grid.KeyboardAccelerators>
+            <KeyboardAccelerator Key="Left"
+                                 Modifiers="Menu"
+                                 Invoked="BackKeyboardAccelerator_Invoked" />
+            <KeyboardAccelerator Key="Right"
+                                 Modifiers="Menu"
+                                 Invoked="ForwardKeyboardAccelerator_Invoked" />
+        </Grid.KeyboardAccelerators>
+
         <controls:TitleBar x:Name="TitleBar"
                            Icon="{x:Bind Icon}"
                            Title="{x:Bind Title}"
-                           Window="{x:Bind}" />
+                           Window="{x:Bind}" 
+                           BackRequested="TitleBar_BackRequested"/>
         <controls:CapturePreview x:Name="Preview"
                                  Grid.RowSpan="2" />
-        <p:MainPage Grid.Row="1" />
+        <Frame x:Name="RootFrame"
+               Grid.Row="1" />
     </Grid>
 </local:WindowBase>

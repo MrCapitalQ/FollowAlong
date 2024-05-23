@@ -5,6 +5,7 @@ using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
+using MrCapitalQ.FollowAlong.Pages;
 using System.Collections.ObjectModel;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;
@@ -60,6 +61,12 @@ internal partial class MainViewModel : ObservableObject
             return;
 
         _messenger.Send(new StartCapture(_displayCaptureItemCreator.Create(SelectedDisplay.DisplayItem)));
+    }
+
+    [RelayCommand]
+    private void Settings()
+    {
+        _messenger.Send<NavigateMessage>(new EntranceNavigateMessage(typeof(SettingsPage)));
     }
 
     private void AddFailedHotKeyRegistration(HotKeyType hotKeyType)
