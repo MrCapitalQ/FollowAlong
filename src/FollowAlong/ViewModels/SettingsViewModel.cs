@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.WinUI.Helpers;
-using MrCapitalQ.FollowAlong.Core.Startup;
+using MrCapitalQ.FollowAlong.Infrastructure.Startup;
 using MrCapitalQ.FollowAlong.Shared;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
-using MrCapitalQ.FollowAlong.Core;
+using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.ViewModels;
 using System.Diagnostics.CodeAnalysis;
 

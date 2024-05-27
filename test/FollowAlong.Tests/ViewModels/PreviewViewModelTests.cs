@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using MrCapitalQ.FollowAlong.Core.HotKeys;
+using MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.ViewModels;
 

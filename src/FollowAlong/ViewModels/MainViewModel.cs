@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using MrCapitalQ.FollowAlong.Core.Capture;
-using MrCapitalQ.FollowAlong.Core.Display;
-using MrCapitalQ.FollowAlong.Core.HotKeys;
+using MrCapitalQ.FollowAlong.Infrastructure.Capture;
+using MrCapitalQ.FollowAlong.Infrastructure.Display;
+using MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Pages;
 using System.Collections.ObjectModel;

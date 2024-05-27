@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
-using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using WinUIEx;

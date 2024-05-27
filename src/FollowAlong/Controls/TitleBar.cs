@@ -3,7 +3,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using MrCapitalQ.FollowAlong.Core;
+using MrCapitalQ.FollowAlong.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 using Windows.Foundation;
 using Windows.Graphics;

@@ -1,7 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Markup;
-using MrCapitalQ.FollowAlong.Core;
+using MrCapitalQ.FollowAlong.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Controls;

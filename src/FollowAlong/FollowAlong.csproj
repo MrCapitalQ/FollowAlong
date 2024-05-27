@@ -41,10 +41,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="FollowAlong.Tests" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\FollowAlong.Core\FollowAlong.Core.csproj" />
-  </ItemGroup>
 
   <!-- 
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
@@ -53,6 +49,9 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FollowAlong.Infrastructure\FollowAlong.Infrastructure.csproj" />
   </ItemGroup>
 
   <!-- 

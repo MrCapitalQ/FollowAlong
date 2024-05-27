@@ -1,11 +1,11 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using MrCapitalQ.FollowAlong.Core;
-using MrCapitalQ.FollowAlong.Core.Capture;
-using MrCapitalQ.FollowAlong.Core.Display;
-using MrCapitalQ.FollowAlong.Core.Tracking;
-using MrCapitalQ.FollowAlong.Core.Utils;
+using MrCapitalQ.FollowAlong.Infrastructure;
+using MrCapitalQ.FollowAlong.Infrastructure.Capture;
+using MrCapitalQ.FollowAlong.Infrastructure.Display;
+using MrCapitalQ.FollowAlong.Infrastructure.Tracking;
+using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using MrCapitalQ.FollowAlong.Messages;
 using System.Diagnostics.CodeAnalysis;
 using Windows.Graphics;

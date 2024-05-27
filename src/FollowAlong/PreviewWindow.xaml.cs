@@ -1,7 +1,7 @@
 using Microsoft.UI.Windowing;
-using MrCapitalQ.FollowAlong.Core;
-using MrCapitalQ.FollowAlong.Core.Display;
-using MrCapitalQ.FollowAlong.Core.Utils;
+using MrCapitalQ.FollowAlong.Infrastructure;
+using MrCapitalQ.FollowAlong.Infrastructure.Display;
+using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using System.Diagnostics.CodeAnalysis;
 using Windows.Graphics;
 
