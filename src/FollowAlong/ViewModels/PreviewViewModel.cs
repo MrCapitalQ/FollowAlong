@@ -8,6 +8,7 @@ namespace MrCapitalQ.FollowAlong.ViewModels;
 
 public partial class PreviewViewModel : ObservableObject
 {
+    private const double DefaultSessionControlsOpacity = 0.5;
     private const double MaxZoom = 3;
     private const double MinZoom = 1;
     private const double ZoomStepSize = 0.5;
@@ -16,7 +17,7 @@ public partial class PreviewViewModel : ObservableObject
     private double _zoom = 1.5;
 
     [ObservableProperty]
-    private double _sessionControlsOpacity = 0.5;
+    private double _sessionControlsOpacity = DefaultSessionControlsOpacity;
 
     [ObservableProperty]
     private bool _isTrackingEnabled = true;
@@ -26,9 +27,9 @@ public partial class PreviewViewModel : ObservableObject
         hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
 
         _messenger = messenger;
-        _messenger.Register<PreviewViewModel, StartCapture>(this, (r, m) => BroadcastCurrentState());
+        _messenger.Register<PreviewViewModel, StartCapture>(this, (r, m) => HandleStart());
 
-        BroadcastCurrentState();
+        HandleStart();
     }
 
     public double Zoom
@@ -60,8 +61,9 @@ public partial class PreviewViewModel : ObservableObject
         SessionControlsOpacity = opacity;
     }
 
-    private void BroadcastCurrentState()
+    private void HandleStart()
     {
+        SessionControlsOpacity = DefaultSessionControlsOpacity;
         _messenger.Send(new ZoomChanged(Zoom));
         _messenger.Send(new TrackingToggled(IsTrackingEnabled));
     }
