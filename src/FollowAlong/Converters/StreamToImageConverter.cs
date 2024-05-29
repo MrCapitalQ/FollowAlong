@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
-using MrCapitalQ.FollowAlong.Core;
+using MrCapitalQ.FollowAlong.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Converters;

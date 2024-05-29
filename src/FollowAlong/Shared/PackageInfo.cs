@@ -1,4 +1,4 @@
-﻿using MrCapitalQ.FollowAlong.Core;
+﻿using MrCapitalQ.FollowAlong.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 using Windows.ApplicationModel;
 

@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using MrCapitalQ.FollowAlong.Core;
-using MrCapitalQ.FollowAlong.Core.Utils;
+using MrCapitalQ.FollowAlong.Infrastructure;
+using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using MrCapitalQ.FollowAlong.Messages;
 using System.Diagnostics.CodeAnalysis;
 using System.Timers;

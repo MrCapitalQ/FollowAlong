@@ -1,4 +1,4 @@
-﻿using MrCapitalQ.FollowAlong.Core.Startup;
+﻿using MrCapitalQ.FollowAlong.Infrastructure.Startup;
 using MrCapitalQ.FollowAlong.Shared;
 using MrCapitalQ.FollowAlong.ViewModels;
 using Windows.ApplicationModel;
