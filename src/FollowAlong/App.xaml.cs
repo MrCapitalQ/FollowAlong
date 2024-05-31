@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using MrCapitalQ.FollowAlong.Core.AppData;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -51,10 +52,13 @@ public partial class App : Application
     {
         _ = SetPreferredAppMode(PreferredAppMode.AllowDark);
 
+        Services.GetRequiredService<ISettingsService>().SetHasBeenLaunchedOnce();
+
         LifetimeWindow = Services.GetRequiredService<LifetimeWindow>();
         LifetimeWindow.Closed += LifetimeWindow_Closed;
 
-        if (AppInstance.GetCurrent().GetActivatedEventArgs().Kind != ExtendedActivationKind.StartupTask)
+        if (AppInstance.GetCurrent().GetActivatedEventArgs().Kind != ExtendedActivationKind.StartupTask
+            && !Environment.GetCommandLineArgs().Contains("-silent"))
             ShowMainWindow();
         else
             EfficiencyModeUtilities.SetEfficiencyMode(true);
