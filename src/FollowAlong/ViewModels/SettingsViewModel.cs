@@ -1,6 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Helpers;
+using Microsoft.UI.Xaml.Media.Animation;
 using MrCapitalQ.FollowAlong.Infrastructure.Startup;
+using MrCapitalQ.FollowAlong.Messages;
+using MrCapitalQ.FollowAlong.Pages;
 using MrCapitalQ.FollowAlong.Shared;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;
@@ -9,6 +14,7 @@ internal partial class SettingsViewModel : ObservableObject
 {
     private readonly IStartupTaskService _startupTaskService;
     private readonly IPackageInfo _packageInfo;
+    private readonly IMessenger _messenger;
 
     private bool _isStartupOn;
 
@@ -18,10 +24,11 @@ internal partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _startupSettingsText = string.Empty;
 
-    public SettingsViewModel(IStartupTaskService startupTaskService, IPackageInfo packageInfo)
+    public SettingsViewModel(IStartupTaskService startupTaskService, IPackageInfo packageInfo, IMessenger messenger)
     {
         _startupTaskService = startupTaskService;
         _packageInfo = packageInfo;
+        _messenger = messenger;
 
         UpdateStartupState();
         AppDisplayName = packageInfo.DisplayName;
@@ -88,7 +95,9 @@ internal partial class SettingsViewModel : ObservableObject
                 IsStartupToggleEnabled = true;
                 break;
         }
-
         OnPropertyChanged(nameof(IsStartupOn));
     }
+
+    [RelayCommand]
+    private void ShortcutsSettings() => _messenger.Send<NavigateMessage>(new SlideNavigateMessage(typeof(ShortcutsSettingsPage), SlideNavigationTransitionEffect.FromRight));
 }

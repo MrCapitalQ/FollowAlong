@@ -1,4 +1,8 @@
-﻿using MrCapitalQ.FollowAlong.Infrastructure.Startup;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI.Xaml.Media.Animation;
+using MrCapitalQ.FollowAlong.Infrastructure.Startup;
+using MrCapitalQ.FollowAlong.Messages;
+using MrCapitalQ.FollowAlong.Pages;
 using MrCapitalQ.FollowAlong.Shared;
 using MrCapitalQ.FollowAlong.ViewModels;
 using Windows.ApplicationModel;
@@ -9,14 +13,16 @@ public class SettingsViewModelTests
 {
     private readonly IStartupTaskService _startupTaskService;
     private readonly IPackageInfo _packageInfo;
+    private readonly IMessenger _messenger;
 
     private readonly SettingsViewModel _viewModel;
     public SettingsViewModelTests()
     {
         _startupTaskService = Substitute.For<IStartupTaskService>();
         _packageInfo = Substitute.For<IPackageInfo>();
+        _messenger = Substitute.For<IMessenger>();
 
-        _viewModel = new(_startupTaskService, _packageInfo);
+        _viewModel = new(_startupTaskService, _packageInfo, _messenger);
     }
 
     [Fact]
@@ -26,7 +32,7 @@ public class SettingsViewModelTests
         _packageInfo.DisplayName.Returns(expectedAppDisplayName);
         _packageInfo.Version.Returns(new PackageVersion(1, 2, 3, 0));
 
-        var viewModel = new SettingsViewModel(_startupTaskService, _packageInfo);
+        var viewModel = new SettingsViewModel(_startupTaskService, _packageInfo, _messenger);
 
         Assert.Equal(expectedAppDisplayName, viewModel.AppDisplayName);
         Assert.Equal("1.2.3", viewModel.Version);
@@ -45,7 +51,7 @@ public class SettingsViewModelTests
     {
         _startupTaskService.GetStartupStateAsync().Returns(startupState);
 
-        var viewModel = new SettingsViewModel(_startupTaskService, _packageInfo);
+        var viewModel = new SettingsViewModel(_startupTaskService, _packageInfo, _messenger);
 
         Assert.Equal(expectedIsStartupOn, viewModel.IsStartupOn);
         Assert.Equal(expectedIsStartupToggleEnabled, viewModel.IsStartupToggleEnabled);
@@ -63,5 +69,15 @@ public class SettingsViewModelTests
 
         Assert.Equal(expectedIsStartupOn, _viewModel.IsStartupOn);
         _startupTaskService.Received(1).SetStartupStateAsync(isStartOn);
+    }
+
+    [Fact]
+    public void ShortcutsSettingsCommand_SendsNavigateMessage()
+    {
+        var navigateMessage = new SlideNavigateMessage(typeof(ShortcutsSettingsPage), SlideNavigationTransitionEffect.FromRight);
+
+        _viewModel.ShortcutsSettingsCommand.Execute(null);
+
+        _messenger.Received(1).Send<NavigateMessage, TestMessengerToken>(navigateMessage, Arg.Any<TestMessengerToken>());
     }
 }

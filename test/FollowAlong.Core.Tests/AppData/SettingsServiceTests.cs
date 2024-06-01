@@ -1,6 +1,6 @@
 ﻿using MrCapitalQ.FollowAlong.Core.AppData;
 
-namespace MrCapitalQ.FollowAlong.Infrastructure.Tests.AppData;
+namespace MrCapitalQ.FollowAlong.Core.Tests.AppData;
 
 public class SettingsServiceTests
 {

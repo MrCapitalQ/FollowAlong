@@ -63,6 +63,12 @@
                                   IsEnabled="{x:Bind _viewModel.IsStartupToggleEnabled, Mode=OneWay}" />
                 </toolkit:SettingsCard>
 
+                <toolkit:SettingsCard Header="Shortcuts"
+                                      HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}"
+                                      Description="View keyboard shortcuts"
+                                      IsClickEnabled="True"
+                                      Command="{x:Bind _viewModel.ShortcutsSettingsCommand}" />
+
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="About" />
                 <toolkit:SettingsExpander Header="{x:Bind _viewModel.AppDisplayName}"
