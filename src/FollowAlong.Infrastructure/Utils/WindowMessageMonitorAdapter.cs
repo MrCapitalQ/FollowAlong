@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using MrCapitalQ.FollowAlong.Core.Utils;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Utils;
 
@@ -9,7 +10,7 @@ public sealed class WindowMessageMonitorAdapter : IWindowMessageMonitor
 
     private WinUIEx.Messaging.WindowMessageMonitor? _monitor;
 
-    public void Init(IntPtr hwnd)
+    public void Init(nint hwnd)
     {
         _monitor = new WinUIEx.Messaging.WindowMessageMonitor(hwnd);
         _monitor.WindowMessageReceived += Monitor_WindowMessageReceived;

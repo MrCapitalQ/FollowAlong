@@ -4,10 +4,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.AppLifecycle;
 using MrCapitalQ.FollowAlong;
 using MrCapitalQ.FollowAlong.Core;
+using MrCapitalQ.FollowAlong.Core.Keyboard;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Display;
-using MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
+using MrCapitalQ.FollowAlong.Infrastructure.Keyboard;
 using MrCapitalQ.FollowAlong.Infrastructure.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using MrCapitalQ.FollowAlong.Services;
@@ -41,6 +43,7 @@ internal class Program
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddSingleton<PreviewViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
+        builder.Services.AddSingleton<ShortcutsSettingsViewModel>();
 
         builder.Services.AddTransient<IDisplayService, DisplayService>();
         builder.Services.AddSingleton<ICaptureSessionAdapter, CaptureSessionAdapter>();
@@ -48,7 +51,7 @@ internal class Program
         builder.Services.AddTransient<IPointerService, PointerService>();
         builder.Services.AddSingleton<IUpdateSynchronizer, UpdateSynchronizer>();
         builder.Services.AddTransient<TrackingTransformService>();
-        builder.Services.AddSingleton<IHotKeysService, HotKeysService>();
+        builder.Services.AddSingleton<IShortcutService, ShortcutService>();
         builder.Services.AddSingleton<DisplayWatcher>();
         builder.Services.AddTransient<IWindowMessageMonitor, WindowMessageMonitorAdapter>();
         builder.Services.AddTransient<IHotKeysInterops, HotKeysInteropsAdapter>();

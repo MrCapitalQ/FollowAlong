@@ -12,12 +12,23 @@
       mc:Ignorable="d">
 
     <Page.Resources>
-        <Style x:Key="KeyboardShortcutStackPanelStyle"
-               TargetType="StackPanel">
-            <Setter Property="Orientation"
-                    Value="Horizontal" />
-            <Setter Property="Spacing"
-                    Value="4" />
+        <Style x:Key="KeyboardShortcutItemsControlStyle"
+               TargetType="ItemsControl">
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="4" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate x:DataType="x:String">
+                        <controls:KeyboardKey Content="{x:Bind}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style TargetType="controls:KeyboardKey">
             <Setter Property="Foreground"
@@ -65,12 +76,8 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <StackPanel Style="{StaticResource KeyboardShortcutStackPanelStyle}">
-                        <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
-                        <controls:KeyboardKey>Shift</controls:KeyboardKey>
-                        <controls:KeyboardKey>Alt</controls:KeyboardKey>
-                        <controls:KeyboardKey>F</controls:KeyboardKey>
-                    </StackPanel>
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.StartStopShortcut.DisplayKeys, Mode=OneWay}"
+                                  Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Pause and unpause mouse tracking"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE769;}"
@@ -78,12 +85,8 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <StackPanel Style="{StaticResource KeyboardShortcutStackPanelStyle}">
-                        <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
-                        <controls:KeyboardKey>Shift</controls:KeyboardKey>
-                        <controls:KeyboardKey>Alt</controls:KeyboardKey>
-                        <controls:KeyboardKey>P</controls:KeyboardKey>
-                    </StackPanel>
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.ToggleTrackingShortcut.DisplayKeys, Mode=OneWay}"
+                                  Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Zoom in"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8A3;}"
@@ -91,12 +94,8 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <StackPanel Style="{StaticResource KeyboardShortcutStackPanelStyle}">
-                        <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
-                        <controls:KeyboardKey>Shift</controls:KeyboardKey>
-                        <controls:KeyboardKey>Alt</controls:KeyboardKey>
-                        <controls:KeyboardKey>+</controls:KeyboardKey>
-                    </StackPanel>
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.ZoomInShortcut.DisplayKeys, Mode=OneWay}"
+                                  Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Zoom out"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE71F;}"
@@ -104,12 +103,8 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <StackPanel Style="{StaticResource KeyboardShortcutStackPanelStyle}">
-                        <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
-                        <controls:KeyboardKey>Shift</controls:KeyboardKey>
-                        <controls:KeyboardKey>Alt</controls:KeyboardKey>
-                        <controls:KeyboardKey>-</controls:KeyboardKey>
-                    </StackPanel>
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.ZoomOutShortcut.DisplayKeys, Mode=OneWay}"
+                                  Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Reset zoom"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE71E;}"
@@ -117,12 +112,8 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <StackPanel Style="{StaticResource KeyboardShortcutStackPanelStyle}">
-                        <controls:KeyboardKey>Ctrl</controls:KeyboardKey>
-                        <controls:KeyboardKey>Shift</controls:KeyboardKey>
-                        <controls:KeyboardKey>Alt</controls:KeyboardKey>
-                        <controls:KeyboardKey>0</controls:KeyboardKey>
-                    </StackPanel>
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.ResetZoomShortcut.DisplayKeys, Mode=OneWay}"
+                                  Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
             </StackPanel>
         </ScrollViewer>

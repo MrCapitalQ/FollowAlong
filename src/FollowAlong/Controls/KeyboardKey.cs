@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Markup;
 using MrCapitalQ.FollowAlong.Infrastructure;
@@ -7,20 +7,20 @@ using System.Diagnostics.CodeAnalysis;
 namespace MrCapitalQ.FollowAlong.Controls;
 
 [ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
-[ContentProperty(Name = nameof(MainContent))]
+[ContentProperty(Name = nameof(Content))]
 public sealed class KeyboardKey : Control
 {
-    public static readonly DependencyProperty MainContentProperty =
-       DependencyProperty.Register(nameof(MainContent),
+    public static readonly DependencyProperty ContentProperty =
+       DependencyProperty.Register(nameof(Content),
           typeof(string),
           typeof(KeyboardKey),
-          new PropertyMetadata(default(string)));
+          new PropertyMetadata(default));
 
     public KeyboardKey() => DefaultStyleKey = typeof(KeyboardKey);
 
-    public string? MainContent
+    public string? Content
     {
-        get { return GetValue(MainContentProperty)?.ToString(); }
-        set { SetValue(MainContentProperty, value); }
+        get => GetValue(ContentProperty)?.ToString();
+        set => SetValue(ContentProperty, value);
     }
 }

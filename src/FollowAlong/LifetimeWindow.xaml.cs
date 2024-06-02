@@ -1,13 +1,12 @@
 using CommunityToolkit.Mvvm.Messaging;
-using H.NotifyIcon.Core;
 using H.NotifyIcon.EfficiencyMode;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
+using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Display;
-using MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
 using MrCapitalQ.FollowAlong.Infrastructure.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using MrCapitalQ.FollowAlong.Messages;
@@ -29,7 +28,7 @@ public sealed partial class LifetimeWindow : Window
     private ShareWindow? _shareWindow;
     private bool _reshowMainWindow = false;
 
-    public LifetimeWindow(IHotKeysService hotKeysService,
+    public LifetimeWindow(IShortcutService shortcutService,
         IBitmapCaptureService captureService,
         IMessenger messenger,
         IDisplayService displayService,
@@ -44,8 +43,8 @@ public sealed partial class LifetimeWindow : Window
 
         InitializeComponent();
 
-        hotKeysService.RegisterHotKeys(WindowNative.GetWindowHandle(this));
-        hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
+        shortcutService.Register(WindowNative.GetWindowHandle(this));
+        shortcutService.ShortcutInvoked += ShortcutService_ShortcutInvoked;
 
         _messenger.Register<LifetimeWindow, StartCapture>(this, (r, m) =>
         {
@@ -133,9 +132,9 @@ public sealed partial class LifetimeWindow : Window
         }
     }
 
-    private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
+    private void ShortcutService_ShortcutInvoked(object? sender, AppShortcutInvokedEventArgs e)
     {
-        if (e.HotKeyType is not HotKeyType.StartStop)
+        if (e.ShortcutKind is not AppShortcutKind.StartStop)
             return;
 
         if (!_captureService.IsStarted)
