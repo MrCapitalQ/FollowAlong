@@ -22,7 +22,8 @@ Follow Along is an open source app for Windows that makes it easier when screen 
 ## Building
 ### Prerequisites
 - Visual Studio 2022
-  - .NET desktop development workload
+  - Windows application development workload
+  - Windows 11 SDK (10.0.22621.0)
 - .NET 8 SDK
 
 ### Build and Run
