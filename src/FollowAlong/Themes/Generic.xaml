@@ -19,14 +19,14 @@
         </Setter>
     </Style>
     <Style TargetType="controls:KeyboardKey">
+        <Setter Property="FontSize"
+                Value="12" />
         <Setter Property="BorderThickness"
-                Value="0.5" />
+                Value="1" />
         <Setter Property="CornerRadius"
                 Value="4" />
         <Setter Property="Padding"
                 Value="4, 2" />
-        <Setter Property="Margin"
-                Value="0, -3" />
         <Setter Property="MinWidth"
                 Value="24" />
         <Setter Property="IsTabStop"
@@ -36,21 +36,21 @@
                 <ControlTemplate TargetType="controls:KeyboardKey">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding Foreground}"
-                            BorderThickness="1"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}"
-                            Margin="{TemplateBinding Margin}"
-                            MinWidth="{TemplateBinding MinWidth}">
+                            Margin="{TemplateBinding Margin}">
                         <TextBlock Text="{TemplateBinding MainContent}"
                                    Foreground="{TemplateBinding Foreground}"
-                                   FontSize="12"
-                                   TextAlignment="Center" />
+                                   FontSize="{TemplateBinding FontSize}"
+                                   TextAlignment="Center"
+                                   VerticalAlignment="Center" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-        <Style x:Key="NavigationBackButtonNormalStyle"
+    <Style x:Key="NavigationBackButtonNormalStyle"
            TargetType="Button">
         <Setter Property="Background"
                 Value="{ThemeResource NavigationViewBackButtonBackground}" />
@@ -191,7 +191,7 @@
                                     Height="NaN"
                                     MaxHeight="{ThemeResource NavigationBackButtonHeight}"
                                     VerticalAlignment="Stretch"
-                                    AutomationProperties.Name="Back" 
+                                    AutomationProperties.Name="Back"
                                     ToolTipService.ToolTip="Back" />
                         </Border>
                         <Image Source="{TemplateBinding Icon}"

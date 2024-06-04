@@ -32,6 +32,7 @@ public sealed partial class MainWindow : WindowBase
             NavigationTransitionInfo? transitionInfo = m switch
             {
                 EntranceNavigateMessage entranceNavigateMessage => new EntranceNavigationTransitionInfo(),
+                SlideNavigateMessage slideNavigateMessage => new SlideNavigationTransitionInfo { Effect = slideNavigateMessage.SlideEffect },
                 _ => null
             };
             r.RootFrame.Navigate(m.SourcePageType, m.Parameter, transitionInfo);
