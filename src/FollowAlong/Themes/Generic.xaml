@@ -40,11 +40,24 @@
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}"
                             Margin="{TemplateBinding Margin}">
-                        <ContentPresenter Content="{TemplateBinding Content}"
-                                          Foreground="{TemplateBinding Foreground}"
-                                          FontSize="{TemplateBinding FontSize}"
-                                          HorizontalContentAlignment="Center"
-                                          VerticalContentAlignment="Center" />
+                        <Grid>
+                            <ContentPresenter x:Name="KeyContentPresenter"
+                                              Content="{TemplateBinding Content}"
+                                              Foreground="{TemplateBinding Foreground}"
+                                              FontSize="{TemplateBinding FontSize}"
+                                              HorizontalContentAlignment="Center"
+                                              VerticalContentAlignment="Center" />
+                            <FontIcon x:Name="GlyphKeyPresenter"
+                                      FontSize="{TemplateBinding FontSize}"
+                                      Glyph="{TemplateBinding Content}"
+                                      Visibility="Collapsed" />
+                            <Viewbox x:Name="WinKeyPresenter"
+                                     Width="{TemplateBinding FontSize}"
+                                     Height="{TemplateBinding FontSize}"
+                                     Visibility="Collapsed">
+                                <PathIcon Data="F1 M32,32z M0,0z M16.742,16.742L16.742,30.995 30.995,30.995 30.995,16.742z M1.004,16.742L1.004,30.995 15.26,30.995 15.26,16.742z M16.742,1.004L16.742,15.26 30.995,15.26 30.995,1.004z M1.004,1.004L1.004,15.26 15.26,15.26 15.26,1.004z" />
+                            </Viewbox>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

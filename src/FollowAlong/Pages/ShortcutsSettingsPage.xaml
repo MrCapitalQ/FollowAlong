@@ -7,6 +7,7 @@
       xmlns:vm="using:MrCapitalQ.FollowAlong.ViewModels"
       xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
       xmlns:ui="using:CommunityToolkit.WinUI"
+      xmlns:system="using:Windows.System"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
@@ -24,8 +25,8 @@
             </Setter>
             <Setter Property="ItemTemplate">
                 <Setter.Value>
-                    <DataTemplate x:DataType="x:String">
-                        <controls:KeyboardKey Content="{x:Bind}" />
+                    <DataTemplate x:DataType="system:VirtualKey">
+                        <controls:KeyboardKey Key="{x:Bind}" />
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
@@ -76,7 +77,7 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <ItemsControl ItemsSource="{x:Bind _viewModel.StartStopShortcut.DisplayKeys, Mode=OneWay}"
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.StartStopShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Pause and unpause mouse tracking"
@@ -85,7 +86,7 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <ItemsControl ItemsSource="{x:Bind _viewModel.ToggleTrackingShortcut.DisplayKeys, Mode=OneWay}"
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.ToggleTrackingShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Zoom in"
@@ -94,7 +95,7 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <ItemsControl ItemsSource="{x:Bind _viewModel.ZoomInShortcut.DisplayKeys, Mode=OneWay}"
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.ZoomInShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Zoom out"
@@ -103,7 +104,7 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <ItemsControl ItemsSource="{x:Bind _viewModel.ZoomOutShortcut.DisplayKeys, Mode=OneWay}"
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.ZoomOutShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Reset zoom"
@@ -112,7 +113,7 @@
                                       IsClickEnabled="False"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
                                       ActionIconToolTip="Change shortcut">
-                    <ItemsControl ItemsSource="{x:Bind _viewModel.ResetZoomShortcut.DisplayKeys, Mode=OneWay}"
+                    <ItemsControl ItemsSource="{x:Bind _viewModel.ResetZoomShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
             </StackPanel>
