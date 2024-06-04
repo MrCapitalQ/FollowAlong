@@ -74,45 +74,50 @@
                 <toolkit:SettingsCard Header="Start and stop"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE768;}"
                                       Description="Shortcut to start and stop a follow along session"
-                                      IsClickEnabled="False"
+                                      IsClickEnabled="True"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
-                                      ActionIconToolTip="Change shortcut">
+                                      ActionIconToolTip="Change shortcut"
+                                      Command="{x:Bind _viewModel.ChangeStartStopShortcutCommand}">
                     <ItemsControl ItemsSource="{x:Bind _viewModel.StartStopShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Pause and unpause mouse tracking"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE769;}"
                                       Description="Shortcut to toggle whether the shared view should move to keep the mouse pointer in view"
-                                      IsClickEnabled="False"
+                                      IsClickEnabled="True"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
-                                      ActionIconToolTip="Change shortcut">
+                                      ActionIconToolTip="Change shortcut"
+                                      Command="{x:Bind _viewModel.ChangeToggleTrackingShortcutCommand}">
                     <ItemsControl ItemsSource="{x:Bind _viewModel.ToggleTrackingShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Zoom in"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8A3;}"
                                       Description="Shortcut to zoom in the shared view"
-                                      IsClickEnabled="False"
+                                      IsClickEnabled="True"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
-                                      ActionIconToolTip="Change shortcut">
+                                      ActionIconToolTip="Change shortcut"
+                                      Command="{x:Bind _viewModel.ChangeZoomInShortcutCommand}">
                     <ItemsControl ItemsSource="{x:Bind _viewModel.ZoomInShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Zoom out"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE71F;}"
                                       Description="Shortcut to zoom out the shared view"
-                                      IsClickEnabled="False"
+                                      IsClickEnabled="True"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
-                                      ActionIconToolTip="Change shortcut">
+                                      ActionIconToolTip="Change shortcut"
+                                      Command="{x:Bind _viewModel.ChangeZoomOutShortcutCommand}">
                     <ItemsControl ItemsSource="{x:Bind _viewModel.ZoomOutShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>
                 <toolkit:SettingsCard Header="Reset zoom"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE71E;}"
                                       Description="Shortcut to reset the shared view to the default zoom level"
-                                      IsClickEnabled="False"
+                                      IsClickEnabled="True"
                                       ActionIcon="{ui:FontIcon Glyph=&#xE70F;}"
-                                      ActionIconToolTip="Change shortcut">
+                                      ActionIconToolTip="Change shortcut"
+                                      Command="{x:Bind _viewModel.ChangeResetZoomShortcutCommand}">
                     <ItemsControl ItemsSource="{x:Bind _viewModel.ResetZoomShortcut.VirtualKeys, Mode=OneWay}"
                                   Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
                 </toolkit:SettingsCard>

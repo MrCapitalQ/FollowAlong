@@ -31,16 +31,31 @@ public class ShortcutServiceTests
     public void Register_Unregistered_RegistersShortcutsAndInitializesWindowMessageMonitor()
     {
         var windowHwnd = new nint(1);
-        var modifiers = ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt;
         _hotKeysInterops.RegisterHotKey(Arg.Any<nint>(), Arg.Any<int>(), Arg.Any<uint>(), Arg.Any<uint>())
             .Returns(true);
 
         _shortcutService.Register(windowHwnd);
 
-        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)AppShortcutKind.StartStop, (uint)modifiers, (uint)PrimaryShortcutKey.F);
-        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)AppShortcutKind.ZoomIn, (uint)modifiers, (uint)PrimaryShortcutKey.Plus);
-        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)AppShortcutKind.ZoomOut, (uint)modifiers, (uint)PrimaryShortcutKey.Minus);
-        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd, (int)AppShortcutKind.ToggleTracking, (uint)modifiers, (uint)PrimaryShortcutKey.P);
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.StartStop,
+            (uint)AppShortcutKind.StartStop.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.StartStop.GetDefaultShortcutKeys().Key);
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.ZoomIn,
+            (uint)AppShortcutKind.ZoomIn.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.ZoomIn.GetDefaultShortcutKeys().Key);
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.ZoomOut,
+            (uint)AppShortcutKind.ZoomOut.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.ZoomOut.GetDefaultShortcutKeys().Key);
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.ResetZoom,
+            (uint)AppShortcutKind.ResetZoom.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.ResetZoom.GetDefaultShortcutKeys().Key);
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.ToggleTracking,
+            (uint)AppShortcutKind.ToggleTracking.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.ToggleTracking.GetDefaultShortcutKeys().Key);
         _windowMessageMonitor.Received(1).Init(windowHwnd);
     }
 
@@ -52,6 +67,7 @@ public class ShortcutServiceTests
             AppShortcutKind.StartStop,
             AppShortcutKind.ZoomIn,
             AppShortcutKind.ZoomOut,
+            AppShortcutKind.ResetZoom,
             AppShortcutKind.ToggleTracking
         };
 
@@ -61,14 +77,44 @@ public class ShortcutServiceTests
     }
 
     [Fact]
-    public void Register_AlreadyRegistered_ThrowsException()
+    public void Register_AlreadyRegistered_UnregistersBeforeRegistering()
     {
         var windowHwnd = new nint(1);
+        _hotKeysInterops.RegisterHotKey(Arg.Any<nint>(), Arg.Any<int>(), Arg.Any<uint>(), Arg.Any<uint>())
+            .Returns(true);
+        _shortcutService.Register(windowHwnd);
+        _hotKeysInterops.ClearReceivedCalls();
+        _windowMessageMonitor.ClearReceivedCalls();
+
         _shortcutService.Register(windowHwnd);
 
-        var ex = Assert.Throws<InvalidOperationException>(() => _shortcutService.Register(windowHwnd));
-
-        Assert.Equal("This service can only be registered to one window at a time.", ex.Message);
+        _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.StartStop);
+        _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.ZoomIn);
+        _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.ZoomOut);
+        _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.ResetZoom);
+        _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.ToggleTracking);
+        _windowMessageMonitor.Received(1).Reset();
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.StartStop,
+            (uint)AppShortcutKind.StartStop.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.StartStop.GetDefaultShortcutKeys().Key);
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.ZoomIn,
+            (uint)AppShortcutKind.ZoomIn.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.ZoomIn.GetDefaultShortcutKeys().Key);
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.ZoomOut,
+            (uint)AppShortcutKind.ZoomOut.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.ZoomOut.GetDefaultShortcutKeys().Key);
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.ResetZoom,
+            (uint)AppShortcutKind.ResetZoom.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.ResetZoom.GetDefaultShortcutKeys().Key);
+        _hotKeysInterops.Received(1).RegisterHotKey(windowHwnd,
+            (int)AppShortcutKind.ToggleTracking,
+            (uint)AppShortcutKind.ToggleTracking.GetDefaultShortcutKeys().ModifierKeys,
+            (uint)AppShortcutKind.ToggleTracking.GetDefaultShortcutKeys().Key);
+        _windowMessageMonitor.Received(1).Init(windowHwnd);
     }
 
     [Fact]
@@ -78,12 +124,16 @@ public class ShortcutServiceTests
         _hotKeysInterops.RegisterHotKey(Arg.Any<nint>(), Arg.Any<int>(), Arg.Any<uint>(), Arg.Any<uint>())
             .Returns(true);
         _shortcutService.Register(windowHwnd);
+        _hotKeysInterops.ClearReceivedCalls();
+        _windowMessageMonitor.ClearReceivedCalls();
 
         _shortcutService.Unregister();
 
         _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.StartStop);
         _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.ZoomIn);
         _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.ZoomOut);
+        _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.ResetZoom);
+        _hotKeysInterops.Received(1).UnregisterHotKey(windowHwnd, (int)AppShortcutKind.ToggleTracking);
         _windowMessageMonitor.Received(1).Reset();
     }
 

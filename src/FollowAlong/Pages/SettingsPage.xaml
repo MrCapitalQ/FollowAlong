@@ -65,7 +65,7 @@
 
                 <toolkit:SettingsCard Header="Shortcuts"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}"
-                                      Description="View keyboard shortcuts"
+                                      Description="Change keyboard shortcuts"
                                       IsClickEnabled="True"
                                       Command="{x:Bind _viewModel.ShortcutsSettingsCommand}" />
 

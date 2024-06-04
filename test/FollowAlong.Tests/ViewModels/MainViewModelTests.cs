@@ -113,7 +113,7 @@ public class MainViewModelTests
         _screenshotService.ClearReceivedCalls();
 
         Assert.NotNull(_stopCaptureMessageHandler);
-        _stopCaptureMessageHandler.Invoke(_mainViewModel, StopCapture.Empty);
+        _stopCaptureMessageHandler.Invoke(_mainViewModel, StopCapture.Instance);
 
         Assert.Equal(2, _mainViewModel.Displays.Count);
         Assert.Equal(_mainViewModel.Displays[1], _mainViewModel.SelectedDisplay);

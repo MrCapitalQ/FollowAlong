@@ -21,8 +21,7 @@ public sealed class ShortcutService(IWindowMessageMonitor windowMessageMonitor, 
 
     public void Register(nint hwnd)
     {
-        if (_hwnd.HasValue)
-            throw new InvalidOperationException($"This service can only be registered to one window at a time.");
+        Unregister();
 
         _hwnd = hwnd;
 
@@ -50,13 +49,10 @@ public sealed class ShortcutService(IWindowMessageMonitor windowMessageMonitor, 
 
         _hwnd = null;
         _windowMessageMonitor.Reset();
-    }
-
-    public void Dispose()
-    {
-        Unregister();
         _windowMessageMonitor.WindowMessageReceived -= WindowMessageMonitor_WindowMessageReceived;
     }
+
+    public void Dispose() => Unregister();
 
     private void RegisterShortcut(nint _hwnd, AppShortcutKind shortcutKind)
     {

@@ -24,8 +24,6 @@ public class ShortcutKeysViewModelTests
 
         var viewModel = new ShortcutKeysViewModel(shortcutKeys);
 
-        Assert.Equal(expectedModifiers, viewModel.ModifierKeys);
-        Assert.Equal(expectedKey, viewModel.Key);
         Assert.Equivalent(expectedVirtualKeys, viewModel.VirtualKeys);
     }
 }

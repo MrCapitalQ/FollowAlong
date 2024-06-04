@@ -43,7 +43,7 @@ public class PreviewViewModelTests
     {
         _previewViewModel.StopCommand.Execute(null);
 
-        _messenger.Received(1).Send(StopCapture.Empty, Arg.Any<TestMessengerToken>());
+        _messenger.Received(1).Send(StopCapture.Instance, Arg.Any<TestMessengerToken>());
     }
 
     [Fact]
