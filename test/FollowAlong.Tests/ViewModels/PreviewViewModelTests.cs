@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
+using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.ViewModels;
 
@@ -7,7 +7,7 @@ namespace MrCapitalQ.FollowAlong.Tests.ViewModels;
 
 public class PreviewViewModelTests
 {
-    private readonly IHotKeysService _hotKeysService;
+    private readonly IShortcutService _shortcutService;
     private readonly IMessenger _messenger;
 
     private readonly PreviewViewModel _previewViewModel;
@@ -16,13 +16,13 @@ public class PreviewViewModelTests
 
     public PreviewViewModelTests()
     {
-        _hotKeysService = Substitute.For<IHotKeysService>();
+        _shortcutService = Substitute.For<IShortcutService>();
         _messenger = Substitute.For<IMessenger>();
 
         _messenger.When(x => x.Register(Arg.Any<PreviewViewModel>(), Arg.Any<TestMessengerToken>(), Arg.Any<MessageHandler<PreviewViewModel, StartCapture>>()))
             .Do(x => _startCaptureMessageHandler = (MessageHandler<PreviewViewModel, StartCapture>)x[2]);
 
-        _previewViewModel = new PreviewViewModel(_hotKeysService, _messenger);
+        _previewViewModel = new PreviewViewModel(_shortcutService, _messenger);
     }
 
     [Theory]
@@ -86,25 +86,25 @@ public class PreviewViewModelTests
     }
 
     [Fact]
-    public void HotKeysService_HotKeyInvoked_ZoomIn_IncreasesZoom()
+    public void ShortcutService_ShortcutInvoked_ZoomIn_IncreasesZoom()
     {
-        _hotKeysService.HotKeyInvoked += Raise.EventWith(new HotKeyInvokedEventArgs(HotKeyType.ZoomIn));
+        _shortcutService.ShortcutInvoked += Raise.EventWith(new AppShortcutInvokedEventArgs(AppShortcutKind.ZoomIn));
 
         Assert.Equal(2, _previewViewModel.Zoom);
     }
 
     [Fact]
-    public void HotKeysService_HotKeyInvoked_ZoomOut_DecreasesZoom()
+    public void ShortcutService_ShortcutInvoked_ZoomOut_DecreasesZoom()
     {
-        _hotKeysService.HotKeyInvoked += Raise.EventWith(new HotKeyInvokedEventArgs(HotKeyType.ZoomOut));
+        _shortcutService.ShortcutInvoked += Raise.EventWith(new AppShortcutInvokedEventArgs(AppShortcutKind.ZoomOut));
 
         Assert.Equal(1, _previewViewModel.Zoom);
     }
 
     [Fact]
-    public void HotKeysService_HotKeyInvoked_ToggleTracking_TogglesIsTrackingEnabledAndSendsTrackingToggledMessage()
+    public void ShortcutService_ShortcutInvoked_ToggleTracking_TogglesIsTrackingEnabledAndSendsTrackingToggledMessage()
     {
-        _hotKeysService.HotKeyInvoked += Raise.EventWith(new HotKeyInvokedEventArgs(HotKeyType.ToggleTracking));
+        _shortcutService.ShortcutInvoked += Raise.EventWith(new AppShortcutInvokedEventArgs(AppShortcutKind.ToggleTracking));
 
         Assert.False(_previewViewModel.IsTrackingEnabled);
         _messenger.Received(1).Send(new TrackingToggled(false), Arg.Any<TestMessengerToken>());

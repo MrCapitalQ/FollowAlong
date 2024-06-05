@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Display;
-using MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Pages;
 using MrCapitalQ.FollowAlong.ViewModels;
@@ -13,7 +13,7 @@ public class MainViewModelTests
 {
     private readonly DisplayItem _primaryDisplayItem = new(true, new(10, 10, 10, 10), new(), 1);
     private readonly IDisplayService _displayService;
-    private readonly IHotKeysService _hotKeysService;
+    private readonly IShortcutService _shortcutService;
     private readonly IScreenshotService _screenshotService;
     private readonly IDisplayCaptureItemCreator _displayCaptureItemCreator;
     private readonly IMessenger _messenger;
@@ -25,7 +25,7 @@ public class MainViewModelTests
     public MainViewModelTests()
     {
         _displayService = Substitute.For<IDisplayService>();
-        _hotKeysService = Substitute.For<IHotKeysService>();
+        _shortcutService = Substitute.For<IShortcutService>();
         _screenshotService = Substitute.For<IScreenshotService>();
         _displayCaptureItemCreator = Substitute.For<IDisplayCaptureItemCreator>();
         _messenger = Substitute.For<IMessenger>();
@@ -35,25 +35,25 @@ public class MainViewModelTests
             .Do(x => _stopCaptureMessageHandler = (MessageHandler<MainViewModel, StopCapture>)x[2]);
 
         _mainViewModel = new MainViewModel(_displayService,
-            _hotKeysService,
+            _shortcutService,
             _screenshotService,
             _displayCaptureItemCreator,
             _messenger);
     }
 
-    [InlineData(HotKeyType.StartStop, "Start and stop keyboard shortcut could not be registered.")]
-    [InlineData(HotKeyType.ZoomIn, "Zoom in keyboard shortcut could not be registered.")]
-    [InlineData(HotKeyType.ZoomOut, "Zoom out keyboard shortcut could not be registered.")]
-    [InlineData(HotKeyType.ResetZoom, "Reset zoom keyboard shortcut could not be registered.")]
-    [InlineData(HotKeyType.ToggleTracking, "Pause and resume tracking keyboard shortcut could not be registered.")]
-    [InlineData((HotKeyType)1000, "HotKeyType 1000 keyboard shortcut could not be registered.")]
+    [InlineData(AppShortcutKind.StartStop, "Start and stop keyboard shortcut could not be registered.")]
+    [InlineData(AppShortcutKind.ZoomIn, "Zoom in keyboard shortcut could not be registered.")]
+    [InlineData(AppShortcutKind.ZoomOut, "Zoom out keyboard shortcut could not be registered.")]
+    [InlineData(AppShortcutKind.ResetZoom, "Reset zoom keyboard shortcut could not be registered.")]
+    [InlineData(AppShortcutKind.ToggleTracking, "Pause and resume tracking keyboard shortcut could not be registered.")]
+    [InlineData((AppShortcutKind)1000, "AppShortcutKind 1000 keyboard shortcut could not be registered.")]
     [Theory]
-    public void Ctor_PopulatesFailedHotKeyRegistrations(HotKeyType hotKeyType, string expectedMessage)
+    public void Ctor_PopulatesFailedShortcutRegistrations(AppShortcutKind shortcutKind, string expectedMessage)
     {
-        _hotKeysService.HotKeyRegistrationFailures.Returns(new HotKeyType[] { hotKeyType }.AsReadOnly());
+        _shortcutService.ShortcutRegistrationFailures.Returns(new AppShortcutKind[] { shortcutKind }.AsReadOnly());
 
         var mainViewModel = new MainViewModel(_displayService,
-            _hotKeysService,
+            _shortcutService,
             _screenshotService,
             _displayCaptureItemCreator,
             _messenger);

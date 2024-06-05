@@ -1,4 +1,4 @@
-﻿namespace MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
+﻿namespace MrCapitalQ.FollowAlong.Core.Keyboard;
 
 public interface IHotKeysInterops
 {

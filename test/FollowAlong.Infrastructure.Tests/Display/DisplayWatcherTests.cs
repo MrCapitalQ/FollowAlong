@@ -1,5 +1,5 @@
-﻿using MrCapitalQ.FollowAlong.Infrastructure.Display;
-using MrCapitalQ.FollowAlong.Infrastructure.Utils;
+﻿using MrCapitalQ.FollowAlong.Core.Utils;
+using MrCapitalQ.FollowAlong.Infrastructure.Display;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Tests.Display;
 

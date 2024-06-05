@@ -40,11 +40,11 @@
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}"
                             Margin="{TemplateBinding Margin}">
-                        <TextBlock Text="{TemplateBinding MainContent}"
-                                   Foreground="{TemplateBinding Foreground}"
-                                   FontSize="{TemplateBinding FontSize}"
-                                   TextAlignment="Center"
-                                   VerticalAlignment="Center" />
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          FontSize="{TemplateBinding FontSize}"
+                                          HorizontalContentAlignment="Center"
+                                          VerticalContentAlignment="Center" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

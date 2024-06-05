@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
+using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Messages;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;
@@ -22,9 +22,9 @@ public partial class PreviewViewModel : ObservableObject
     [ObservableProperty]
     private bool _isTrackingEnabled = true;
 
-    public PreviewViewModel(IHotKeysService hotKeysService, IMessenger messenger)
+    public PreviewViewModel(IShortcutService shortcutService, IMessenger messenger)
     {
-        hotKeysService.HotKeyInvoked += HotKeysService_HotKeyInvoked;
+        shortcutService.ShortcutInvoked += ShortcutService_ShortcutInvoked;
 
         _messenger = messenger;
         _messenger.Register<PreviewViewModel, StartCapture>(this, (r, m) => HandleStart());
@@ -68,13 +68,13 @@ public partial class PreviewViewModel : ObservableObject
         _messenger.Send(new TrackingToggled(IsTrackingEnabled));
     }
 
-    private void HotKeysService_HotKeyInvoked(object? sender, HotKeyInvokedEventArgs e)
+    private void ShortcutService_ShortcutInvoked(object? sender, AppShortcutInvokedEventArgs e)
     {
-        if (e.HotKeyType == HotKeyType.ZoomIn)
+        if (e.ShortcutKind == AppShortcutKind.ZoomIn)
             ZoomIn();
-        else if (e.HotKeyType == HotKeyType.ZoomOut)
+        else if (e.ShortcutKind == AppShortcutKind.ZoomOut)
             ZoomOut();
-        else if (e.HotKeyType == HotKeyType.ToggleTracking)
+        else if (e.ShortcutKind == AppShortcutKind.ToggleTracking)
             IsTrackingEnabled = !IsTrackingEnabled;
     }
 

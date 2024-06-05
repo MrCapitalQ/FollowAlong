@@ -1,4 +1,4 @@
-﻿using MrCapitalQ.FollowAlong.Infrastructure.Utils;
+﻿using MrCapitalQ.FollowAlong.Core.Utils;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Display;
 
@@ -9,14 +9,14 @@ public sealed class DisplayWatcher : IDisposable
     private const uint WM_DISPLAYCHANGE = 0x07E;
 
     private readonly IWindowMessageMonitor _windowMessageMonitor;
-    private IntPtr? _hwnd;
+    private nint? _hwnd;
 
     public DisplayWatcher(IWindowMessageMonitor windowMessageMonitor)
     {
         _windowMessageMonitor = windowMessageMonitor;
     }
 
-    public void Register(IntPtr hwnd)
+    public void Register(nint hwnd)
     {
         if (_hwnd.HasValue)
             throw new InvalidOperationException("This service can only be registered to one window at a time.");

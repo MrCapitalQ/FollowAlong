@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Display;
-using MrCapitalQ.FollowAlong.Infrastructure.HotKeys;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Pages;
 using System.Collections.ObjectModel;
@@ -27,7 +27,7 @@ internal partial class MainViewModel : ObservableObject
     private ObservableCollection<AlertViewModel> _alerts = [];
 
     public MainViewModel(IDisplayService displayService,
-        IHotKeysService hotKeysService,
+        IShortcutService shortcutService,
         IScreenshotService screenshotService,
         IDisplayCaptureItemCreator displayCaptureItemCreator,
         IMessenger messenger)
@@ -38,8 +38,8 @@ internal partial class MainViewModel : ObservableObject
         _messenger = messenger;
         _messenger.Register<MainViewModel, StopCapture>(this, (r, m) => r.Load());
 
-        foreach (var hotKeyType in hotKeysService.HotKeyRegistrationFailures)
-            AddFailedHotKeyRegistration(hotKeyType);
+        foreach (var shortcutKind in shortcutService.ShortcutRegistrationFailures)
+            AddFailedShortcutRegistration(shortcutKind);
     }
 
     public void Load()
@@ -69,16 +69,16 @@ internal partial class MainViewModel : ObservableObject
         _messenger.Send<NavigateMessage>(new EntranceNavigateMessage(typeof(SettingsPage)));
     }
 
-    private void AddFailedHotKeyRegistration(HotKeyType hotKeyType)
+    private void AddFailedShortcutRegistration(AppShortcutKind shortcutKind)
     {
-        var shortcutTypeDisplayName = hotKeyType switch
+        var shortcutTypeDisplayName = shortcutKind switch
         {
-            HotKeyType.StartStop => "Start and stop",
-            HotKeyType.ZoomIn => "Zoom in",
-            HotKeyType.ZoomOut => "Zoom out",
-            HotKeyType.ResetZoom => "Reset zoom",
-            HotKeyType.ToggleTracking => "Pause and resume tracking",
-            _ => $"HotKeyType {hotKeyType}"
+            AppShortcutKind.StartStop => "Start and stop",
+            AppShortcutKind.ZoomIn => "Zoom in",
+            AppShortcutKind.ZoomOut => "Zoom out",
+            AppShortcutKind.ResetZoom => "Reset zoom",
+            AppShortcutKind.ToggleTracking => "Pause and resume tracking",
+            _ => $"AppShortcutKind {shortcutKind}"
         };
 
         Alerts.Add(AlertViewModel.Warning($"{shortcutTypeDisplayName} keyboard shortcut could not be registered."));
