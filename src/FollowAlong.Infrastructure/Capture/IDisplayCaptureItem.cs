@@ -1,4 +1,4 @@
-﻿using Windows.Foundation;
+﻿using System.Drawing;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
 
@@ -7,5 +7,5 @@ public interface IDisplayCaptureItem
     event EventHandler? Closed;
 
     string DisplayName { get; }
-    Rect OuterBounds { get; }
+    Rectangle OuterBounds { get; }
 }

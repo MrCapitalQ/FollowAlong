@@ -1,4 +1,4 @@
-﻿namespace MrCapitalQ.FollowAlong.Infrastructure.Utils;
+﻿namespace MrCapitalQ.FollowAlong.Core.Utils;
 
 public interface IUpdateSynchronizer
 {

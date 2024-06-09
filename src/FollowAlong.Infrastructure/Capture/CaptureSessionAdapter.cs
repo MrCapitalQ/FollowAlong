@@ -1,4 +1,5 @@
 ﻿using Microsoft.Graphics.Canvas;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using System.Diagnostics.CodeAnalysis;
 using Windows.Graphics;

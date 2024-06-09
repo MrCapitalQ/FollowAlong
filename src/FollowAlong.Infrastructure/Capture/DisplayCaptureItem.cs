@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Windows.Foundation;
+using System.Drawing;
 using Windows.Graphics.Capture;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
@@ -9,7 +9,7 @@ public class DisplayCaptureItem : IDisplayCaptureItem
 {
     public event EventHandler? Closed;
 
-    internal DisplayCaptureItem(GraphicsCaptureItem graphicsCaptureItem, Rect outerBounds)
+    internal DisplayCaptureItem(GraphicsCaptureItem graphicsCaptureItem, Rectangle outerBounds)
     {
         GraphicsCaptureItem = graphicsCaptureItem;
         GraphicsCaptureItem.Closed += (_, _) => OnClosed();
@@ -17,7 +17,7 @@ public class DisplayCaptureItem : IDisplayCaptureItem
     }
 
     public GraphicsCaptureItem GraphicsCaptureItem { get; }
-    public Rect OuterBounds { get; }
+    public Rectangle OuterBounds { get; }
     public string DisplayName => GraphicsCaptureItem.DisplayName;
 
     private void OnClosed()

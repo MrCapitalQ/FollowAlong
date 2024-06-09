@@ -5,12 +5,12 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Hosting;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
-using MrCapitalQ.FollowAlong.Infrastructure.Tracking;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Numerics;
-using Windows.Foundation;
 
 namespace MrCapitalQ.FollowAlong.Controls;
 
@@ -19,7 +19,7 @@ public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTran
 {
     public event EventHandler? ViewportSizeChanged;
 
-    private Rect _contentArea;
+    private Rectangle _contentArea;
     private CompositionDrawingSurface? _surface;
     private CompositionSurfaceBrush? _brush;
     private SpriteVisual? _visual;
@@ -30,10 +30,10 @@ public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTran
         SizeChanged += CapturePreview_SizeChanged;
     }
 
-    public Rect ContentArea => _contentArea;
-    public Size ViewportSize => ActualSize.ToSize();
+    public Rectangle ContentArea => _contentArea;
+    public Size ViewportSize => new((int)ActualSize.X, (int)ActualSize.Y);
 
-    public void Initialize(CanvasDevice canvasDevice, Rect? contentArea = null)
+    public void Initialize(CanvasDevice canvasDevice, Rectangle? contentArea = null)
     {
         if (contentArea.HasValue)
             _contentArea = contentArea.Value;
@@ -41,7 +41,7 @@ public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTran
         var compositor = ElementCompositionPreview.GetElementVisual(this).Compositor;
         using var compositionGraphicsDevice = CanvasComposition.CreateCompositionGraphicsDevice(compositor, canvasDevice);
 
-        _surface = compositionGraphicsDevice.CreateDrawingSurface(new Size(_contentArea.Width, _contentArea.Height),
+        _surface = compositionGraphicsDevice.CreateDrawingSurface(new Windows.Foundation.Size(_contentArea.Width, _contentArea.Height),
              Microsoft.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
              Microsoft.Graphics.DirectX.DirectXAlphaMode.Premultiplied);
 

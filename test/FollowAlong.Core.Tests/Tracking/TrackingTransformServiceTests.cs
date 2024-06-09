@@ -1,9 +1,9 @@
-﻿using MrCapitalQ.FollowAlong.Infrastructure.Tracking;
-using MrCapitalQ.FollowAlong.Infrastructure.Utils;
+﻿using MrCapitalQ.FollowAlong.Core.Tracking;
+using MrCapitalQ.FollowAlong.Core.Utils;
+using System.Drawing;
 using System.Numerics;
-using Windows.Foundation;
 
-namespace MrCapitalQ.FollowAlong.Infrastructure.Tests.Tracking;
+namespace MrCapitalQ.FollowAlong.Core.Tests.Tracking;
 
 public class TrackingTransformServiceTests
 {
@@ -94,11 +94,11 @@ public class TrackingTransformServiceTests
 
     [Theory]
     [MemberData(nameof(GetUpdateRequested_ScalesToViewportParameters))]
-    public void UpdateRequested_ScalesToViewport(Size viewportSize, float scale)
+    public void UpdateRequested_ScalesToViewport(int viewportWidth, int viewportHeight, float scale)
     {
         _pointerService.GetCurrentPosition().Returns(new Point(400, 300));
-        _target.ViewportSize.Returns(viewportSize);
-        _target.ContentArea.Returns(new Rect(0, 0, 800, 600));
+        _target.ViewportSize.Returns(new Size(viewportWidth, viewportHeight));
+        _target.ContentArea.Returns(new Rectangle(0, 0, 800, 600));
         _trackingTransformService.StartTrackingTransforms(_target);
 
         _synchronizer.UpdateRequested += Raise.Event();
@@ -107,21 +107,21 @@ public class TrackingTransformServiceTests
         _target.Received(1).SetOffset(new Vector2(0));
     }
 
-    public static TheoryData<Size, float> GetUpdateRequested_ScalesToViewportParameters()
+    public static TheoryData<int, int, float> GetUpdateRequested_ScalesToViewportParameters()
     {
-        var data = new TheoryData<Size, float>
+        var data = new TheoryData<int, int, float>
         {
             // If viewport is half size of content in both dimensions,
             // then default scale should be half.
-            { new Size(400, 300), 0.5f },
+            { 400, 300, 0.5f },
 
             // If viewport is half height of content and a quarter width of content,
             // then default scale should be half.
-            { new Size(200, 300), 0.5f },
+            { 200, 300, 0.5f },
 
             // If viewport is a quarter height of content and half width of content,
             // then default scale should be a quarter.
-            { new Size(400, 150), 0.5f }
+            { 400, 150, 0.5f }
         };
         return data;
     }
@@ -129,33 +129,36 @@ public class TrackingTransformServiceTests
 
     [Theory]
     [MemberData(nameof(GetUpdateRequested_OffsetsContentForPointerPositionParameters))]
-    public void UpdateRequested_OffsetsContentForPointerPosition(Point pointerPosition,
-        Size viewportSize,
-        Vector2 offset)
+    public void UpdateRequested_OffsetsContentForPointerPosition(int pointerX,
+        int pointerY,
+        int viewportWidth,
+        int viewportHeight,
+        float offsetX,
+        float offsetY)
     {
-        _pointerService.GetCurrentPosition().Returns(pointerPosition);
-        _target.ViewportSize.Returns(viewportSize);
-        _target.ContentArea.Returns(new Rect(0, 0, 800, 600));
+        _pointerService.GetCurrentPosition().Returns(new Point(pointerX, pointerY));
+        _target.ViewportSize.Returns(new Size(viewportWidth, viewportHeight));
+        _target.ContentArea.Returns(new Rectangle(0, 0, 800, 600));
         _trackingTransformService.Zoom = 2;
         _trackingTransformService.StartTrackingTransforms(_target);
 
         _synchronizer.UpdateRequested += Raise.Event();
 
         _target.Received(1).SetScale(1);
-        _target.Received(1).SetOffset(offset);
+        _target.Received(1).SetOffset(new Vector2(offsetX, offsetY));
     }
 
-    public static TheoryData<Point, Size, Vector2> GetUpdateRequested_OffsetsContentForPointerPositionParameters()
+    public static TheoryData<int, int, int, int, float, float> GetUpdateRequested_OffsetsContentForPointerPositionParameters()
     {
-        var data = new TheoryData<Point, Size, Vector2>
+        var data = new TheoryData<int, int, int, int, float, float>
         {
             // If pointer is in top left corner and viewport is half size of content with 2x zoom,
             // then scale is cancels out to 1x with offset to bottom right.
-            { new Point(0, 0), new Size(400, 300), new Vector2(200, 150) },
+            { 0, 0, 400, 300, 200, 150 },
 
             // If pointer is in bottom right corner and viewport is half size of content with 2x zoom,
             // then scale is cancels out to 1x with offset to top left.
-            { new Point(800, 600), new Size(400, 300), new Vector2(-200, -150) }
+            { 800, 600, 400, 300, -200, -150 }
         };
         return data;
     }
@@ -164,7 +167,7 @@ public class TrackingTransformServiceTests
     public void UpdateRequested_TargetNotSet_DoesNothing()
     {
         _target.ViewportSize.Returns(new Size(400, 300));
-        _target.ContentArea.Returns(new Rect(0, 0, 800, 600));
+        _target.ContentArea.Returns(new Rectangle(0, 0, 800, 600));
 
         _synchronizer.UpdateRequested += Raise.Event();
 
@@ -177,7 +180,7 @@ public class TrackingTransformServiceTests
     {
         // When tracking enabled, move pointer to top left and verify offset is updated accordingly.
         _target.ViewportSize.Returns(new Size(400, 300));
-        _target.ContentArea.Returns(new Rect(0, 0, 800, 600));
+        _target.ContentArea.Returns(new Rectangle(0, 0, 800, 600));
         _pointerService.GetCurrentPosition().Returns(new Point(0, 0));
         _trackingTransformService.Zoom = 2;
         _trackingTransformService.StartTrackingTransforms(_target);
@@ -205,7 +208,7 @@ public class TrackingTransformServiceTests
     {
         _pointerService.GetCurrentPosition().Returns(new Point(400, 300));
         _target.ViewportSize.Returns(new Size(400, 300));
-        _target.ContentArea.Returns(new Rect(0, 0, 800, 600));
+        _target.ContentArea.Returns(new Rectangle(0, 0, 800, 600));
         _trackingTransformService.StartTrackingTransforms(_target);
         _trackingTransformService.StopTrackingTransforms();
 

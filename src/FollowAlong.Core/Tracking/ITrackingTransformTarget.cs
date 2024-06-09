@@ -1,13 +1,13 @@
-﻿using System.Numerics;
-using Windows.Foundation;
+﻿using System.Drawing;
+using System.Numerics;
 
-namespace MrCapitalQ.FollowAlong.Infrastructure.Tracking;
+namespace MrCapitalQ.FollowAlong.Core.Tracking;
 
 public interface ITrackingTransformTarget
 {
     event EventHandler ViewportSizeChanged;
 
-    Rect ContentArea { get; }
+    Rectangle ContentArea { get; }
     Size ViewportSize { get; }
 
     void SetCenterPoint(Vector2 centerPoint);

@@ -5,6 +5,7 @@ using Microsoft.Windows.AppLifecycle;
 using MrCapitalQ.FollowAlong;
 using MrCapitalQ.FollowAlong.Core;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
