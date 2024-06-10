@@ -2,9 +2,9 @@
 
 public class StopCapture
 {
-    private static readonly StopCapture s_emptyInstance = new();
+    private static readonly StopCapture s_instance = new();
 
     private StopCapture() { }
 
-    public static StopCapture Empty => s_emptyInstance;
+    public static StopCapture Instance => s_instance;
 };

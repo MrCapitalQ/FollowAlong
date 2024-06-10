@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="MrCapitalQ.FollowAlong.Controls.ShortcutPreviewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:MrCapitalQ.FollowAlong.Controls"
+             xmlns:system="using:Windows.System"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="KeyboardShortcutItemsControlStyle"
+               TargetType="ItemsControl">
+            <Setter Property="MinHeight"
+                    Value="64" />
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="4" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate x:DataType="system:VirtualKey">
+                        <local:KeyboardKey Key="{x:Bind}"
+                                           Style="{StaticResource PreviewKeyboardKeyStyle}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="HorizontalAlignment"
+                    Value="Center" />
+        </Style>
+        <Style x:Key="TransientKeyboardShortcutItemsControlStyle"
+               TargetType="ItemsControl"
+               BasedOn="{StaticResource KeyboardShortcutItemsControlStyle}">
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate x:DataType="system:VirtualKey">
+                        <local:KeyboardKey Key="{x:Bind}"
+                                           Style="{StaticResource TransientKeyboardKeyStyle}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PreviewKeyboardKeyStyle"
+               TargetType="local:KeyboardKey">
+            <Setter Property="Foreground"
+                    Value="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
+            <Setter Property="Background"
+                    Value="{ThemeResource AccentFillColorDefaultBrush}" />
+            <Setter Property="FontSize"
+                    Value="18" />
+            <Setter Property="FontWeight"
+                    Value="SemiBold" />
+            <Setter Property="BorderThickness"
+                    Value="0" />
+            <Setter Property="MinHeight"
+                    Value="48" />
+            <Setter Property="MinWidth"
+                    Value="48" />
+            <Setter Property="Padding"
+                    Value="12" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+        </Style>
+        <Style x:Key="TransientKeyboardKeyStyle"
+               TargetType="local:KeyboardKey"
+               BasedOn="{StaticResource PreviewKeyboardKeyStyle}">
+            <Setter Property="Foreground"
+                    Value="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+            <Setter Property="Background"
+                    Value="{ThemeResource ControlAltFillColorQuarternaryBrush}" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid Visibility="{x:Bind TransientShortcutKeys, Mode=OneWay, Converter={StaticResource InverseCollectionVisibilityConverter}}"
+              MinHeight="64">
+            <TextBlock Text="No shortcut set"
+                       Visibility="{x:Bind ShortcutKeys, Mode=OneWay, Converter={StaticResource InverseCollectionVisibilityConverter}}"
+                       Style="{ThemeResource BodyStrongTextBlockStyle}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            <StackPanel Visibility="{x:Bind ShortcutKeys, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="40,0,0,0">
+                <ItemsControl ItemsSource="{x:Bind ShortcutKeys, Mode=OneWay}"
+                              Style="{StaticResource KeyboardShortcutItemsControlStyle}" />
+                <Button Style="{StaticResource AlternateCloseButtonStyle}"
+                        VerticalAlignment="Center"
+                        ToolTipService.ToolTip="Clear shortcut"
+                        Click="ClearButton_Click">
+                    <FontIcon Glyph="&#xE894;"
+                              Style="{StaticResource ButtonFontIconStyle}" />
+                </Button>
+            </StackPanel>
+        </Grid>
+        <ItemsControl ItemsSource="{x:Bind TransientShortcutKeys, Mode=OneWay}"
+                      Style="{StaticResource TransientKeyboardShortcutItemsControlStyle}"
+                      Visibility="{x:Bind TransientShortcutKeys, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}" />
+        <TextBlock Text="Press a new shortcut key that starts with any combination of the Windows, Ctrl, Shift, and Alt key along with one other key."
+                   Style="{ThemeResource CaptionTextBlockStyle}"
+                   TextWrapping="Wrap"
+                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                   Grid.Row="1" />
+    </Grid>
+</UserControl>

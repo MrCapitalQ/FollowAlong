@@ -44,7 +44,7 @@ public partial class PreviewViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Stop() => _messenger.Send(StopCapture.Empty);
+    private void Stop() => _messenger.Send(StopCapture.Instance);
 
     [RelayCommand]
     private void ZoomIn() => Zoom += ZoomStepSize;

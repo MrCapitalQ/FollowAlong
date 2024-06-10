@@ -18,6 +18,7 @@ namespace MrCapitalQ.FollowAlong;
 [ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
 public sealed partial class LifetimeWindow : Window
 {
+    private readonly IShortcutService _shortcutService;
     private readonly IBitmapCaptureService _captureService;
     private readonly IMessenger _messenger;
     private readonly IDisplayService _displayService;
@@ -35,6 +36,7 @@ public sealed partial class LifetimeWindow : Window
         IDisplayCaptureItemCreator displayCaptureItemCreator,
         IPointerService pointerService)
     {
+        _shortcutService = shortcutService;
         _captureService = captureService;
         _messenger = messenger;
         _displayService = displayService;
@@ -43,8 +45,8 @@ public sealed partial class LifetimeWindow : Window
 
         InitializeComponent();
 
-        shortcutService.Register(WindowNative.GetWindowHandle(this));
-        shortcutService.ShortcutInvoked += ShortcutService_ShortcutInvoked;
+        RegisterShortcuts();
+        _shortcutService.ShortcutInvoked += ShortcutService_ShortcutInvoked;
 
         _messenger.Register<LifetimeWindow, StartCapture>(this, (r, m) =>
         {
@@ -72,6 +74,9 @@ public sealed partial class LifetimeWindow : Window
             EfficiencyModeUtilities.SetEfficiencyMode(true);
             r.Stop();
         });
+
+        _messenger.Register<LifetimeWindow, RegisterShortcutsMessage>(this, (r, m) => r.RegisterShortcuts());
+        _messenger.Register<LifetimeWindow, UnregisterShortcutsMessage>(this, (r, m) => r._shortcutService.Unregister());
 
         Closed += LifetimeWindow_Closed;
 
@@ -132,6 +137,8 @@ public sealed partial class LifetimeWindow : Window
         }
     }
 
+    private void RegisterShortcuts() => _shortcutService.Register(WindowNative.GetWindowHandle(this));
+
     private void ShortcutService_ShortcutInvoked(object? sender, AppShortcutInvokedEventArgs e)
     {
         if (e.ShortcutKind is not AppShortcutKind.StartStop)
@@ -140,7 +147,7 @@ public sealed partial class LifetimeWindow : Window
         if (!_captureService.IsStarted)
             _messenger.Send(StartCapture.Empty);
         else
-            _messenger.Send(StopCapture.Empty);
+            _messenger.Send(StopCapture.Instance);
     }
 
     private void LifetimeWindow_Closed(object sender, WindowEventArgs args)

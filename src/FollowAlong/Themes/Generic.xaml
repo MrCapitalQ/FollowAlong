@@ -46,7 +46,8 @@
                                               Foreground="{TemplateBinding Foreground}"
                                               FontSize="{TemplateBinding FontSize}"
                                               HorizontalContentAlignment="Center"
-                                              VerticalContentAlignment="Center" />
+                                              VerticalContentAlignment="Center"
+                                              IsTextScaleFactorEnabled="False" />
                             <FontIcon x:Name="GlyphKeyPresenter"
                                       FontSize="{TemplateBinding FontSize}"
                                       Glyph="{TemplateBinding Content}"

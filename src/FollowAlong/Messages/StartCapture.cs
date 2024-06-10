@@ -13,5 +13,4 @@ public class StartCapture
     public static StartCapture Empty => s_emptyInstance;
 
     public IDisplayCaptureItem? CaptureItem { get; }
-
 }
