@@ -68,7 +68,7 @@
             </GridView>
             <Button HorizontalAlignment="Center"
                     Command="{x:Bind _viewModel.StartCommand}"
-                    ToolTipService.ToolTip="Ctrl + Shift + Alt + F">
+                    ToolTipService.ToolTip="{x:Bind _viewModel.StartToolTip}">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <FontIcon Glyph="&#xE768;"

@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using MrCapitalQ.FollowAlong.Core.AppData;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Display;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Pages;
+using MrCapitalQ.FollowAlong.Shared;
 using System.Collections.ObjectModel;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;
@@ -16,6 +18,7 @@ internal partial class MainViewModel : ObservableObject
     private readonly IScreenshotService _screenshotService;
     private readonly IDisplayCaptureItemCreator _displayCaptureItemCreator;
     private readonly IMessenger _messenger;
+    private readonly ISettingsService _settingsService;
 
     [ObservableProperty]
     private ObservableCollection<DisplayViewModel> _displays = [];
@@ -30,17 +33,21 @@ internal partial class MainViewModel : ObservableObject
         IShortcutService shortcutService,
         IScreenshotService screenshotService,
         IDisplayCaptureItemCreator displayCaptureItemCreator,
-        IMessenger messenger)
+        IMessenger messenger,
+        ISettingsService settingsService)
     {
         _displayService = displayService;
         _screenshotService = screenshotService;
         _displayCaptureItemCreator = displayCaptureItemCreator;
         _messenger = messenger;
+        _settingsService = settingsService;
         _messenger.Register<MainViewModel, StopCapture>(this, (r, m) => r.Load());
 
         foreach (var shortcutKind in shortcutService.ShortcutRegistrationFailures)
             AddFailedShortcutRegistration(shortcutKind);
     }
+
+    public string StartToolTip => _settingsService.GetShortcutKeys(AppShortcutKind.StartStop).ToDisplayString();
 
     public void Load()
     {
