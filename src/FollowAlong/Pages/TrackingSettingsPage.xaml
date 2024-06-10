@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="MrCapitalQ.FollowAlong.Pages.TrackingSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:MrCapitalQ.FollowAlong.Pages"
+      xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
+      xmlns:converters="using:MrCapitalQ.FollowAlong.Converters"
+      xmlns:vm="using:MrCapitalQ.FollowAlong.ViewModels"
+      xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
+      xmlns:ui="using:CommunityToolkit.WinUI"
+      xmlns:system="using:Windows.System"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style x:Key="PercentageSettingsSliderStyle"
+               BasedOn="{StaticResource DefaultSliderStyle}"
+               TargetType="Slider">
+            <Setter Property="MinWidth"
+                    Value="240" />
+            <Setter Property="ThumbToolTipValueConverter">
+                <Setter.Value>
+                    <converters:PercentageValueConverter />
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="Mouse pointer tracking"
+                   Style="{StaticResource SettingsPageTitleTextBlockStyle}" />
+        <ScrollViewer VerticalAlignment="Top"
+                      Grid.Row="1">
+            <StackPanel Style="{StaticResource SettingsBodyStackPanelStyle}">
+
+                <StackPanel.ChildrenTransitions>
+                    <TransitionCollection>
+                        <EntranceThemeTransition IsStaggeringEnabled="True" />
+                        <RepositionThemeTransition IsStaggeringEnabled="False" />
+                    </TransitionCollection>
+                </StackPanel.ChildrenTransitions>
+
+                <toolkit:SettingsExpander Header="Follow sensitivity"
+                                          HeaderIcon="{ui:FontIcon Glyph=&#xF57A;}"
+                                          Description="Adjust how much the app tries to keep your mouse pointer in view as it moves around"
+                                          IsExpanded="True">
+                    <toolkit:SettingsExpander.Items>
+                        <toolkit:SettingsCard Header="Horizontal sensitivity">
+                            <Slider Value="{x:Bind _viewModel.HorizontalBoundsThreshold, Mode=TwoWay}"
+                                    Style="{StaticResource PercentageSettingsSliderStyle}" />
+                        </toolkit:SettingsCard>
+                        <toolkit:SettingsCard Header="Vertical sensitivity">
+                            <Slider Value="{x:Bind _viewModel.VerticalBoundsThreshold, Mode=TwoWay}"
+                                    Style="{StaticResource PercentageSettingsSliderStyle}" />
+                        </toolkit:SettingsCard>
+                    </toolkit:SettingsExpander.Items>
+                </toolkit:SettingsExpander>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

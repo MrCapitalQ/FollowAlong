@@ -40,14 +40,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBlock Text="Settings"
-                   Style="{ThemeResource TitleTextBlockStyle}"
-                   MaxWidth="{StaticResource SettingsCardMaxWidth}"
-                   Margin="16,0,16,16" />
+                   Style="{StaticResource SettingsPageTitleTextBlockStyle}" />
         <ScrollViewer VerticalAlignment="Top"
                       Grid.Row="1">
-            <StackPanel HorizontalAlignment="Stretch"
-                        Spacing="{StaticResource SettingsCardSpacing}"
-                        Margin="16,0,16,16">
+            <StackPanel Style="{StaticResource SettingsBodyStackPanelStyle}">
 
                 <StackPanel.ChildrenTransitions>
                     <TransitionCollection>
@@ -62,6 +58,12 @@
                     <ToggleSwitch IsOn="{x:Bind _viewModel.IsStartupOn, Mode=TwoWay}"
                                   IsEnabled="{x:Bind _viewModel.IsStartupToggleEnabled, Mode=OneWay}" />
                 </toolkit:SettingsCard>
+                
+                <toolkit:SettingsCard Header="Mouse pointer tracking"
+                                      HeaderIcon="{ui:FontIcon Glyph=&#xE8B0;}"
+                                      Description="Adjust follow sensitivity"
+                                      IsClickEnabled="True"
+                                      Command="{x:Bind _viewModel.TrackingSettingsCommand}" />
 
                 <toolkit:SettingsCard Header="Shortcuts"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}"

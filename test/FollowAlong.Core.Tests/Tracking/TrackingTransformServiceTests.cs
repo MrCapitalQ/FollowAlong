@@ -1,4 +1,5 @@
-﻿using MrCapitalQ.FollowAlong.Core.Tracking;
+﻿using MrCapitalQ.FollowAlong.Core.AppData;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using System.Drawing;
 using System.Numerics;
@@ -8,6 +9,7 @@ namespace MrCapitalQ.FollowAlong.Core.Tests.Tracking;
 public class TrackingTransformServiceTests
 {
     private readonly IPointerService _pointerService;
+    private readonly ISettingsService _settingsService;
     private readonly IUpdateSynchronizer _synchronizer;
     private readonly ITrackingTransformTarget _target;
 
@@ -16,54 +18,11 @@ public class TrackingTransformServiceTests
     public TrackingTransformServiceTests()
     {
         _pointerService = Substitute.For<IPointerService>();
+        _settingsService = Substitute.For<ISettingsService>();
         _synchronizer = Substitute.For<IUpdateSynchronizer>();
         _target = Substitute.For<ITrackingTransformTarget>();
 
-        _trackingTransformService = new TrackingTransformService(_pointerService, _synchronizer);
-    }
-
-    [Fact]
-    public void HorizontalBoundsPercentage_SetValueInBounds_ValueUpdated()
-    {
-        var expected = 1;
-
-        _trackingTransformService.HorizontalBoundsPercentage = expected;
-
-        Assert.Equal(expected, _trackingTransformService.HorizontalBoundsPercentage);
-    }
-
-    [Fact]
-    public void HorizontalBoundsPercentage_SetNegativeValue_ThrowsException()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => _trackingTransformService.HorizontalBoundsPercentage = -1);
-    }
-
-    [Fact]
-    public void HorizontalBoundsPercentage_SetValueOverOne_ThrowsException()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => _trackingTransformService.HorizontalBoundsPercentage = 2);
-    }
-
-    [Fact]
-    public void VerticalBoundsPercentage_SetValueInBounds_ValueUpdated()
-    {
-        var expected = 1;
-
-        _trackingTransformService.VerticalBoundsPercentage = expected;
-
-        Assert.Equal(expected, _trackingTransformService.VerticalBoundsPercentage);
-    }
-
-    [Fact]
-    public void VerticalBoundsPercentage_SetNegativeValue_ThrowsException()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => _trackingTransformService.VerticalBoundsPercentage = -1);
-    }
-
-    [Fact]
-    public void VerticalBoundsPercentage_SetValueOverOne_ThrowsException()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => _trackingTransformService.VerticalBoundsPercentage = 2);
+        _trackingTransformService = new TrackingTransformService(_pointerService, _settingsService, _synchronizer);
     }
 
     [Fact]

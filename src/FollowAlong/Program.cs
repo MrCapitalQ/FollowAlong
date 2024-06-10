@@ -45,6 +45,7 @@ internal class Program
         builder.Services.AddSingleton<PreviewViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddSingleton<ShortcutsSettingsViewModel>();
+        builder.Services.AddSingleton<TrackingSettingsViewModel>();
 
         builder.Services.AddTransient<IDisplayService, DisplayService>();
         builder.Services.AddSingleton<ICaptureSessionAdapter, CaptureSessionAdapter>();

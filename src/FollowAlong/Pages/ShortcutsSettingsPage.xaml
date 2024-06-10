@@ -55,14 +55,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBlock Text="Shortcuts"
-                   Style="{ThemeResource TitleTextBlockStyle}"
-                   MaxWidth="{StaticResource SettingsCardMaxWidth}"
-                   Margin="16,0,16,16" />
+                   Style="{StaticResource SettingsPageTitleTextBlockStyle}" />
         <ScrollViewer VerticalAlignment="Top"
                       Grid.Row="1">
-            <StackPanel HorizontalAlignment="Stretch"
-                        Spacing="{StaticResource SettingsCardSpacing}"
-                        Margin="16,0,16,16">
+            <StackPanel Style="{StaticResource SettingsBodyStackPanelStyle}">
 
                 <StackPanel.ChildrenTransitions>
                     <TransitionCollection>

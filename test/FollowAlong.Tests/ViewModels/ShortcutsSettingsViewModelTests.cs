@@ -31,13 +31,13 @@ public class ShortcutsSettingsViewModelTests
             .Do(x => _shortcutChangedMessageHandler = (MessageHandler<ShortcutsSettingsViewModel, ShortcutChangedMessage>)x[2]);
 
         _viewModel = new(_settingsService, _messenger);
+
+        _settingsService.ClearReceivedCalls();
     }
 
     [Fact]
     public void Ctor_InitializesFromSettingsService()
     {
-        _settingsService.ClearReceivedCalls();
-
         var viewModel = new ShortcutsSettingsViewModel(_settingsService, _messenger);
 
         Assert.Equal(AppShortcutKind.StartStop.GetDefaultShortcutKeys(), viewModel.StartStopShortcut.VirtualKeys.ToShortcutKeys());
@@ -111,6 +111,7 @@ public class ShortcutsSettingsViewModelTests
         _shortcutChangedMessageHandler.Invoke(_viewModel, new ShortcutChangedMessage(AppShortcutKind.StartStop, expected));
 
         Assert.Equal(expected, _viewModel.StartStopShortcut.VirtualKeys.ToShortcutKeys());
+        _settingsService.Received(1).SetShortcutKeys(AppShortcutKind.StartStop, _viewModel.StartStopShortcut.VirtualKeys.ToShortcutKeys());
     }
 
     [Fact]
@@ -122,6 +123,7 @@ public class ShortcutsSettingsViewModelTests
         _shortcutChangedMessageHandler.Invoke(_viewModel, new ShortcutChangedMessage(AppShortcutKind.ZoomIn, expected));
 
         Assert.Equal(expected, _viewModel.ZoomInShortcut.VirtualKeys.ToShortcutKeys());
+        _settingsService.Received(1).SetShortcutKeys(AppShortcutKind.ZoomIn, _viewModel.ZoomInShortcut.VirtualKeys.ToShortcutKeys());
     }
 
     [Fact]
@@ -133,6 +135,7 @@ public class ShortcutsSettingsViewModelTests
         _shortcutChangedMessageHandler.Invoke(_viewModel, new ShortcutChangedMessage(AppShortcutKind.ZoomOut, expected));
 
         Assert.Equal(expected, _viewModel.ZoomOutShortcut.VirtualKeys.ToShortcutKeys());
+        _settingsService.Received(1).SetShortcutKeys(AppShortcutKind.ZoomOut, _viewModel.ZoomOutShortcut.VirtualKeys.ToShortcutKeys());
     }
 
     [Fact]
@@ -144,6 +147,7 @@ public class ShortcutsSettingsViewModelTests
         _shortcutChangedMessageHandler.Invoke(_viewModel, new ShortcutChangedMessage(AppShortcutKind.ResetZoom, expected));
 
         Assert.Equal(expected, _viewModel.ResetZoomShortcut.VirtualKeys.ToShortcutKeys());
+        _settingsService.Received(1).SetShortcutKeys(AppShortcutKind.ResetZoom, _viewModel.ResetZoomShortcut.VirtualKeys.ToShortcutKeys());
     }
 
     [Fact]
@@ -155,5 +159,6 @@ public class ShortcutsSettingsViewModelTests
         _shortcutChangedMessageHandler.Invoke(_viewModel, new ShortcutChangedMessage(AppShortcutKind.ToggleTracking, expected));
 
         Assert.Equal(expected, _viewModel.ToggleTrackingShortcut.VirtualKeys.ToShortcutKeys());
+        _settingsService.Received(1).SetShortcutKeys(AppShortcutKind.ToggleTracking, _viewModel.ToggleTrackingShortcut.VirtualKeys.ToShortcutKeys());
     }
 }
