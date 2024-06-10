@@ -117,9 +117,9 @@ public sealed class KeyboardKey : Control
             VirtualKey.Number8 or VirtualKey.NumberPad8 => "8",
             VirtualKey.Number9 or VirtualKey.NumberPad9 => "9",
             (VirtualKey)186 => ";",
-            (VirtualKey)187 => "+",
+            (VirtualKey)187 => "\uF8AA", // +
             (VirtualKey)188 => ",",
-            (VirtualKey)189 => "-",
+            (VirtualKey)189 => "\uF8AB", // -
             (VirtualKey)190 => ".",
             (VirtualKey)191 => "/",
             (VirtualKey)192 => "`",
@@ -134,6 +134,7 @@ public sealed class KeyboardKey : Control
         {
             VirtualKey.LeftWindows or VirtualKey.RightWindows => KeyDisplayMode.WinKey,
             VirtualKey.Left or VirtualKey.Up or VirtualKey.Right or VirtualKey.Down => KeyDisplayMode.Glyph,
+            (VirtualKey)187 or (VirtualKey)189 => KeyDisplayMode.Glyph, // + and -
             _ => KeyDisplayMode.Default
         };
 
