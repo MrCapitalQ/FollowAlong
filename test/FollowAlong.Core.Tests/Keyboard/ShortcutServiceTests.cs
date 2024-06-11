@@ -118,6 +118,22 @@ public class ShortcutServiceTests
     }
 
     [Fact]
+    public void Register_NoShortcutsSet_DoesNotRegisterShortcuts()
+    {
+        var windowHwnd = new nint(1);
+        _settingsService.GetShortcutKeys(AppShortcutKind.StartStop).Returns(new ShortcutKeys(ModifierKeys.None, PrimaryShortcutKey.None));
+        _settingsService.GetShortcutKeys(AppShortcutKind.ZoomIn).Returns(new ShortcutKeys(ModifierKeys.None, PrimaryShortcutKey.None));
+        _settingsService.GetShortcutKeys(AppShortcutKind.ZoomOut).Returns(new ShortcutKeys(ModifierKeys.None, PrimaryShortcutKey.None));
+        _settingsService.GetShortcutKeys(AppShortcutKind.ResetZoom).Returns(new ShortcutKeys(ModifierKeys.None, PrimaryShortcutKey.None));
+        _settingsService.GetShortcutKeys(AppShortcutKind.ToggleTracking).Returns(new ShortcutKeys(ModifierKeys.None, PrimaryShortcutKey.None));
+
+        _shortcutService.Register(windowHwnd);
+
+        _hotKeysInterops.DidNotReceive().RegisterHotKey(windowHwnd, Arg.Any<int>(), Arg.Any<uint>(), Arg.Any<uint>());
+        _windowMessageMonitor.Received(1).Init(windowHwnd);
+    }
+
+    [Fact]
     public void Unregister_WhenRegistered_UnregistersHotKeysAndResetsWindowMessageMonitor()
     {
         var windowHwnd = new nint(1);

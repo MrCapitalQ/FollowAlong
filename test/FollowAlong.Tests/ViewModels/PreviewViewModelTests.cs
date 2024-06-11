@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using MrCapitalQ.FollowAlong.Core.AppData;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Messages;
+using MrCapitalQ.FollowAlong.Shared;
 using MrCapitalQ.FollowAlong.ViewModels;
 
 namespace MrCapitalQ.FollowAlong.Tests.ViewModels;
@@ -9,6 +11,7 @@ public class PreviewViewModelTests
 {
     private readonly IShortcutService _shortcutService;
     private readonly IMessenger _messenger;
+    private readonly ISettingsService _settingsService;
 
     private readonly PreviewViewModel _previewViewModel;
 
@@ -18,11 +21,12 @@ public class PreviewViewModelTests
     {
         _shortcutService = Substitute.For<IShortcutService>();
         _messenger = Substitute.For<IMessenger>();
+        _settingsService = Substitute.For<ISettingsService>();
 
         _messenger.When(x => x.Register(Arg.Any<PreviewViewModel>(), Arg.Any<TestMessengerToken>(), Arg.Any<MessageHandler<PreviewViewModel, StartCapture>>()))
             .Do(x => _startCaptureMessageHandler = (MessageHandler<PreviewViewModel, StartCapture>)x[2]);
 
-        _previewViewModel = new PreviewViewModel(_shortcutService, _messenger);
+        _previewViewModel = new PreviewViewModel(_shortcutService, _messenger, _settingsService);
     }
 
     [Theory]
@@ -36,6 +40,42 @@ public class PreviewViewModelTests
 
         Assert.Equal(expectedValue, _previewViewModel.Zoom);
         _messenger.Received(1).Send(new ZoomChanged(expectedValue));
+    }
+
+    [Fact]
+    public void StopToolTip_ReturnsStopShortcutTooltip()
+    {
+        var shortcutKeys = AppShortcutKind.StartStop.GetDefaultShortcutKeys();
+        var expected = shortcutKeys.ToDisplayString();
+        _settingsService.GetShortcutKeys(AppShortcutKind.StartStop).Returns(shortcutKeys);
+
+        var actual = _previewViewModel.StopToolTip;
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void ZoomInToolTip_ReturnsZoomInShortcutTooltip()
+    {
+        var shortcutKeys = AppShortcutKind.StartStop.GetDefaultShortcutKeys();
+        var expected = shortcutKeys.ToDisplayString();
+        _settingsService.GetShortcutKeys(AppShortcutKind.ZoomIn).Returns(shortcutKeys);
+
+        var actual = _previewViewModel.ZoomInToolTip;
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void ZoomOutToolTip_ReturnsZoomOutShortcutTooltip()
+    {
+        var shortcutKeys = AppShortcutKind.StartStop.GetDefaultShortcutKeys();
+        var expected = shortcutKeys.ToDisplayString();
+        _settingsService.GetShortcutKeys(AppShortcutKind.ZoomOut).Returns(shortcutKeys);
+
+        var actual = _previewViewModel.ZoomOutToolTip;
+
+        Assert.Equal(expected, actual);
     }
 
     [Fact]

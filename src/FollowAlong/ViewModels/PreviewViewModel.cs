@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using MrCapitalQ.FollowAlong.Core.AppData;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Messages;
+using MrCapitalQ.FollowAlong.Shared;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;
 
@@ -12,7 +14,9 @@ public partial class PreviewViewModel : ObservableObject
     private const double MaxZoom = 3;
     private const double MinZoom = 1;
     private const double ZoomStepSize = 0.5;
+
     private readonly IMessenger _messenger;
+    private readonly ISettingsService _settingsService;
 
     private double _zoom = 1.5;
 
@@ -22,11 +26,12 @@ public partial class PreviewViewModel : ObservableObject
     [ObservableProperty]
     private bool _isTrackingEnabled = true;
 
-    public PreviewViewModel(IShortcutService shortcutService, IMessenger messenger)
+    public PreviewViewModel(IShortcutService shortcutService, IMessenger messenger, ISettingsService settingsService)
     {
         shortcutService.ShortcutInvoked += ShortcutService_ShortcutInvoked;
 
         _messenger = messenger;
+        _settingsService = settingsService;
         _messenger.Register<PreviewViewModel, StartCapture>(this, (r, m) => HandleStart());
 
         HandleStart();
@@ -42,6 +47,10 @@ public partial class PreviewViewModel : ObservableObject
             _messenger.Send(new ZoomChanged(_zoom));
         }
     }
+
+    public string StopToolTip => _settingsService.GetShortcutKeys(AppShortcutKind.StartStop).ToDisplayString();
+    public string ZoomInToolTip => _settingsService.GetShortcutKeys(AppShortcutKind.ZoomIn).ToDisplayString();
+    public string ZoomOutToolTip => _settingsService.GetShortcutKeys(AppShortcutKind.ZoomOut).ToDisplayString();
 
     [RelayCommand]
     private void Stop() => _messenger.Send(StopCapture.Instance);

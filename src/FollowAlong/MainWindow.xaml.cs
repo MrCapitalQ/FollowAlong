@@ -39,6 +39,7 @@ public sealed partial class MainWindow : WindowBase
         PersistenceId = nameof(MainWindow);
         this.SetIsExcludedFromCapture(false);
         Closed += MainWindow_Closed;
+        Activated += MainWindow_Activated;
 
         RootFrame.Navigated += RootFrame_Navigated;
         RootFrame.Navigate(typeof(MainPage));
@@ -56,7 +57,6 @@ public sealed partial class MainWindow : WindowBase
         };
         _editShortcutDialog.PreviewKeyDown += Dialog_PreviewKeyDown;
         _editShortcutDialog.PreviewKeyUp += Dialog_PreviewKeyUp;
-        _editShortcutDialog.LostFocus += Dialog_LostFocus;
 
         _messenger.Register<MainWindow, NavigateMessage>(this, (r, m) =>
         {
@@ -123,10 +123,10 @@ public sealed partial class MainWindow : WindowBase
     private void MainWindow_Closed(object sender, WindowEventArgs args)
     {
         Closed -= MainWindow_Closed;
+        Activated -= MainWindow_Activated;
         RootFrame.Navigated -= RootFrame_Navigated;
         _editShortcutDialog.PreviewKeyDown -= Dialog_PreviewKeyDown;
         _editShortcutDialog.PreviewKeyUp -= Dialog_PreviewKeyUp;
-        _editShortcutDialog.LostFocus -= Dialog_LostFocus;
         _messenger.Send(RegisterShortcutsMessage.Instance);
         _messenger.UnregisterAll(this);
     }
@@ -200,5 +200,9 @@ public sealed partial class MainWindow : WindowBase
             _shortcutPreviewer.TransientShortcutKeys = pressedKeys;
     }
 
-    private void Dialog_LostFocus(object sender, RoutedEventArgs e) => _shortcutPreviewer.TransientShortcutKeys = [];
+    private void MainWindow_Activated(object sender, Microsoft.UI.Xaml.WindowActivatedEventArgs args)
+    {
+        if (args.WindowActivationState == WindowActivationState.Deactivated)
+            _shortcutPreviewer.TransientShortcutKeys = [];
+    }
 }

@@ -124,7 +124,7 @@ public sealed class KeyboardKey : Control
             (VirtualKey)191 => "/",
             (VirtualKey)192 => "`",
             (VirtualKey)219 => "[",
-            (VirtualKey)220 => "|",
+            (VirtualKey)220 => "\\",
             (VirtualKey)221 => "]",
             (VirtualKey)222 => "'",
             _ => virtualKey.ToString()

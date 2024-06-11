@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using MrCapitalQ.FollowAlong.Core.AppData;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Display;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Pages;
+using MrCapitalQ.FollowAlong.Shared;
 using MrCapitalQ.FollowAlong.ViewModels;
 using System.Drawing;
 
@@ -17,6 +19,7 @@ public class MainViewModelTests
     private readonly IScreenshotService _screenshotService;
     private readonly IDisplayCaptureItemCreator _displayCaptureItemCreator;
     private readonly IMessenger _messenger;
+    private readonly ISettingsService _settingsService;
 
     private readonly MainViewModel _mainViewModel;
 
@@ -29,6 +32,7 @@ public class MainViewModelTests
         _screenshotService = Substitute.For<IScreenshotService>();
         _displayCaptureItemCreator = Substitute.For<IDisplayCaptureItemCreator>();
         _messenger = Substitute.For<IMessenger>();
+        _settingsService = Substitute.For<ISettingsService>();
 
         _displayService.GetAll().Returns([_primaryDisplayItem]);
         _messenger.When(x => x.Register(Arg.Any<MainViewModel>(), Arg.Any<TestMessengerToken>(), Arg.Any<MessageHandler<MainViewModel, StopCapture>>()))
@@ -38,7 +42,8 @@ public class MainViewModelTests
             _shortcutService,
             _screenshotService,
             _displayCaptureItemCreator,
-            _messenger);
+            _messenger,
+            _settingsService);
     }
 
     [InlineData(AppShortcutKind.StartStop, "Start and stop keyboard shortcut could not be registered.")]
@@ -56,10 +61,23 @@ public class MainViewModelTests
             _shortcutService,
             _screenshotService,
             _displayCaptureItemCreator,
-            _messenger);
+            _messenger,
+            _settingsService);
 
         var alertViewModel = Assert.Single(mainViewModel.Alerts);
         Assert.Equal(expectedMessage, alertViewModel.Message);
+    }
+
+    [Fact]
+    public void StartToolTip_ReturnsStartShortcutTooltip()
+    {
+        var shortcutKeys = AppShortcutKind.StartStop.GetDefaultShortcutKeys();
+        var expected = shortcutKeys.ToDisplayString();
+        _settingsService.GetShortcutKeys(AppShortcutKind.StartStop).Returns(shortcutKeys);
+
+        var actual = _mainViewModel.StartToolTip;
+
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
