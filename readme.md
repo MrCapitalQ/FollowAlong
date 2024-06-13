@@ -14,10 +14,10 @@
 Follow Along is an open source app for Windows that makes it easier when screen sharing high resolution or ultrawide desktops in apps like Teams. It allows you to share a different view where you can zoom in and follow your mouse pointer while still being able to work normally on your desktop.
 
 ## Basic Instructions
-1. Select a display you want to share and press "Start" or use the shortcut CTRL + SHIFT + ALT + F. A preview of what you will be sharing will appear in the bottom left corner.
+1. Select a display you want to share and press "Start" or use the configurable keyboard shortcut while the app is running in the background. A preview of what you will be sharing will appear in the bottom left corner.
 2. In a screen sharing app, start the process to share a specific window and choose the window named "Follow Along - Share Window". Do not share your whole screen.
-3. Use the zoom controls in the preview window or the shortcuts CTRL + SHIFT + ALT + PLUS/MINUS to change the zoom level. Use CTRL + SHIFT + ALT + P to pause mouse pointer tracking.
-4. Press "Stop" in the preview window or use the shortcut CTRL + SHIFT + ALT + F again to stop.
+3. Use the zoom controls in the preview window or the configurable shortcuts to change the zoom level. A configurable shortcut can also be used to toggle mouse pointer tracking.
+4. Press "Stop" in the preview window or use the start shortcut again to stop.
 
 ## Building
 ### Prerequisites
