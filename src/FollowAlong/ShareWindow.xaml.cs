@@ -1,10 +1,10 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Display;
-using MrCapitalQ.FollowAlong.Infrastructure.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using MrCapitalQ.FollowAlong.Messages;
 using System.Diagnostics.CodeAnalysis;
@@ -73,7 +73,7 @@ public sealed partial class ShareWindow : WindowBase
     private void RepositionToSharingPosition()
     {
         var lowestDisplay = _displayService.GetAll()
-            .Select(x => x.OuterBounds.ToRect())
+            .Select(x => x.OuterBounds.ToRectangle())
             .Aggregate((x, y) =>
             {
                 return (x, y) switch
@@ -86,7 +86,7 @@ public sealed partial class ShareWindow : WindowBase
 
         // Move to the bottom, right most corner of the lowest-positioned display with 1px still in view so the window
         // content is still rendered.
-        AppWindow.Move(new PointInt32((int)lowestDisplay.Right - 1, (int)lowestDisplay.Bottom - 1));
+        AppWindow.Move(new PointInt32(lowestDisplay.Right - 1, lowestDisplay.Bottom - 1));
     }
 
     private void DisplayWatcher_DisplayChanged(object? sender, EventArgs e) => RepositionToSharingPosition();

@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
-using MrCapitalQ.FollowAlong.Infrastructure.Tracking;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.ViewModels;
 using System.Diagnostics.CodeAnalysis;

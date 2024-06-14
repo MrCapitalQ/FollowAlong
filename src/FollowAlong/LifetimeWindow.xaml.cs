@@ -4,10 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Display;
-using MrCapitalQ.FollowAlong.Infrastructure.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using MrCapitalQ.FollowAlong.Messages;
 using System.Diagnostics.CodeAnalysis;
@@ -63,7 +63,7 @@ public sealed partial class LifetimeWindow : Window
                 return;
 
             var currentPointerDisplay = r._displayService.GetAll()
-                .FirstOrDefault(x => x.OuterBounds.ToRect().Contains(currentPointerPosition.Value));
+                .FirstOrDefault(x => x.OuterBounds.Contains(currentPointerPosition.Value));
             if (currentPointerDisplay is null)
                 return;
 

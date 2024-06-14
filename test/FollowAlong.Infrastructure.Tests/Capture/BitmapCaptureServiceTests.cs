@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Utils;
-using Windows.Foundation;
+using System.Drawing;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Tests.Capture;
 
@@ -27,7 +27,7 @@ public class BitmapCaptureServiceTests
         var handler = Substitute.For<IBitmapFrameHandler>();
         _bitmapCaptureService.RegisterFrameHandler(handler);
         handler.ClearReceivedCalls();
-        var captureItemRect = new Rect(0, 0, 10, 20);
+        var captureItemRect = new Rectangle(0, 0, 10, 20);
         var captureItem = Substitute.For<IDisplayCaptureItem>();
         captureItem.OuterBounds.Returns(captureItemRect);
         CaptureStartedEventArgs? eventRaisedArgs = null;

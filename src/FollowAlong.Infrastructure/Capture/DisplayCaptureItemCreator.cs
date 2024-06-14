@@ -13,6 +13,6 @@ public class DisplayCaptureItemCreator : IDisplayCaptureItemCreator
         var graphicsCaptureItem = GraphicsCaptureItem.TryCreateFromDisplayId(new(displayItem.DisplayId))
             ?? throw new InvalidOperationException($"Failed to create graphics capture item from display ID {displayItem.DisplayId}.");
 
-        return new DisplayCaptureItem(graphicsCaptureItem, displayItem.OuterBounds.ToRect());
+        return new DisplayCaptureItem(graphicsCaptureItem, displayItem.OuterBounds.ToRectangle());
     }
 }

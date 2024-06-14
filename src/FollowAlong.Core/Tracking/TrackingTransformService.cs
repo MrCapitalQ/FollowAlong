@@ -1,8 +1,8 @@
-﻿using MrCapitalQ.FollowAlong.Infrastructure.Utils;
+﻿using MrCapitalQ.FollowAlong.Core.Utils;
+using System.Drawing;
 using System.Numerics;
-using Windows.Foundation;
 
-namespace MrCapitalQ.FollowAlong.Infrastructure.Tracking;
+namespace MrCapitalQ.FollowAlong.Core.Tracking;
 
 public class TrackingTransformService
 {
@@ -82,7 +82,7 @@ public class TrackingTransformService
         if (_target is null)
             return;
 
-        _target.SetCenterPoint(new(_target.ViewportSize._width / 2, _target.ViewportSize._height / 2));
+        _target.SetCenterPoint(new(_target.ViewportSize.Width / 2f, _target.ViewportSize.Height / 2f));
     }
 
     private void Scale()
@@ -90,11 +90,11 @@ public class TrackingTransformService
         if (_target is null)
             return;
 
-        var contentAspectRatio = _target.ContentArea.Width / _target.ContentArea.Height;
-        var viewportAspectRatio = _target.ViewportSize.Width / _target.ViewportSize.Height;
+        var contentAspectRatio = (double)_target.ContentArea.Width / _target.ContentArea.Height;
+        var viewportAspectRatio = (double)_target.ViewportSize.Width / _target.ViewportSize.Height;
         var baseScale = contentAspectRatio > viewportAspectRatio
-            ? _target.ViewportSize.Height / _target.ContentArea.Height
-            : _target.ViewportSize.Width / _target.ContentArea.Width;
+            ? (double)_target.ViewportSize.Height / _target.ContentArea.Height
+            : (double)_target.ViewportSize.Width / _target.ContentArea.Width;
 
         _currentScale = _zoom * baseScale;
 
@@ -125,8 +125,8 @@ public class TrackingTransformService
         else if (point.Y > viewportBounds.Bottom)
             translateY = _currentTranslate.Y + point.Y - viewportBounds.Bottom;
 
-        var translateLimitX = Math.Max((_currentScale * _target.ContentArea.Width) - _target.ViewportSize.Width, 0) / 2 / _currentScale;
-        var translateLimitY = Math.Max((_currentScale * _target.ContentArea.Height) - _target.ViewportSize.Height, 0) / 2 / _currentScale;
+        var translateLimitX = (int)(Math.Max(_currentScale * _target.ContentArea.Width - _target.ViewportSize.Width, 0) / 2 / _currentScale);
+        var translateLimitY = (int)(Math.Max(_currentScale * _target.ContentArea.Height - _target.ViewportSize.Height, 0) / 2 / _currentScale);
 
         _currentTranslate.X = Math.Clamp(translateX, -translateLimitX, translateLimitX);
         _currentTranslate.Y = Math.Clamp(translateY, -translateLimitY, translateLimitY);
@@ -134,15 +134,15 @@ public class TrackingTransformService
             (float)(-_currentTranslate.Y * _currentScale)));
     }
 
-    private Rect GetViewportBounds(ITrackingTransformTarget target)
+    private Rectangle GetViewportBounds(ITrackingTransformTarget target)
     {
-        var boundsAreaWidth = (target.ViewportSize.Width / _currentScale * (1 - _horizontalBoundsPercentage));
-        var boundsAreaHeight = (target.ViewportSize.Height / _currentScale * (1 - _horizontalBoundsPercentage));
+        var boundsAreaWidth = target.ViewportSize.Width / _currentScale * (1 - _horizontalBoundsPercentage);
+        var boundsAreaHeight = target.ViewportSize.Height / _currentScale * (1 - _horizontalBoundsPercentage);
 
-        var viewportBounds = new Rect(((target.ContentArea.Width - boundsAreaWidth) / 2) + _currentTranslate.X,
-            ((target.ContentArea.Height - boundsAreaHeight) / 2) + _currentTranslate.Y,
-            boundsAreaWidth,
-            boundsAreaHeight);
+        var viewportBounds = new Rectangle((int)((target.ContentArea.Width - boundsAreaWidth) / 2) + _currentTranslate.X,
+            (int)((target.ContentArea.Height - boundsAreaHeight) / 2) + _currentTranslate.Y,
+            (int)boundsAreaWidth,
+            (int)boundsAreaHeight);
         return viewportBounds;
     }
 
