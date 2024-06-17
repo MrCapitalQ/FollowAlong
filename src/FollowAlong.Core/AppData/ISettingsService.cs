@@ -9,4 +9,10 @@ public interface ISettingsService
 
     ShortcutKeys GetShortcutKeys(AppShortcutKind shortcutKind);
     void SetShortcutKeys(AppShortcutKind shortcutKind, ShortcutKeys shortcutKeys);
+
+    double GetHorizontalBoundsThreshold();
+    void SetHorizontalBoundsThreshold(double threshold);
+
+    double GetVerticalBoundsThreshold();
+    void SetVerticalBoundsThreshold(double threshold);
 }

@@ -1,4 +1,5 @@
-﻿using MrCapitalQ.FollowAlong.Core.Utils;
+﻿using MrCapitalQ.FollowAlong.Core.AppData;
+using MrCapitalQ.FollowAlong.Core.Utils;
 using System.Drawing;
 using System.Numerics;
 
@@ -7,42 +8,24 @@ namespace MrCapitalQ.FollowAlong.Core.Tracking;
 public class TrackingTransformService
 {
     private readonly IPointerService _pointerService;
+    private readonly ISettingsService _settingsService;
     private readonly IUpdateSynchronizer _synchronizer;
+
     private double _zoom = 1;
-    private double _horizontalBoundsPercentage = 0.5;
-    private double _verticalBoundsPercentage = 0.5;
     private ITrackingTransformTarget? _target;
     private double _currentScale = 1;
     private Point _currentTranslate;
     private Point _latestPointerPosition;
 
-    public TrackingTransformService(IPointerService pointerService, IUpdateSynchronizer synchronizer)
+    public TrackingTransformService(IPointerService pointerService,
+        ISettingsService settingsService,
+        IUpdateSynchronizer synchronizer)
     {
         _pointerService = pointerService;
+        _settingsService = settingsService;
         _synchronizer = synchronizer;
+
         _synchronizer.UpdateRequested += Synchronizer_UpdateRequested;
-    }
-
-    public double HorizontalBoundsPercentage
-    {
-        get => _horizontalBoundsPercentage;
-        set
-        {
-            if (value is < 0 or > 1)
-                throw new ArgumentOutOfRangeException(nameof(value), $"Value must be between 0 and 1 inclusively.");
-            _horizontalBoundsPercentage = value;
-        }
-    }
-
-    public double VerticalBoundsPercentage
-    {
-        get => _verticalBoundsPercentage;
-        set
-        {
-            if (value is < 0 or > 1)
-                throw new ArgumentOutOfRangeException(nameof(value), $"Value must be between 0 and 1 inclusively.");
-            _verticalBoundsPercentage = value;
-        }
     }
 
     public double Zoom
@@ -136,8 +119,8 @@ public class TrackingTransformService
 
     private Rectangle GetViewportBounds(ITrackingTransformTarget target)
     {
-        var boundsAreaWidth = target.ViewportSize.Width / _currentScale * (1 - _horizontalBoundsPercentage);
-        var boundsAreaHeight = target.ViewportSize.Height / _currentScale * (1 - _horizontalBoundsPercentage);
+        var boundsAreaWidth = target.ViewportSize.Width / _currentScale * (1 - _settingsService.GetHorizontalBoundsThreshold());
+        var boundsAreaHeight = target.ViewportSize.Height / _currentScale * (1 - _settingsService.GetVerticalBoundsThreshold());
 
         var viewportBounds = new Rectangle((int)((target.ContentArea.Width - boundsAreaWidth) / 2) + _currentTranslate.X,
             (int)((target.ContentArea.Height - boundsAreaHeight) / 2) + _currentTranslate.Y,

@@ -99,5 +99,10 @@ internal partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ShortcutsSettings() => _messenger.Send<NavigateMessage>(new SlideNavigateMessage(typeof(ShortcutsSettingsPage), SlideNavigationTransitionEffect.FromRight));
+    private void TrackingSettings() => _messenger.Send<NavigateMessage>(new SlideNavigateMessage(typeof(TrackingSettingsPage),
+        SlideNavigationTransitionEffect.FromRight));
+
+    [RelayCommand]
+    private void ShortcutsSettings() => _messenger.Send<NavigateMessage>(new SlideNavigateMessage(typeof(ShortcutsSettingsPage),
+        SlideNavigationTransitionEffect.FromRight));
 }

@@ -7,6 +7,9 @@ public class SettingsService(IApplicationDataStore localApplicationData) : ISett
 {
     private const string HasBeenLaunchedOnceSettingsKey = "HasBeenLaunchedOnce";
     private const string ShortcutKeySettingsKeyTemplate = "ShortcutKeys_{0}";
+    private const string HorizontalBoundsThresholdSettingsKey = "HorizontalBoundsThreshold";
+    private const string VerticalBoundsThresholdSettingsKey = "VerticalBoundsThreshold";
+    private const double BoundsThresholdDefault = 0.5;
 
     private readonly IApplicationDataStore _applicationDataStore = localApplicationData;
 
@@ -29,4 +32,28 @@ public class SettingsService(IApplicationDataStore localApplicationData) : ISett
 
     public void SetShortcutKeys(AppShortcutKind shortcutKind, ShortcutKeys shortcutKeys)
         => _applicationDataStore.SetValue(string.Format(ShortcutKeySettingsKeyTemplate, shortcutKind), JsonSerializer.Serialize(shortcutKeys));
+
+    public double GetHorizontalBoundsThreshold()
+    {
+        if (_applicationDataStore.GetValue(HorizontalBoundsThresholdSettingsKey) is double value)
+            return value;
+
+        SetHorizontalBoundsThreshold(BoundsThresholdDefault);
+        return BoundsThresholdDefault;
+    }
+
+    public void SetHorizontalBoundsThreshold(double threshold)
+        => _applicationDataStore.SetValue(HorizontalBoundsThresholdSettingsKey, threshold);
+
+    public double GetVerticalBoundsThreshold()
+    {
+        if (_applicationDataStore.GetValue(VerticalBoundsThresholdSettingsKey) is double value)
+            return value;
+
+        SetVerticalBoundsThreshold(BoundsThresholdDefault);
+        return BoundsThresholdDefault;
+    }
+
+    public void SetVerticalBoundsThreshold(double threshold)
+        => _applicationDataStore.SetValue(VerticalBoundsThresholdSettingsKey, threshold);
 }
