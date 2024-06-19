@@ -33,7 +33,7 @@ Follow Along is an open source app for Windows that makes it easier when screen 
 4. Start debugging.
 
 ### Execute Tests
-The tests can be executed in Visual Studio's Test Explorer window. Additionally, there is a [`runTests.ps`](/scripts/runTests.ps1) script that will execute all of the tests and generate a code coverage report. This requires the `reportgenerator` dotnet global tool to be installed.
+The tests can be executed in Visual Studio's Test Explorer window. Additionally, there is a [`runTests.ps1`](/scripts/runTests.ps1) script that will execute all of the tests and generate a code coverage report. This requires the `reportgenerator` dotnet global tool to be installed.
 ```shell
 dotnet tool install -g dotnet-reportgenerator-globaltool
 ```
