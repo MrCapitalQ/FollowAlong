@@ -51,6 +51,7 @@ internal partial class SettingsViewModel : ObservableObject
 
     public IEnumerable<ExternalLinkViewModel> OpenSourceLibraryLinks =
         [
+            new(".NET Community Toolkit", "https://github.com/CommunityToolkit/dotnet"),
             new("H.NotifyIcon", "https://github.com/HavenDV/H.NotifyIcon"),
             new("Win2D", "https://github.com/microsoft/Win2D"),
             new("Windows App SDK", "https://github.com/microsoft/WindowsAppSDK"),
