@@ -45,6 +45,53 @@
                     </TransitionCollection>
                 </StackPanel.ChildrenTransitions>
 
+                <Border BorderBrush="Black"
+                        BorderThickness="12"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        CornerRadius="4"
+                        HorizontalAlignment="Center">
+                    <Grid x:Name="ScreenArea"
+                          Height="216"
+                          Width="384">
+
+                        <Grid x:Name="CaptureZoneContainer">
+                            <Border x:Name="ThresholdBounds"
+                                    BorderBrush="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
+                                    BorderThickness="2" />
+
+                            <Border x:Name="CaptureZone"
+                                    BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                    BorderThickness="2"
+                                    Height="144"
+                                    Width="256"
+                                    SizeChanged="CaptureZone_SizeChanged" />
+                        </Grid>
+
+                        <Border x:Name="Pointer"
+                                Width="32"
+                                Height="40">
+                            <Grid>
+                                <FontIcon Glyph="&#xF8AF;"
+                                          Foreground="White"
+                                          FontSize="20"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Bottom" />
+                                <FontIcon Glyph="&#xE8B0;"
+                                          Foreground="Black"
+                                          FontSize="20"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Bottom" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <TextBlock Text="A simulation of how the shared area of the display moves with the mouse pointer based on the sensitivity."
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,16" />
+
                 <toolkit:SettingsExpander Header="Follow sensitivity"
                                           HeaderIcon="{ui:FontIcon Glyph=&#xF57A;}"
                                           Description="Adjust how much the app tries to keep your mouse pointer in view as it moves around"
