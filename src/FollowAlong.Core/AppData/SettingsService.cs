@@ -9,7 +9,9 @@ public class SettingsService(IApplicationDataStore localApplicationData) : ISett
     private const string ShortcutKeySettingsKeyTemplate = "ShortcutKeys_{0}";
     private const string HorizontalBoundsThresholdSettingsKey = "HorizontalBoundsThreshold";
     private const string VerticalBoundsThresholdSettingsKey = "VerticalBoundsThreshold";
+    private const string DefaultZoomSettingsKey = "DefaultZoom";
     private const double BoundsThresholdDefault = 0.5;
+    private const double DefaultZoomDefault = 1.5;
 
     private readonly IApplicationDataStore _applicationDataStore = localApplicationData;
 
@@ -56,4 +58,16 @@ public class SettingsService(IApplicationDataStore localApplicationData) : ISett
 
     public void SetVerticalBoundsThreshold(double threshold)
         => _applicationDataStore.SetValue(VerticalBoundsThresholdSettingsKey, threshold);
+
+    public double GetDefaultZoom()
+    {
+        if (_applicationDataStore.GetValue(DefaultZoomSettingsKey) is double value)
+            return value;
+
+        SetDefaultZoom(DefaultZoomDefault);
+        return DefaultZoomDefault;
+    }
+
+    public void SetDefaultZoom(double zoom)
+        => _applicationDataStore.SetValue(DefaultZoomSettingsKey, zoom);
 }

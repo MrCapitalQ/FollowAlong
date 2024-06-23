@@ -18,7 +18,7 @@ public partial class PreviewViewModel : ObservableObject
     private readonly IMessenger _messenger;
     private readonly ISettingsService _settingsService;
 
-    private double _zoom = 1.5;
+    private double _zoom;
 
     [ObservableProperty]
     private double _sessionControlsOpacity = DefaultSessionControlsOpacity;
@@ -33,6 +33,8 @@ public partial class PreviewViewModel : ObservableObject
         _messenger = messenger;
         _settingsService = settingsService;
         _messenger.Register<PreviewViewModel, StartCapture>(this, (r, m) => HandleStart());
+
+        _zoom = _settingsService.GetDefaultZoom();
 
         HandleStart();
     }
