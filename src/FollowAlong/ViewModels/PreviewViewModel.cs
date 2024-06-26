@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MrCapitalQ.FollowAlong.Core.AppData;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Shared;
 
@@ -11,14 +12,11 @@ namespace MrCapitalQ.FollowAlong.ViewModels;
 public partial class PreviewViewModel : ObservableObject
 {
     private const double DefaultSessionControlsOpacity = 0.5;
-    private const double MaxZoom = 3;
-    private const double MinZoom = 1;
-    private const double ZoomStepSize = 0.5;
 
     private readonly IMessenger _messenger;
     private readonly ISettingsService _settingsService;
 
-    private double _zoom = 1.5;
+    private double _zoom;
 
     [ObservableProperty]
     private double _sessionControlsOpacity = DefaultSessionControlsOpacity;
@@ -42,7 +40,7 @@ public partial class PreviewViewModel : ObservableObject
         get => _zoom;
         set
         {
-            _zoom = Math.Clamp(value, MinZoom, MaxZoom);
+            _zoom = Math.Clamp(value, TrackingConstants.MinZoom, TrackingConstants.MaxZoom);
             OnPropertyChanged();
             _messenger.Send(new ZoomChanged(_zoom));
         }
@@ -56,10 +54,10 @@ public partial class PreviewViewModel : ObservableObject
     private void Stop() => _messenger.Send(StopCapture.Instance);
 
     [RelayCommand]
-    private void ZoomIn() => Zoom += ZoomStepSize;
+    private void ZoomIn() => Zoom += _settingsService.GetZoomStepSize();
 
     [RelayCommand]
-    private void ZoomOut() => Zoom -= ZoomStepSize;
+    private void ZoomOut() => Zoom -= _settingsService.GetZoomStepSize();
 
     [RelayCommand]
     private void UpdateSessionControlOpacity(string parameterValue)
@@ -72,8 +70,8 @@ public partial class PreviewViewModel : ObservableObject
 
     private void HandleStart()
     {
+        Zoom = _settingsService.GetZoomDefaultLevel();
         SessionControlsOpacity = DefaultSessionControlsOpacity;
-        _messenger.Send(new ZoomChanged(Zoom));
         _messenger.Send(new TrackingToggled(IsTrackingEnabled));
     }
 
@@ -83,6 +81,8 @@ public partial class PreviewViewModel : ObservableObject
             ZoomIn();
         else if (e.ShortcutKind == AppShortcutKind.ZoomOut)
             ZoomOut();
+        else if (e.ShortcutKind == AppShortcutKind.ResetZoom)
+            Zoom = _settingsService.GetZoomDefaultLevel();
         else if (e.ShortcutKind == AppShortcutKind.ToggleTracking)
             IsTrackingEnabled = !IsTrackingEnabled;
     }

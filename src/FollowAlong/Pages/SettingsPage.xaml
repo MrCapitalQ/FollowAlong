@@ -58,12 +58,43 @@
                     <ToggleSwitch IsOn="{x:Bind _viewModel.IsStartupOn, Mode=TwoWay}"
                                   IsEnabled="{x:Bind _viewModel.IsStartupToggleEnabled, Mode=OneWay}" />
                 </toolkit:SettingsCard>
-                
+
                 <toolkit:SettingsCard Header="Mouse pointer tracking"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8B0;}"
                                       Description="Adjust follow sensitivity"
                                       IsClickEnabled="True"
                                       Command="{x:Bind _viewModel.TrackingSettingsCommand}" />
+
+                <toolkit:SettingsExpander Header="Default zoom"
+                                          HeaderIcon="{ui:FontIcon Glyph=&#xE71E;}"
+                                          Description="Set the default zoom level when a session starts">
+                    <toolkit:SettingsExpander.Items>
+                        <toolkit:SettingsCard Header="Zoom increment">
+                            <ComboBox ItemsSource="{x:Bind _viewModel.ZoomStepSizeOptions}"
+                                      SelectedItem="{x:Bind _viewModel.SelectedZoomStepSize, Mode=TwoWay}"
+                                      DisplayMemberPath="Display" />
+                        </toolkit:SettingsCard>
+                    </toolkit:SettingsExpander.Items>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource IconButtonStyle}"
+                                Command="{x:Bind _viewModel.DecreaseZoomDefaultLevelCommand}">
+                            <FontIcon Glyph="&#xE738;"
+                                      Style="{StaticResource ButtonFontIconStyle}" />
+                        </Button>
+                        <TextBlock Text="{x:Bind _viewModel.ZoomDefaultLevel, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:P0}'}"
+                                   TextAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Width="50"
+                                   TextLineBounds="Tight"
+                                   Margin="8,0" />
+                        <Button Style="{StaticResource IconButtonStyle}"
+                                Command="{x:Bind _viewModel.IncreaseZoomDefaultLevelCommand}">
+                            <FontIcon Glyph="&#xE710;"
+                                      Style="{StaticResource ButtonFontIconStyle}" />
+                        </Button>
+                    </StackPanel>
+                </toolkit:SettingsExpander>
 
                 <toolkit:SettingsCard Header="Shortcuts"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}"

@@ -6,10 +6,12 @@ namespace MrCapitalQ.FollowAlong.Core.Tests.AppData;
 
 public class SettingsServiceTests
 {
-    private const string HasBeenLaunchedOnceKey = "HasBeenLaunchedOnce";
+    private const string HasBeenLaunchedOnceSettingsKey = "HasBeenLaunchedOnce";
     private const string ShortcutKeySettingsKey = "ShortcutKeys_StartStop";
     private const string HorizontalBoundsThresholdSettingsKey = "HorizontalBoundsThreshold";
     private const string VerticalBoundsThresholdSettingsKey = "VerticalBoundsThreshold";
+    private const string ZoomDefaultLevelSettingsKey = "ZoomDefaultLevel";
+    private const string ZoomStepSizeSettingsKey = "ZoomStepSize";
     private readonly IApplicationDataStore _applicationDataStore;
 
     private readonly SettingsService _settingsService;
@@ -24,23 +26,23 @@ public class SettingsServiceTests
     [Fact]
     public void GetHasBeenLaunchedOnce_DataStoreReturnsBool_ReturnsValue()
     {
-        _applicationDataStore.GetValue(HasBeenLaunchedOnceKey).Returns(true);
+        _applicationDataStore.GetValue(HasBeenLaunchedOnceSettingsKey).Returns(true);
 
         var actual = _settingsService.GetHasBeenLaunchedOnce();
 
         Assert.True(actual);
-        _applicationDataStore.Received(1).GetValue(HasBeenLaunchedOnceKey);
+        _applicationDataStore.Received(1).GetValue(HasBeenLaunchedOnceSettingsKey);
     }
 
     [Fact]
     public void GetHasBeenLaunchedOnce_DataStoreReturnsNull_ReturnsFalse()
     {
-        _applicationDataStore.GetValue(HasBeenLaunchedOnceKey).Returns(null);
+        _applicationDataStore.GetValue(HasBeenLaunchedOnceSettingsKey).Returns(null);
 
         var actual = _settingsService.GetHasBeenLaunchedOnce();
 
         Assert.False(actual);
-        _applicationDataStore.Received(1).GetValue(HasBeenLaunchedOnceKey);
+        _applicationDataStore.Received(1).GetValue(HasBeenLaunchedOnceSettingsKey);
     }
 
     [Fact]
@@ -48,7 +50,7 @@ public class SettingsServiceTests
     {
         _settingsService.SetHasBeenLaunchedOnce();
 
-        _applicationDataStore.Received(1).SetValue(HasBeenLaunchedOnceKey, true);
+        _applicationDataStore.Received(1).SetValue(HasBeenLaunchedOnceSettingsKey, true);
     }
 
     [Fact]
@@ -154,5 +156,75 @@ public class SettingsServiceTests
         _settingsService.SetVerticalBoundsThreshold(value);
 
         _applicationDataStore.Received(1).SetValue(VerticalBoundsThresholdSettingsKey, value);
+    }
+
+    [Fact]
+    public void GetZoomDefaultLevel_DataStoreReturnsNonNull_ReturnsValue()
+    {
+        var expected = 2d;
+        _applicationDataStore.GetValue(ZoomDefaultLevelSettingsKey).Returns(expected);
+
+        var actual = _settingsService.GetZoomDefaultLevel();
+
+        Assert.Equal(expected, actual);
+        _applicationDataStore.Received(1).GetValue(ZoomDefaultLevelSettingsKey);
+    }
+
+    [Fact]
+    public void GetZoomDefaultLevel_DataStoreReturnsNull_SetsAndReturnsDefaultValue()
+    {
+        var expected = 1.5;
+        _applicationDataStore.GetValue(ZoomDefaultLevelSettingsKey).Returns(null);
+
+        var actual = _settingsService.GetZoomDefaultLevel();
+
+        Assert.Equal(expected, actual);
+        _applicationDataStore.Received(1).SetValue(ZoomDefaultLevelSettingsKey, expected);
+        _applicationDataStore.Received(1).GetValue(ZoomDefaultLevelSettingsKey);
+    }
+
+    [Fact]
+    public void SetZoomDefaultLevel_SavesValueInApplicationDataStore()
+    {
+        var value = 2d;
+
+        _settingsService.SetZoomDefaultLevel(value);
+
+        _applicationDataStore.Received(1).SetValue(ZoomDefaultLevelSettingsKey, value);
+    }
+
+    [Fact]
+    public void GetZoomStepSize_DataStoreReturnsNonNull_ReturnsValue()
+    {
+        var expected = 1d;
+        _applicationDataStore.GetValue(ZoomStepSizeSettingsKey).Returns(expected);
+
+        var actual = _settingsService.GetZoomStepSize();
+
+        Assert.Equal(expected, actual);
+        _applicationDataStore.Received(1).GetValue(ZoomStepSizeSettingsKey);
+    }
+
+    [Fact]
+    public void GetZoomStepSize_DataStoreReturnsNull_SetsAndReturnsDefaultValue()
+    {
+        var expected = 0.5;
+        _applicationDataStore.GetValue(ZoomStepSizeSettingsKey).Returns(null);
+
+        var actual = _settingsService.GetZoomStepSize();
+
+        Assert.Equal(expected, actual);
+        _applicationDataStore.Received(1).SetValue(ZoomStepSizeSettingsKey, expected);
+        _applicationDataStore.Received(1).GetValue(ZoomStepSizeSettingsKey);
+    }
+
+    [Fact]
+    public void SetZoomStepSize_SavesValueInApplicationDataStore()
+    {
+        var value = 1d;
+
+        _settingsService.SetZoomStepSize(value);
+
+        _applicationDataStore.Received(1).SetValue(ZoomStepSizeSettingsKey, value);
     }
 }

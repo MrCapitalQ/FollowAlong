@@ -15,4 +15,10 @@ public interface ISettingsService
 
     double GetVerticalBoundsThreshold();
     void SetVerticalBoundsThreshold(double threshold);
+
+    double GetZoomDefaultLevel();
+    void SetZoomDefaultLevel(double zoom);
+
+    double GetZoomStepSize();
+    void SetZoomStepSize(double stepSize);
 }

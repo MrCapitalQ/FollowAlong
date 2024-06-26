@@ -23,6 +23,9 @@ public class PreviewViewModelTests
         _messenger = Substitute.For<IMessenger>();
         _settingsService = Substitute.For<ISettingsService>();
 
+        _settingsService.GetZoomDefaultLevel().Returns(1.5);
+        _settingsService.GetZoomStepSize().Returns(.5);
+
         _messenger.When(x => x.Register(Arg.Any<PreviewViewModel>(), Arg.Any<TestMessengerToken>(), Arg.Any<MessageHandler<PreviewViewModel, StartCapture>>()))
             .Do(x => _startCaptureMessageHandler = (MessageHandler<PreviewViewModel, StartCapture>)x[2]);
 
@@ -139,6 +142,17 @@ public class PreviewViewModelTests
         _shortcutService.ShortcutInvoked += Raise.EventWith(new AppShortcutInvokedEventArgs(AppShortcutKind.ZoomOut));
 
         Assert.Equal(1, _previewViewModel.Zoom);
+    }
+
+    [Fact]
+    public void ShortcutService_ShortcutInvoked_ResetZoom_SetsToZoomDefaultLevel()
+    {
+        var expected = 2;
+        _settingsService.GetZoomDefaultLevel().Returns(expected);
+
+        _shortcutService.ShortcutInvoked += Raise.EventWith(new AppShortcutInvokedEventArgs(AppShortcutKind.ResetZoom));
+
+        Assert.Equal(expected, _previewViewModel.Zoom);
     }
 
     [Fact]

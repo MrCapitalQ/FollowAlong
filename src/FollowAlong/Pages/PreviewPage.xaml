@@ -4,18 +4,12 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:MrCapitalQ.FollowAlong.Pages"
       xmlns:controls="using:MrCapitalQ.FollowAlong.Controls"
-      xmlns:toolkitConverters="using:CommunityToolkit.WinUI.Converters"
       xmlns:i="using:Microsoft.Xaml.Interactivity"
       xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    <Page.Resources>
-        <toolkitConverters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <toolkitConverters:StringFormatConverter x:Key="StringFormatConverter" />
-    </Page.Resources>
 
     <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch"
