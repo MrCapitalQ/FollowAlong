@@ -23,6 +23,9 @@ public class PreviewViewModelTests
         _messenger = Substitute.For<IMessenger>();
         _settingsService = Substitute.For<ISettingsService>();
 
+        _settingsService.GetZoomDefaultLevel().Returns(1.5);
+        _settingsService.GetZoomStepSize().Returns(.5);
+
         _messenger.When(x => x.Register(Arg.Any<PreviewViewModel>(), Arg.Any<TestMessengerToken>(), Arg.Any<MessageHandler<PreviewViewModel, StartCapture>>()))
             .Do(x => _startCaptureMessageHandler = (MessageHandler<PreviewViewModel, StartCapture>)x[2]);
 

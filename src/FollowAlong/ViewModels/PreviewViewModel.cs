@@ -13,7 +13,6 @@ public partial class PreviewViewModel : ObservableObject
     private const double DefaultSessionControlsOpacity = 0.5;
     private const double MaxZoom = 3;
     private const double MinZoom = 1;
-    private const double ZoomStepSize = 0.5;
 
     private readonly IMessenger _messenger;
     private readonly ISettingsService _settingsService;
@@ -34,7 +33,7 @@ public partial class PreviewViewModel : ObservableObject
         _settingsService = settingsService;
         _messenger.Register<PreviewViewModel, StartCapture>(this, (r, m) => HandleStart());
 
-        _zoom = _settingsService.GetDefaultZoom();
+        _zoom = _settingsService.GetZoomDefaultLevel();
 
         HandleStart();
     }
@@ -58,10 +57,10 @@ public partial class PreviewViewModel : ObservableObject
     private void Stop() => _messenger.Send(StopCapture.Instance);
 
     [RelayCommand]
-    private void ZoomIn() => Zoom += ZoomStepSize;
+    private void ZoomIn() => Zoom += _settingsService.GetZoomStepSize();
 
     [RelayCommand]
-    private void ZoomOut() => Zoom -= ZoomStepSize;
+    private void ZoomOut() => Zoom -= _settingsService.GetZoomStepSize();
 
     [RelayCommand]
     private void UpdateSessionControlOpacity(string parameterValue)

@@ -9,9 +9,11 @@ public class SettingsService(IApplicationDataStore localApplicationData) : ISett
     private const string ShortcutKeySettingsKeyTemplate = "ShortcutKeys_{0}";
     private const string HorizontalBoundsThresholdSettingsKey = "HorizontalBoundsThreshold";
     private const string VerticalBoundsThresholdSettingsKey = "VerticalBoundsThreshold";
-    private const string DefaultZoomSettingsKey = "DefaultZoom";
+    private const string ZoomDefaultLevelSettingsKey = "ZoomDefaultLevel";
+    private const string ZoomStepSizeSettingsKey = "ZoomStepSize";
     private const double BoundsThresholdDefault = 0.5;
-    private const double DefaultZoomDefault = 1.5;
+    private const double DefaultZoomDefaultLevel = 1.5;
+    private const double DefaultZoomStepSize = 0.5;
 
     private readonly IApplicationDataStore _applicationDataStore = localApplicationData;
 
@@ -59,15 +61,27 @@ public class SettingsService(IApplicationDataStore localApplicationData) : ISett
     public void SetVerticalBoundsThreshold(double threshold)
         => _applicationDataStore.SetValue(VerticalBoundsThresholdSettingsKey, threshold);
 
-    public double GetDefaultZoom()
+    public double GetZoomDefaultLevel()
     {
-        if (_applicationDataStore.GetValue(DefaultZoomSettingsKey) is double value)
+        if (_applicationDataStore.GetValue(ZoomDefaultLevelSettingsKey) is double value)
             return value;
 
-        SetDefaultZoom(DefaultZoomDefault);
-        return DefaultZoomDefault;
+        SetZoomDefaultLevel(DefaultZoomDefaultLevel);
+        return DefaultZoomDefaultLevel;
     }
 
-    public void SetDefaultZoom(double zoom)
-        => _applicationDataStore.SetValue(DefaultZoomSettingsKey, zoom);
+    public void SetZoomDefaultLevel(double zoom)
+        => _applicationDataStore.SetValue(ZoomDefaultLevelSettingsKey, zoom);
+
+    public double GetZoomStepSize()
+    {
+        if (_applicationDataStore.GetValue(ZoomStepSizeSettingsKey) is double value)
+            return value;
+
+        SetZoomStepSize(DefaultZoomStepSize);
+        return DefaultZoomStepSize;
+    }
+
+    public void SetZoomStepSize(double zoom)
+        => _applicationDataStore.SetValue(ZoomStepSizeSettingsKey, zoom);
 }
