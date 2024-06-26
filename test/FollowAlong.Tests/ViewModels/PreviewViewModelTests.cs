@@ -145,6 +145,17 @@ public class PreviewViewModelTests
     }
 
     [Fact]
+    public void ShortcutService_ShortcutInvoked_ResetZoom_SetsToZoomDefaultLevel()
+    {
+        var expected = 2;
+        _settingsService.GetZoomDefaultLevel().Returns(expected);
+
+        _shortcutService.ShortcutInvoked += Raise.EventWith(new AppShortcutInvokedEventArgs(AppShortcutKind.ResetZoom));
+
+        Assert.Equal(expected, _previewViewModel.Zoom);
+    }
+
+    [Fact]
     public void ShortcutService_ShortcutInvoked_ToggleTracking_TogglesIsTrackingEnabledAndSendsTrackingToggledMessage()
     {
         _shortcutService.ShortcutInvoked += Raise.EventWith(new AppShortcutInvokedEventArgs(AppShortcutKind.ToggleTracking));

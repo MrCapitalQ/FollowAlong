@@ -81,6 +81,8 @@ public partial class PreviewViewModel : ObservableObject
             ZoomIn();
         else if (e.ShortcutKind == AppShortcutKind.ZoomOut)
             ZoomOut();
+        else if (e.ShortcutKind == AppShortcutKind.ResetZoom)
+            Zoom = _settingsService.GetZoomDefaultLevel();
         else if (e.ShortcutKind == AppShortcutKind.ToggleTracking)
             IsTrackingEnabled = !IsTrackingEnabled;
     }
