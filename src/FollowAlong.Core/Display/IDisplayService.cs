@@ -1,4 +1,4 @@
-﻿namespace MrCapitalQ.FollowAlong.Infrastructure.Display;
+﻿namespace MrCapitalQ.FollowAlong.Core.Display;
 
 public interface IDisplayService
 {
