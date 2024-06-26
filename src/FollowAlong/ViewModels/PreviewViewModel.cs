@@ -72,7 +72,6 @@ public partial class PreviewViewModel : ObservableObject
     {
         Zoom = _settingsService.GetZoomDefaultLevel();
         SessionControlsOpacity = DefaultSessionControlsOpacity;
-        _messenger.Send(new ZoomChanged(Zoom));
         _messenger.Send(new TrackingToggled(IsTrackingEnabled));
     }
 

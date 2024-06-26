@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Media.Animation;
+using MrCapitalQ.FollowAlong.Core.AppData;
 using MrCapitalQ.FollowAlong.Infrastructure.Startup;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Pages;
@@ -12,6 +13,7 @@ namespace MrCapitalQ.FollowAlong.Tests.ViewModels;
 public class SettingsViewModelTests
 {
     private readonly IStartupTaskService _startupTaskService;
+    private readonly ISettingsService _settingsService;
     private readonly IPackageInfo _packageInfo;
     private readonly IMessenger _messenger;
 
@@ -19,10 +21,13 @@ public class SettingsViewModelTests
     public SettingsViewModelTests()
     {
         _startupTaskService = Substitute.For<IStartupTaskService>();
+        _settingsService = Substitute.For<ISettingsService>();
         _packageInfo = Substitute.For<IPackageInfo>();
         _messenger = Substitute.For<IMessenger>();
 
-        _viewModel = new(_startupTaskService, _packageInfo, _messenger);
+        _viewModel = new(_startupTaskService, _settingsService, _packageInfo, _messenger);
+
+        _settingsService.ClearReceivedCalls();
     }
 
     [Fact]
@@ -32,7 +37,7 @@ public class SettingsViewModelTests
         _packageInfo.DisplayName.Returns(expectedAppDisplayName);
         _packageInfo.Version.Returns(new PackageVersion(1, 2, 3, 0));
 
-        var viewModel = new SettingsViewModel(_startupTaskService, _packageInfo, _messenger);
+        var viewModel = new SettingsViewModel(_startupTaskService, _settingsService, _packageInfo, _messenger);
 
         Assert.Equal(expectedAppDisplayName, viewModel.AppDisplayName);
         Assert.Equal("1.2.3", viewModel.Version);
@@ -51,7 +56,7 @@ public class SettingsViewModelTests
     {
         _startupTaskService.GetStartupStateAsync().Returns(startupState);
 
-        var viewModel = new SettingsViewModel(_startupTaskService, _packageInfo, _messenger);
+        var viewModel = new SettingsViewModel(_startupTaskService, _settingsService, _packageInfo, _messenger);
 
         Assert.Equal(expectedIsStartupOn, viewModel.IsStartupOn);
         Assert.Equal(expectedIsStartupToggleEnabled, viewModel.IsStartupToggleEnabled);
@@ -71,6 +76,29 @@ public class SettingsViewModelTests
         _startupTaskService.Received(1).SetStartupStateAsync(isStartOn);
     }
 
+    [Theory]
+    [InlineData(0, 1)]
+    [InlineData(1, 1)]
+    [InlineData(3, 3)]
+    [InlineData(4, 3)]
+    public void SetZoomDefaultLevel_ClampsValueAndUpdatesSettings(double updateValue, double expectedValue)
+    {
+        _viewModel.ZoomDefaultLevel = updateValue;
+
+        Assert.Equal(expectedValue, _viewModel.ZoomDefaultLevel);
+        _settingsService.Received(1).SetZoomDefaultLevel(expectedValue);
+    }
+
+    [Fact]
+    public void TrackingSettingsCommand_SendsNavigateMessage()
+    {
+        var navigateMessage = new SlideNavigateMessage(typeof(TrackingSettingsPage), SlideNavigationTransitionEffect.FromRight);
+
+        _viewModel.TrackingSettingsCommand.Execute(null);
+
+        _messenger.Received(1).Send<NavigateMessage, TestMessengerToken>(navigateMessage, Arg.Any<TestMessengerToken>());
+    }
+
     [Fact]
     public void ShortcutsSettingsCommand_SendsNavigateMessage()
     {
@@ -79,5 +107,27 @@ public class SettingsViewModelTests
         _viewModel.ShortcutsSettingsCommand.Execute(null);
 
         _messenger.Received(1).Send<NavigateMessage, TestMessengerToken>(navigateMessage, Arg.Any<TestMessengerToken>());
+    }
+
+    [Fact]
+    public void IncreaseZoomDefaultLevelCommand_IncreasesZoomDefaultLevelBySelectedZoomStepSize()
+    {
+        _viewModel.ZoomDefaultLevel = 2;
+        var expected = _viewModel.ZoomDefaultLevel + _viewModel.SelectedZoomStepSize.Value;
+
+        _viewModel.IncreaseZoomDefaultLevelCommand.Execute(null);
+
+        Assert.Equal(expected, _viewModel.ZoomDefaultLevel);
+    }
+
+    [Fact]
+    public void DecreaseZoomDefaultLevelCommand_DecreasesZoomDefaultLevelBySelectedZoomStepSize()
+    {
+        _viewModel.ZoomDefaultLevel = 2;
+        var expected = _viewModel.ZoomDefaultLevel - _viewModel.SelectedZoomStepSize.Value;
+
+        _viewModel.DecreaseZoomDefaultLevelCommand.Execute(null);
+
+        Assert.Equal(expected, _viewModel.ZoomDefaultLevel);
     }
 }

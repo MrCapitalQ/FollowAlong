@@ -17,7 +17,6 @@ internal partial class SettingsViewModel : ObservableObject
 {
     private readonly IStartupTaskService _startupTaskService;
     private readonly ISettingsService _settingsService;
-    private readonly IPackageInfo _packageInfo;
     private readonly IMessenger _messenger;
 
     private bool _isStartupOn;
@@ -40,7 +39,6 @@ internal partial class SettingsViewModel : ObservableObject
     {
         _startupTaskService = startupTaskService;
         _settingsService = settingsService;
-        _packageInfo = packageInfo;
         _messenger = messenger;
 
         UpdateStartupState();
@@ -66,7 +64,7 @@ internal partial class SettingsViewModel : ObservableObject
         {
             _zoomDefaultLevel = Math.Clamp(value, TrackingConstants.MinZoom, TrackingConstants.MaxZoom);
             OnPropertyChanged();
-            _settingsService.SetZoomDefaultLevel(value);
+            _settingsService.SetZoomDefaultLevel(_zoomDefaultLevel);
         }
     }
 
