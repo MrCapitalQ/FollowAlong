@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MrCapitalQ.FollowAlong.Core;
 using MrCapitalQ.FollowAlong.Core.AppData;
+using MrCapitalQ.FollowAlong.Core.Startup;
 using MrCapitalQ.FollowAlong.Infrastructure;
-using MrCapitalQ.FollowAlong.Infrastructure.Startup;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Background;
 
