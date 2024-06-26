@@ -3,16 +3,20 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Helpers;
 using Microsoft.UI.Xaml.Media.Animation;
+using MrCapitalQ.FollowAlong.Core.AppData;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Infrastructure.Startup;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Pages;
 using MrCapitalQ.FollowAlong.Shared;
+using System.Globalization;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;
 
 internal partial class SettingsViewModel : ObservableObject
 {
     private readonly IStartupTaskService _startupTaskService;
+    private readonly ISettingsService _settingsService;
     private readonly IPackageInfo _packageInfo;
     private readonly IMessenger _messenger;
 
@@ -24,13 +28,27 @@ internal partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _startupSettingsText = string.Empty;
 
-    public SettingsViewModel(IStartupTaskService startupTaskService, IPackageInfo packageInfo, IMessenger messenger)
+    private double _zoomDefaultLevel;
+
+    [ObservableProperty]
+    private ComboBoxOption<double> _selectedZoomStepSize;
+
+    public SettingsViewModel(IStartupTaskService startupTaskService,
+        ISettingsService settingsService,
+        IPackageInfo packageInfo,
+        IMessenger messenger)
     {
         _startupTaskService = startupTaskService;
+        _settingsService = settingsService;
         _packageInfo = packageInfo;
         _messenger = messenger;
 
         UpdateStartupState();
+
+        ZoomDefaultLevel = _settingsService.GetZoomDefaultLevel();
+        SelectedZoomStepSize = ZoomStepSizeOptions.FirstOrDefault(x => x.Value == _settingsService.GetZoomStepSize())
+            ?? ZoomStepSizeOptions.First(x => x.Value == 0.5);
+
         AppDisplayName = packageInfo.DisplayName;
         Version = packageInfo.Version.ToFormattedString(3);
     }
@@ -40,6 +58,21 @@ internal partial class SettingsViewModel : ObservableObject
         get => _isStartupOn;
         set => UpdateStartupState(value);
     }
+
+    public double ZoomDefaultLevel
+    {
+        get => _zoomDefaultLevel;
+        set
+        {
+            _zoomDefaultLevel = Math.Clamp(value, TrackingConstants.MinZoom, TrackingConstants.MaxZoom);
+            OnPropertyChanged();
+            _settingsService.SetZoomDefaultLevel(value);
+        }
+    }
+
+    public List<ComboBoxOption<double>> ZoomStepSizeOptions { get; } = new List<double> { 0.05, 0.1, 0.25, 0.5, 1d }
+        .Select(x => new ComboBoxOption<double>(x, string.Format(CultureInfo.CurrentUICulture, "{0:P0}", x)))
+        .ToList();
 
     public string AppDisplayName { get; }
     public string Version { get; }
@@ -106,4 +139,12 @@ internal partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void ShortcutsSettings() => _messenger.Send<NavigateMessage>(new SlideNavigateMessage(typeof(ShortcutsSettingsPage),
         SlideNavigationTransitionEffect.FromRight));
+
+    [RelayCommand]
+    private void IncreaseZoomDefaultLevel() => ZoomDefaultLevel += SelectedZoomStepSize.Value;
+
+    [RelayCommand]
+    private void DecreaseZoomDefaultLevel() => ZoomDefaultLevel -= SelectedZoomStepSize.Value;
+
+    partial void OnSelectedZoomStepSizeChanged(ComboBoxOption<double> value) => _settingsService.SetZoomStepSize(value.Value);
 }

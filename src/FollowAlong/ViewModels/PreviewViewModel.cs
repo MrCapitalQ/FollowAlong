@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MrCapitalQ.FollowAlong.Core.AppData;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
+using MrCapitalQ.FollowAlong.Core.Tracking;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Shared;
 
@@ -11,8 +12,6 @@ namespace MrCapitalQ.FollowAlong.ViewModels;
 public partial class PreviewViewModel : ObservableObject
 {
     private const double DefaultSessionControlsOpacity = 0.5;
-    private const double MaxZoom = 3;
-    private const double MinZoom = 1;
 
     private readonly IMessenger _messenger;
     private readonly ISettingsService _settingsService;
@@ -33,8 +32,6 @@ public partial class PreviewViewModel : ObservableObject
         _settingsService = settingsService;
         _messenger.Register<PreviewViewModel, StartCapture>(this, (r, m) => HandleStart());
 
-        _zoom = _settingsService.GetZoomDefaultLevel();
-
         HandleStart();
     }
 
@@ -43,7 +40,7 @@ public partial class PreviewViewModel : ObservableObject
         get => _zoom;
         set
         {
-            _zoom = Math.Clamp(value, MinZoom, MaxZoom);
+            _zoom = Math.Clamp(value, TrackingConstants.MinZoom, TrackingConstants.MaxZoom);
             OnPropertyChanged();
             _messenger.Send(new ZoomChanged(_zoom));
         }
@@ -73,6 +70,7 @@ public partial class PreviewViewModel : ObservableObject
 
     private void HandleStart()
     {
+        Zoom = _settingsService.GetZoomDefaultLevel();
         SessionControlsOpacity = DefaultSessionControlsOpacity;
         _messenger.Send(new ZoomChanged(Zoom));
         _messenger.Send(new TrackingToggled(IsTrackingEnabled));
