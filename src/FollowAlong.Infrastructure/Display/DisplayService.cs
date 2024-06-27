@@ -1,4 +1,6 @@
 ﻿using Microsoft.UI.Windowing;
+using MrCapitalQ.FollowAlong.Core.Display;
+using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Display;
@@ -15,8 +17,8 @@ public class DisplayService : IDisplayService
         {
             var displayArea = displayAreas[i];
             yield return new DisplayItem(displayArea.IsPrimary,
-                displayArea.OuterBounds,
-                displayArea.WorkArea,
+                displayArea.OuterBounds.ToRectangle(),
+                displayArea.WorkArea.ToRectangle(),
                 displayArea.DisplayId.Value);
         }
     }

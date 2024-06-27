@@ -1,5 +1,5 @@
-﻿using MrCapitalQ.FollowAlong.Infrastructure.Capture;
-using MrCapitalQ.FollowAlong.Infrastructure.Display;
+﻿using MrCapitalQ.FollowAlong.Core.Display;
+using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using System.Drawing;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Tests.Capture;
@@ -28,16 +28,10 @@ public class ScreenshotServiceTests
         Assert.Equal(0, stream.Position);
     }
 
-    private class TestGraphics : IGraphics
+    private class TestGraphics(Image image) : IGraphics
     {
-        private readonly Image _image;
-        private readonly Graphics _graphics;
-
-        public TestGraphics(Image image)
-        {
-            _image = image;
-            _graphics = Graphics.FromImage(image);
-        }
+        private readonly Image _image = image;
+        private readonly Graphics _graphics = Graphics.FromImage(image);
 
         public void CopyFromScreen(int sourceX, int sourceY, int destinationX, int destinationY, Size blockRegionSize)
         {

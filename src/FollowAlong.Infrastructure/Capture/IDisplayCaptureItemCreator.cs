@@ -1,4 +1,4 @@
-﻿using MrCapitalQ.FollowAlong.Infrastructure.Display;
+﻿using MrCapitalQ.FollowAlong.Core.Display;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
 
