@@ -2,9 +2,7 @@
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
 
-public class FrameArrivedEventArgs : EventArgs
+public class FrameArrivedEventArgs(CanvasBitmap bitmap) : EventArgs
 {
-    public FrameArrivedEventArgs(CanvasBitmap bitmap) => Bitmap = bitmap;
-
-    public CanvasBitmap Bitmap { get; }
+    public CanvasBitmap Bitmap { get; } = bitmap;
 }

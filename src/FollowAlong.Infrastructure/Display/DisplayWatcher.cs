@@ -42,7 +42,7 @@ public sealed class DisplayWatcher : IDisposable
     private void OnDisplayChanged()
     {
         var raiseEvent = DisplayChanged;
-        raiseEvent?.Invoke(this, new());
+        raiseEvent?.Invoke(this, EventArgs.Empty);
     }
 
     private void WindowMessageMonitor_WindowMessageReceived(object? sender, WindowMessageEventArgs e)

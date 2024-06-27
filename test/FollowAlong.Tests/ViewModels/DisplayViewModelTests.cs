@@ -1,5 +1,5 @@
+using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
-using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using MrCapitalQ.FollowAlong.ViewModels;
 using System.Drawing;
 

@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
+namespace MrCapitalQ.FollowAlong.Core.Capture;
 
 public interface IGraphics : IDisposable
 {

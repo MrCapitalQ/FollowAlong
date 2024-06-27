@@ -1,4 +1,5 @@
 ﻿using Microsoft.Graphics.Canvas;
+using MrCapitalQ.FollowAlong.Core.Capture;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
 

@@ -1,6 +1,6 @@
 ﻿using MrCapitalQ.FollowAlong.Core.Display;
 
-namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
+namespace MrCapitalQ.FollowAlong.Core.Capture;
 
 public interface IDisplayCaptureItemCreator
 {
