@@ -1,4 +1,4 @@
-﻿namespace MrCapitalQ.FollowAlong.Infrastructure.Startup;
+﻿namespace MrCapitalQ.FollowAlong.Core.Startup;
 
 public enum AppStartupState
 {

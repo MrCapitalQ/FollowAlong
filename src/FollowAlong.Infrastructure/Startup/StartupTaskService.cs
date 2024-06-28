@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using MrCapitalQ.FollowAlong.Core.Startup;
+using System.Diagnostics.CodeAnalysis;
 using Windows.ApplicationModel;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Startup;

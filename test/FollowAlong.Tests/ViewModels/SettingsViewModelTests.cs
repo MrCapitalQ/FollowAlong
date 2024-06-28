@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml.Media.Animation;
 using MrCapitalQ.FollowAlong.Core.AppData;
-using MrCapitalQ.FollowAlong.Infrastructure.Startup;
+using MrCapitalQ.FollowAlong.Core.Startup;
 using MrCapitalQ.FollowAlong.Messages;
 using MrCapitalQ.FollowAlong.Pages;
 using MrCapitalQ.FollowAlong.Shared;

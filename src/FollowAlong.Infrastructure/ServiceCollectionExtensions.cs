@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MrCapitalQ.FollowAlong.Core.AppData;
+using MrCapitalQ.FollowAlong.Core.Startup;
 using MrCapitalQ.FollowAlong.Infrastructure.Startup;
 using System.Diagnostics.CodeAnalysis;
 
