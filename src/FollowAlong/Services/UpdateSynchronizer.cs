@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using MrCapitalQ.FollowAlong.Core.AppData;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Infrastructure;
 using MrCapitalQ.FollowAlong.Messages;
@@ -11,17 +12,25 @@ namespace MrCapitalQ.FollowAlong.Services;
 [ExcludeFromCodeCoverage(Justification = ExcludeFromCoverageJustifications.RequiresUIThread)]
 internal sealed class UpdateSynchronizer : IUpdateSynchronizer, IDisposable
 {
+    private const double MillisecondsInSeconds = 1000;
+
     public event EventHandler? UpdateRequested;
 
-    private const int UpdatesPerSecond = 60;
+    private readonly ISettingsService _settingsService;
     private readonly Timer _timer;
 
-    public UpdateSynchronizer(IMessenger messenger)
+    public UpdateSynchronizer(ISettingsService settingsService, IMessenger messenger)
     {
-        _timer = new Timer(TimeSpan.FromSeconds(1d / UpdatesPerSecond).TotalMilliseconds);
+        _settingsService = settingsService;
+
+        _timer = new Timer();
         _timer.Elapsed += Timer_Elapsed;
 
-        messenger.Register<UpdateSynchronizer, StartCapture>(this, (r, messenger) => r._timer.Start());
+        messenger.Register<UpdateSynchronizer, StartCapture>(this, (r, messenger) =>
+        {
+            r._timer.Interval = MillisecondsInSeconds / r._settingsService.GetUpdatesPerSecond();
+            r._timer.Start();
+        });
         messenger.Register<UpdateSynchronizer, StopCapture>(this, (r, messenger) => r._timer.Stop());
     }
 

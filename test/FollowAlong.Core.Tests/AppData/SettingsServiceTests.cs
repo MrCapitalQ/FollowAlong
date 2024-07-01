@@ -12,6 +12,7 @@ public class SettingsServiceTests
     private const string VerticalBoundsThresholdSettingsKey = "VerticalBoundsThreshold";
     private const string ZoomDefaultLevelSettingsKey = "ZoomDefaultLevel";
     private const string ZoomStepSizeSettingsKey = "ZoomStepSize";
+    private const string UpdatesPerSecondSettingsKey = "UpdatesPerSecond";
     private readonly IApplicationDataStore _applicationDataStore;
 
     private readonly SettingsService _settingsService;
@@ -226,5 +227,40 @@ public class SettingsServiceTests
         _settingsService.SetZoomStepSize(value);
 
         _applicationDataStore.Received(1).SetValue(ZoomStepSizeSettingsKey, value);
+    }
+
+    [Fact]
+    public void GetUpdatesPerSecond_DataStoreReturnsNonNull_ReturnsValue()
+    {
+        var expected = 123;
+        _applicationDataStore.GetValue(UpdatesPerSecondSettingsKey).Returns(expected);
+
+        var actual = _settingsService.GetUpdatesPerSecond();
+
+        Assert.Equal(expected, actual);
+        _applicationDataStore.Received(1).GetValue(UpdatesPerSecondSettingsKey);
+    }
+
+    [Fact]
+    public void GetUpdatesPerSecond_DataStoreReturnsNull_SetsAndReturnsDefaultValue()
+    {
+        var expected = 30;
+        _applicationDataStore.GetValue(UpdatesPerSecondSettingsKey).Returns(null);
+
+        var actual = _settingsService.GetUpdatesPerSecond();
+
+        Assert.Equal(expected, actual);
+        _applicationDataStore.Received(1).SetValue(UpdatesPerSecondSettingsKey, expected);
+        _applicationDataStore.Received(1).GetValue(UpdatesPerSecondSettingsKey);
+    }
+
+    [Fact]
+    public void SetUpdatesPerSecond_SavesValueInApplicationDataStore()
+    {
+        var value = 123;
+
+        _settingsService.SetUpdatesPerSecond(value);
+
+        _applicationDataStore.Received(1).SetValue(UpdatesPerSecondSettingsKey, value);
     }
 }
