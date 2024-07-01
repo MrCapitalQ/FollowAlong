@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using MrCapitalQ.FollowAlong.Core.Capture;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Windows.Graphics.Capture;
 
@@ -23,6 +24,6 @@ public class DisplayCaptureItem : IDisplayCaptureItem
     private void OnClosed()
     {
         var raiseEvent = Closed;
-        raiseEvent?.Invoke(this, new());
+        raiseEvent?.Invoke(this, EventArgs.Empty);
     }
 }

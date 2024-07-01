@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.AppLifecycle;
 using MrCapitalQ.FollowAlong;
 using MrCapitalQ.FollowAlong.Core;
+using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Core.Tracking;
@@ -18,6 +19,7 @@ using MrCapitalQ.FollowAlong.Services;
 using MrCapitalQ.FollowAlong.Shared;
 using MrCapitalQ.FollowAlong.ViewModels;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 
 [ExcludeFromCodeCoverage]
 internal class Program
@@ -59,7 +61,7 @@ internal class Program
         builder.Services.AddTransient<IWindowMessageMonitor, WindowMessageMonitorAdapter>();
         builder.Services.AddTransient<IHotKeysInterops, HotKeysInteropsAdapter>();
         builder.Services.AddTransient<IScreenshotService, ScreenshotService>();
-        builder.Services.AddTransient<IGraphicsCreator, GraphicsCreator>();
+        builder.Services.AddTransient<IGraphicsCreator<Image>, GraphicsCreator>();
         builder.Services.AddTransient<IDisplayCaptureItemCreator, DisplayCaptureItemCreator>();
         builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
         builder.Services.AddSingleton<IPackageInfo, PackageInfo>();

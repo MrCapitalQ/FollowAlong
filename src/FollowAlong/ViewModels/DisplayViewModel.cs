@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
-using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using System.Drawing;
 
 namespace MrCapitalQ.FollowAlong.ViewModels;

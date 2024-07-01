@@ -3,6 +3,7 @@ using H.NotifyIcon.EfficiencyMode;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
+using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Core.Keyboard;
 using MrCapitalQ.FollowAlong.Core.Tracking;

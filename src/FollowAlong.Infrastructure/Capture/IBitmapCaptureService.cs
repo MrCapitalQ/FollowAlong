@@ -1,4 +1,6 @@
-﻿namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
+﻿using MrCapitalQ.FollowAlong.Core.Capture;
+
+namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
 
 public interface IBitmapCaptureService
 {

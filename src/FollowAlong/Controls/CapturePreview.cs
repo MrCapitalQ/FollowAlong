@@ -116,6 +116,6 @@ public sealed class CapturePreview : Control, IBitmapFrameHandler, ITrackingTran
     private void CapturePreview_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         var raiseEvent = ViewportSizeChanged;
-        raiseEvent?.Invoke(this, new());
+        raiseEvent?.Invoke(this, EventArgs.Empty);
     }
 }

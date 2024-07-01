@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using MrCapitalQ.FollowAlong.Infrastructure.Utils;
-using Windows.Graphics;
+using MrCapitalQ.FollowAlong.Core.Capture;
+using System.Drawing;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Capture;
 
@@ -45,7 +45,7 @@ public sealed class BitmapCaptureService : IBitmapCaptureService, IDisposable
                 handler.Initialize(_captureSessionAdapter.CanvasDevice, captureItem.OuterBounds);
             }
 
-        OnStarted(captureItem.OuterBounds.ToSizeInt32());
+        OnStarted(captureItem.OuterBounds.Size);
     }
 
     public void StopCapture()
@@ -86,7 +86,7 @@ public sealed class BitmapCaptureService : IBitmapCaptureService, IDisposable
 
     public void Dispose() => StopCapture();
 
-    private void OnStarted(SizeInt32 size)
+    private void OnStarted(Size size)
     {
         var raiseEvent = Started;
         raiseEvent?.Invoke(this, new(size));
@@ -95,7 +95,7 @@ public sealed class BitmapCaptureService : IBitmapCaptureService, IDisposable
     private void OnStopped()
     {
         var raiseEvent = Stopped;
-        raiseEvent?.Invoke(this, new());
+        raiseEvent?.Invoke(this, EventArgs.Empty);
     }
 
     private void CaptureSessionAdapter_FrameArrived(object? sender, FrameArrivedEventArgs e)

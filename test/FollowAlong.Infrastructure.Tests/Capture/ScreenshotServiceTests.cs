@@ -1,4 +1,5 @@
-﻿using MrCapitalQ.FollowAlong.Core.Display;
+﻿using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.Display;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
 using System.Drawing;
 
@@ -6,13 +7,13 @@ namespace MrCapitalQ.FollowAlong.Infrastructure.Tests.Capture;
 
 public class ScreenshotServiceTests
 {
-    private readonly IGraphicsCreator _graphicsCreator;
+    private readonly IGraphicsCreator<Image> _graphicsCreator;
 
     private readonly ScreenshotService _screenshotService;
 
     public ScreenshotServiceTests()
     {
-        _graphicsCreator = Substitute.For<IGraphicsCreator>();
+        _graphicsCreator = Substitute.For<IGraphicsCreator<Image>>();
         _screenshotService = new(_graphicsCreator);
     }
 
@@ -20,7 +21,7 @@ public class ScreenshotServiceTests
     public async Task GetDisplayImageAsync_ReturnsStreamWithDataAndAtStartPosition()
     {
         var displayItem = new DisplayItem(true, new(10, 10, 10, 10), new(), 1);
-        _graphicsCreator.FromImage(Arg.Any<Image>()).Returns(x => new TestGraphics((Image)x[0]));
+        _graphicsCreator.CreateFrom(Arg.Any<Image>()).Returns(x => new TestGraphics((Image)x[0]));
 
         var stream = await _screenshotService.GetDisplayImageAsync(displayItem, new Size(10, 10));
 

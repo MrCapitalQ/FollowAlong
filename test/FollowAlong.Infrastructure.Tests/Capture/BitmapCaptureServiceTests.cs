@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Canvas;
+using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Infrastructure.Capture;
-using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using System.Drawing;
 
 namespace MrCapitalQ.FollowAlong.Infrastructure.Tests.Capture;
@@ -37,7 +37,7 @@ public class BitmapCaptureServiceTests
 
         Assert.True(_bitmapCaptureService.IsStarted);
         Assert.NotNull(eventRaisedArgs);
-        Assert.Equal(captureItemRect.ToSizeInt32(), eventRaisedArgs.Size);
+        Assert.Equal(captureItemRect.Size, eventRaisedArgs.Size);
         _captureSessionAdapter.Received(1).Start(captureItem);
         handler.Received(1).Initialize(canvasDevice, captureItemRect);
     }

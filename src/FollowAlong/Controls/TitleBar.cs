@@ -195,7 +195,7 @@ public sealed class TitleBar : Control
     private void BackButton_Click(object sender, RoutedEventArgs e)
     {
         var raiseEvent = BackRequested;
-        raiseEvent?.Invoke(this, new());
+        raiseEvent?.Invoke(this, EventArgs.Empty);
     }
 
     private void BackButtonHolder_SizeChanged(object sender, SizeChangedEventArgs e) => UpdateClickThroughRegions();

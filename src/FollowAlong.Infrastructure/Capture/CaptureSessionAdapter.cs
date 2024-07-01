@@ -1,4 +1,5 @@
 ﻿using Microsoft.Graphics.Canvas;
+using MrCapitalQ.FollowAlong.Core.Capture;
 using MrCapitalQ.FollowAlong.Core.Utils;
 using MrCapitalQ.FollowAlong.Infrastructure.Utils;
 using System.Diagnostics.CodeAnalysis;
@@ -75,7 +76,7 @@ public sealed class CaptureSessionAdapter : ICaptureSessionAdapter, IDisposable
     private void OnRecreated()
     {
         var raiseEvent = Recreated;
-        raiseEvent?.Invoke(this, new());
+        raiseEvent?.Invoke(this, EventArgs.Empty);
     }
 
     private void ResetFramePool(SizeInt32 size)

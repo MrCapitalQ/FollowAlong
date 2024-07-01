@@ -1,4 +1,5 @@
-﻿using MrCapitalQ.FollowAlong.Core.Display;
+﻿using MrCapitalQ.FollowAlong.Core.Capture;
+using MrCapitalQ.FollowAlong.Core.Display;
 using System.Diagnostics.CodeAnalysis;
 using Windows.Graphics.Capture;
 
