@@ -31,16 +31,39 @@ public class SettingsViewModelTests
     }
 
     [Fact]
-    public void Ctor_InitializesWithPackageInfo()
+    public void Ctor_WithValidSavedSettings_InitializesWithSavedSettings()
     {
+        var expectedSelectedCaptureRate = 15;
+        _settingsService.GetUpdatesPerSecond().Returns(expectedSelectedCaptureRate);
+        var expectedZoomDefaultLevel = 2d;
+        _settingsService.GetZoomDefaultLevel().Returns(expectedZoomDefaultLevel);
+        var expectedSelectedStepSize = 0.25;
+        _settingsService.GetZoomStepSize().Returns(expectedSelectedStepSize);
         var expectedAppDisplayName = "AppName";
         _packageInfo.DisplayName.Returns(expectedAppDisplayName);
         _packageInfo.Version.Returns(new PackageVersion(1, 2, 3, 0));
 
         var viewModel = new SettingsViewModel(_startupTaskService, _settingsService, _packageInfo, _messenger);
 
+        Assert.Equal(expectedSelectedCaptureRate, viewModel.SelectedCaptureRate.Value);
+        Assert.Equal(expectedZoomDefaultLevel, viewModel.ZoomDefaultLevel);
+        Assert.Equal(expectedSelectedStepSize, viewModel.SelectedZoomStepSize.Value);
         Assert.Equal(expectedAppDisplayName, viewModel.AppDisplayName);
         Assert.Equal("1.2.3", viewModel.Version);
+    }
+
+    [Fact]
+    public void Ctor_WithInvalidSavedSettings_InitializesWithDefaults()
+    {
+        var expectedSelectedCaptureRate = 30;
+        _settingsService.GetUpdatesPerSecond().Returns(0);
+        var expectedSelectedStepSize = 0.5;
+        _settingsService.GetZoomStepSize().Returns(0);
+
+        var viewModel = new SettingsViewModel(_startupTaskService, _settingsService, _packageInfo, _messenger);
+
+        Assert.Equal(expectedSelectedCaptureRate, viewModel.SelectedCaptureRate.Value);
+        Assert.Equal(expectedSelectedStepSize, viewModel.SelectedZoomStepSize.Value);
     }
 
     [InlineData(AppStartupState.Disabled, false, true, "Start automatically in the background when you sign in")]
@@ -76,6 +99,17 @@ public class SettingsViewModelTests
         _startupTaskService.Received(1).SetStartupStateAsync(isStartOn);
     }
 
+    [Fact]
+    public void SetCaptureRate_UpdatesSettings()
+    {
+        var expectedValue = 15;
+
+        _viewModel.SelectedCaptureRate = new(expectedValue, string.Empty);
+
+        Assert.Equal(expectedValue, _viewModel.SelectedCaptureRate.Value);
+        _settingsService.Received(1).SetUpdatesPerSecond(expectedValue);
+    }
+
     [Theory]
     [InlineData(0, 1)]
     [InlineData(1, 1)]
@@ -87,6 +121,17 @@ public class SettingsViewModelTests
 
         Assert.Equal(expectedValue, _viewModel.ZoomDefaultLevel);
         _settingsService.Received(1).SetZoomDefaultLevel(expectedValue);
+    }
+
+    [Fact]
+    public void SetZoomStepSize_UpdatesSettings()
+    {
+        var expectedValue = 0.25;
+
+        _viewModel.SelectedZoomStepSize = new(expectedValue, string.Empty);
+
+        Assert.Equal(expectedValue, _viewModel.SelectedZoomStepSize.Value);
+        _settingsService.Received(1).SetZoomStepSize(expectedValue);
     }
 
     [Fact]
