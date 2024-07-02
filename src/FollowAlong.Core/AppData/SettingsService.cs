@@ -11,9 +11,11 @@ public class SettingsService(IApplicationDataStore localApplicationData) : ISett
     private const string VerticalBoundsThresholdSettingsKey = "VerticalBoundsThreshold";
     private const string ZoomDefaultLevelSettingsKey = "ZoomDefaultLevel";
     private const string ZoomStepSizeSettingsKey = "ZoomStepSize";
+    private const string UpdatesPerSecondSettingsKey = "UpdatesPerSecond";
     private const double BoundsThresholdDefault = 0.5;
     private const double DefaultZoomDefaultLevel = 1.5;
     private const double DefaultZoomStepSize = 0.5;
+    private const int DefaultUpdatesPerSecond = 30;
 
     private readonly IApplicationDataStore _applicationDataStore = localApplicationData;
 
@@ -84,4 +86,16 @@ public class SettingsService(IApplicationDataStore localApplicationData) : ISett
 
     public void SetZoomStepSize(double zoom)
         => _applicationDataStore.SetValue(ZoomStepSizeSettingsKey, zoom);
+
+    public double GetUpdatesPerSecond()
+    {
+        if (_applicationDataStore.GetValue(UpdatesPerSecondSettingsKey) is int value)
+            return value;
+
+        SetUpdatesPerSecond(DefaultUpdatesPerSecond);
+        return DefaultUpdatesPerSecond;
+    }
+
+    public void SetUpdatesPerSecond(int updatesPerSecond)
+        => _applicationDataStore.SetValue(UpdatesPerSecondSettingsKey, updatesPerSecond);
 }

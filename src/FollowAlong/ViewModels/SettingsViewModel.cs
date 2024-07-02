@@ -30,6 +30,9 @@ internal partial class SettingsViewModel : ObservableObject
     private double _zoomDefaultLevel;
 
     [ObservableProperty]
+    private ComboBoxOption<int> _selectedCaptureRate;
+
+    [ObservableProperty]
     private ComboBoxOption<double> _selectedZoomStepSize;
 
     public SettingsViewModel(IStartupTaskService startupTaskService,
@@ -43,6 +46,8 @@ internal partial class SettingsViewModel : ObservableObject
 
         UpdateStartupState();
 
+        SelectedCaptureRate = CaptureRateOptions.FirstOrDefault(x => x.Value == _settingsService.GetUpdatesPerSecond())
+            ?? CaptureRateOptions.First(x => x.Value == 30);
         ZoomDefaultLevel = _settingsService.GetZoomDefaultLevel();
         SelectedZoomStepSize = ZoomStepSizeOptions.FirstOrDefault(x => x.Value == _settingsService.GetZoomStepSize())
             ?? ZoomStepSizeOptions.First(x => x.Value == 0.5);
@@ -67,6 +72,10 @@ internal partial class SettingsViewModel : ObservableObject
             _settingsService.SetZoomDefaultLevel(_zoomDefaultLevel);
         }
     }
+
+    public List<ComboBoxOption<int>> CaptureRateOptions { get; } = new List<int> { 15, 30, 60 }
+        .Select(x => new ComboBoxOption<int>(x, string.Format(CultureInfo.CurrentUICulture, "{0} fps", x)))
+        .ToList();
 
     public List<ComboBoxOption<double>> ZoomStepSizeOptions { get; } = new List<double> { 0.05, 0.1, 0.25, 0.5, 1d }
         .Select(x => new ComboBoxOption<double>(x, string.Format(CultureInfo.CurrentUICulture, "{0:P0}", x)))
@@ -143,6 +152,8 @@ internal partial class SettingsViewModel : ObservableObject
 
     [RelayCommand]
     private void DecreaseZoomDefaultLevel() => ZoomDefaultLevel -= SelectedZoomStepSize.Value;
+
+    partial void OnSelectedCaptureRateChanged(ComboBoxOption<int> value) => _settingsService.SetUpdatesPerSecond(value.Value);
 
     partial void OnSelectedZoomStepSizeChanged(ComboBoxOption<double> value) => _settingsService.SetZoomStepSize(value.Value);
 }

@@ -21,4 +21,7 @@ public interface ISettingsService
 
     double GetZoomStepSize();
     void SetZoomStepSize(double stepSize);
+
+    double GetUpdatesPerSecond();
+    void SetUpdatesPerSecond(int updatesPerSecond);
 }

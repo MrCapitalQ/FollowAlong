@@ -59,6 +59,14 @@
                                   IsEnabled="{x:Bind _viewModel.IsStartupToggleEnabled, Mode=OneWay}" />
                 </toolkit:SettingsCard>
 
+                <toolkit:SettingsCard Header="Screen capture rate"
+                                      HeaderIcon="{ui:FontIcon Glyph=&#xF7EE;}"
+                                      Description="Capturing at a higher rate will consume more resources">
+                    <ComboBox ItemsSource="{x:Bind _viewModel.CaptureRateOptions}"
+                              SelectedItem="{x:Bind _viewModel.SelectedCaptureRate, Mode=TwoWay}"
+                              DisplayMemberPath="Display" />
+                </toolkit:SettingsCard>
+
                 <toolkit:SettingsCard Header="Mouse pointer tracking"
                                       HeaderIcon="{ui:FontIcon Glyph=&#xE8B0;}"
                                       Description="Adjust follow sensitivity"
